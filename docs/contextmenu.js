@@ -76,7 +76,7 @@ function changeCircleRadius(e) {
 
     // create popup with input
     L.popup().setLatLng(e.latlng)
-        .setContent(`<input type="range" value=${target.radius} min=0 max=1000 oninput="Global.map._layers[${target._leaflet_id}].setRadius(this.value)"/>`)
+        .setContent(`<input type="range" value=${target._mRadius} min=0 max=1000 oninput="Global.map._layers[${target._leaflet_id}].setRadius(this.value)"/>`)
         .addTo(Global.map).openOn(Global.map);
 }
 
@@ -106,7 +106,6 @@ function onMapRightClick(e) {
                     text: 'Delete Circle',
                     callback: deleteCircle
                 });
-                //TODO: set radius by opening a popup, giving the circle to it and letting user change radius
             } else {
                 addSeperator = false;
             }

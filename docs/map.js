@@ -147,7 +147,9 @@ function handleZipFile(event) {
     Promise.all(promises).then(() => {
         // info at the end of load
         console.log("done");
-        alert(`Loaded Zip.`);
+        alert(`Loaded Zip. Refreshing site.`);
+        if (!Global.DEBUG)
+            window.location.reload();
     });
 }
 // attach handler to input (in index.html)
@@ -215,21 +217,11 @@ async function loadFromZip(f) {
             clearCaseImgDB();
             console.debug("Loading cases");
             let caseCounter = 0;
-            let caseImgCounter = 0;
+            let cases = [];
+            let casePromises = [];
             zip.folder("cases").forEach((path, entry) => {
-                // dir? save contained images
-                if (entry.dir) {
-                    zip.folder(entry.name).forEach((path, e) => {
-                        if (e.dir)
-                            return;
-                        //TODO: file ending check?
-
-                        caseImgCounter++;
-                        let promise = e.async("blob").then(blob => saveCaseImage(entry.name, path, blob));
-                        promises.push(promise);
-                    });
+                if (entry.dir)
                     return;
-                }
 
                 if (!entry.name.endsWith(".json"))
                     return;
@@ -238,19 +230,45 @@ async function loadFromZip(f) {
                 let promise = entry.async("text").then(text => {
                     // parse json
                     let json = JSON.parse(text);
+                    // save case id, so we can load the case images later
+                    cases.push(json.id);
                     // save into db
                     saveCaseJson(json);
                 });
-                promises.push(promise);
+                casePromises.push(promise);
             });
-            console.debug(`Found ${caseCounter} Cases and ${caseImgCounter} Case Images.`);
+            console.debug(`Found ${caseCounter} Cases.`);
+
+            // load case images
+            Promise.all(casePromises).then(() => {
+                console.debug("Loading case images.");
+                let caseImgCounter = 0;
+                for (let key in cases) {
+                    let id = cases[key];
+                    let path = `cases/${id}`
+                    zip.folder(path).forEach((p, e) => {
+                        if (e.dir)
+                            return;
+                        //TODO: file ending check?
+
+                        caseImgCounter++;
+                        let promise = e.async("blob").then(blob => saveCaseImage(path, p, blob));
+                        promises.push(promise);
+                    });
+                }
+                console.debug(`Found ${caseImgCounter} Case Images.`);
+            });
 
             return Promise.all(promises);
         });
 }
 
 function loadTestMap() {
-    const path = "data/ghosthunt.zip"
+    const path = "data/ghosthunt.zip";
     alert("Fetching and loading Test Map. This can take a few seconds. Press OK to continue.");
-    fetch(path).then(res => res.blob()).then(blob => loadFromZip(blob)).then(() => alert(`Loaded Map. Refresh site.`))
+    fetch(path).then(res => res.blob()).then(blob => loadFromZip(blob)).then(() => {
+        alert(`Loaded Map. Refreshing site.`);
+        if (!Global.DEBUG)
+            window.location.reload();
+    });
 }
