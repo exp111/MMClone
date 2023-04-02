@@ -59,6 +59,24 @@ function deleteMarker(e) {
     target.remove();
 }
 
+function printTarget(e) {
+    let target = e.relatedTarget;
+    if (!target)
+        return;
+
+    console.log(target);
+}
+
+function changeCircleRadius(e) {
+    let target = e.relatedTarget;
+    if (!target)
+        return;
+
+    // create popup with input
+    L.popup().setLatLng(e.latlng)
+        .setContent(`<input type="range" value=${target.radius} min=0 max=1000 oninput="Global.map._layers[${target._leaflet_id}].setRadius(this.value)"/>`)
+        .addTo(Global.map).openOn(Global.map);
+}
 
 // Called on contextmenu, add our own items
 function onMapRightClick(e) {
@@ -79,6 +97,10 @@ function onMapRightClick(e) {
             // only add circle items on debug
             if (Global.DEBUG) {
                 e.contextmenu.addItem({
+                    text: 'Change Radius',
+                    callback: changeCircleRadius
+                });
+                e.contextmenu.addItem({
                     text: 'Delete Circle',
                     callback: deleteCircle
                 });
@@ -86,6 +108,13 @@ function onMapRightClick(e) {
             } else {
                 addSeperator = false;
             }
+        }
+
+        if (Global.DEBUG) {
+            e.contextmenu.addItem({
+                text: 'Print in Console',
+                callback: printTarget
+            });
         }
 
         // add seperator
