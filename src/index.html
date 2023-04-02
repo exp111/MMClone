@@ -1,186 +1,55 @@
 <!DOCTYPE html>
 <html>
-    <style>
-        #map, body, html
-        {
-            width: 100vw;
-            height: 90%;
+<style>
+    #map,
+    body,
+    html {
+        width: 100vw;
+        height: 90%;
+        background: #fff;
+    }
+</style>
+
+<head>
+    <script src="dependencies/leaflet/leaflet.js"></script>
+    <link rel="stylesheet" href="dependencies/leaflet/leaflet.css" />
+    <script src="dependencies/idb/umd.js"></script>
+    <script src="dependencies/leaflet.offline/bundle.js"></script>
+    <script src="dependencies/jszip/jszip.min.js"></script>
+</head>
+
+<body>
+    <div id="map"></div>
+    <label for="file_map">Upload Map:</label>
+    <input type="file" id="file_map" />
+    <label for="file_case">Upload Case:</label>
+    <input type="file" id="file_case" multiple />
+    <label for="select_case">Choose Case:</label>
+    <select id="select_case" onchange="handleCaseChange(this)">
+        <option value="Placeholder">
+    </select> 
+    <p id="case_objective"></p>
+    <button onclick="Global.caseProgress++; updateCaseStep()">Next</button>
+    <script>
+        var Global = {
+            map: null,
+            baseLayer: null,
+            cases: {},
+            currentCase: null,
+            caseProgress: 0 //TODO: read from/save to idb
         }
-    </style>
-    <head>
-        <script src="dependencies/leaflet/leaflet.js"></script>
-        <link rel="stylesheet" href="dependencies/leaflet/leaflet.css"/>
-        <script src="dependencies/idb/umd.js"></script>
-        <script src="dependencies/leaflet.offline/bundle.js"></script>
-        <script src="dependencies/jszip/jszip.min.js"></script>
-    </head>
-    <body>
-        <div id="map"></div>
-        <input type="file" id="file" name="file"/>
-        <script>
-            const zip = new JSZip();
-            const MAP_BOUNDS_VISCOSITY = 1;
-            const MAP_WIDTH_IN_PIXELS = 24685;
-            const MAP_HEIGHT_IN_PIXELS = 17513;
-            const MAP_BASE_TILE_SIZE = 256;
+    </script>
+    <script src="map.js"></script>
+    <script src="case.js"></script>
+    <script>
+        const zip = new JSZip();
+        document.getElementById("file_map").onchange = handleMapFile;
+        document.getElementById("file_case").onchange = handleCaseFile;
 
-            const MAP_MIN_ZOOM = 2;
-            const MAP_BOUNDS_EXTENSION = 1e3;
-            const MAP_MAX_RESOLUTION = 1;
+        initMap();
+        refreshCases();
+    </script>
 
-            l = Math.pow(2, 6) * MAP_MAX_RESOLUTION;
-            transformation = .5;
-            u = transformation;
+</body>
 
-            var c = L.CRS.Simple;
-            c.transformation = new L.Transformation(u, 0, u, 0);
-            c.scale = function (e)
-            {
-                return Math.pow(2, e) / l
-            }
-            c.zoom = function (e)
-            {
-                return Math.log(e * l) / Math.LN2
-            }
-
-            var map = L.map('map', 
-            {
-                //zoomSnap: 1,
-                //crs: c,
-                crs: c,
-                maxZoom: 6,
-                minZoom: MAP_MIN_ZOOM,
-                zoomSnap: 1,
-                zoomDelta: .75,
-                wheelPxPerZoomLevel: 250,
-                bounceAtZoomLimits: false,
-                maxBounds: [c.unproject(L.point(-MAP_BOUNDS_EXTENSION, -MAP_BOUNDS_EXTENSION)), c.unproject(L.point(MAP_WIDTH_IN_PIXELS + MAP_BOUNDS_EXTENSION, MAP_HEIGHT_IN_PIXELS + MAP_BOUNDS_EXTENSION))],
-                maxBoundsViscosity: MAP_BOUNDS_VISCOSITY
-            });
-            // create offline layer
-            const baseLayer = LeafletOffline.tileLayerOffline("{z}/{y}/{x}.png", 
-            {
-                minZoom: MAP_MIN_ZOOM,
-                maxZoom: 6,
-                noWrap: true,
-                tms: !1,
-                edgeBufferTiles: 1,
-                tileSize: MAP_BASE_TILE_SIZE,
-                bounds: [c.unproject(L.point(0, 0)), c.unproject(L.point(MAP_WIDTH_IN_PIXELS, MAP_HEIGHT_IN_PIXELS))]
-
-            });
-
-            // copy cause it sucks ass
-            function getTileUrl(urlTemplate, data) {
-                return leaflet.Util.template(urlTemplate, {
-                ...data,
-                r: leaflet.Browser.retina ? '@2x' : ''
-                });
-            }
-            // let layer let from cache
-            baseLayer.on('tileloadstart', (event) => 
-            {
-                tile = event.tile;
-                coords = event.coords;
-                url = getTileUrl(baseLayer._url, coords);
-                // reset tile.src, to not start download yet
-                tile.src = '';
-                LeafletOffline.getBlobByKey(url).then((blob) => 
-                {
-                    if (blob)
-                    {
-                        tile.src = URL.createObjectURL(blob);
-                        console.debug(`Loaded ${url} from idb`);
-                        return;
-                    }
-                    console.debug(`missing tile ${url}`);
-                });
-            });
-            baseLayer.addTo(map)
-            map.setView([0,0], 0)
-            function saveTile(coords, blob)
-            {
-                url = getTileUrl(baseLayer._url, coords);
-                info = {
-                    key: url,
-                    url: url,
-                    x: coords.x,
-                    y: coords.y,
-                    z: coords.z,
-                    urlTemplate: baseLayer._url,
-                    createdAt: Date.now()
-                };
-
-                LeafletOffline.saveTile(info, blob)
-            }
-            
-            // Called from the file upload
-            function handleFile(event)
-            {
-                console.debug("Got File");
-                let files = event.target.files;
-                for (let i = 0; i < files.length; i++)
-                {
-                    let file = files[i];
-                    console.debug(`Loading from ${file}`);
-                    loadFromZip(file);
-                }
-            }
-            // attach handler to input
-            document.getElementById("file").onchange = handleFile;
-
-            // Parses coords from a img/ path. Else returns null
-            function parseCoords(path)
-            {
-                // img/6/9/9.png
-                let p = path.split("img/")[1]; // remove "img/"
-                p = p.split(".")[0]; // remove file ending
-                nums = p.split("/"); // split by dirs
-                if (nums.length != 3)
-                    return null;
-
-                return {
-                    z: nums[0], // zoom first
-                    y: nums[1], // then y
-                    x: nums[2], // then x
-                }
-            }
-            function loadFromZip(f)
-            {
-                //TODO: warn user cause deleting
-                // delete the current cache
-                LeafletOffline.truncate();
-
-                //TODO: sometimes reading doesnt fully read everything and you need multiple tries. idk why
-                JSZip.loadAsync(f)
-                    .then((zip) => {
-                        // load images
-                        zip.forEach(function (path, entry)
-                        {
-                            // only need files
-                            if (entry.dir)
-                                return;
-                            
-                            // imgs are in path "img/"
-                            if (!path.startsWith("img/"))
-                                return;
-
-                            // TODO: check file ending?
-
-                            // try to parse coords
-                            let coords = parseCoords(path);
-                            if (!coords)
-                                return;
-                            
-                            entry.async("arraybuffer").then(c => {
-                                console.debug(`loaded data for (x: ${coords.x}, y: ${coords.y}, z: ${coords.z}), url ${path}`);
-                                let buffer = new Uint8Array(c);
-                                let blob = new Blob([buffer.buffer]);
-                                saveTile(coords, blob);
-                            });
-                        });
-                    });
-            }
-        </script>
-    </body>
 </html>

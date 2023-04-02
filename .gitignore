@@ -1,5 +1,10 @@
+# original data
 map/*/
-cases/democase
+cases/*/
 js/
+# compiled python
 *.pyc
+# secrets
 const.py
+# test data
+data/
