@@ -300,7 +300,7 @@ function loadMapFromZip(f) {
 }
 
 function printMissingTiles() {
-    print("Missing tiles");
+    console.log("Missing tiles");
     for (let key in loadedTiles) {
         let val = loadedTiles[key];
         if (!val)

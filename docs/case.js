@@ -9,7 +9,7 @@ function handleCaseFile(event) {
     //TODO: inform user at the end of load
     //alert(`Loaded ${files.length} Cases.`);
 
-    // refresh cases
+    // refresh cases //TODO: do this at the end of the load
     refreshCases();
 }
 
@@ -112,9 +112,11 @@ function handleCaseChange(select) {
         return;
     Global.currentCase = selected;
     Global.caseProgress = 0;
+    updateCase();
     console.debug(`Selected case ${selected.name} (ID ${selected.id})`);
 }
 
+// Updates the objective text and markers. Returns the amount of solutions
 function updateCaseStep() {
     let step = Global.currentCase.steps[Global.caseProgress];
     if (!step)
@@ -122,8 +124,11 @@ function updateCaseStep() {
     // update objective label
     let label = document.getElementById("case_objective");
     label.textContent = step.text ? step.text : "";
+    // clear solution
+    document.getElementById("case_solution_title").textContent = "";
+    document.getElementById("case_solution_text").textContent = "";
 
-    //TODO: update solutions
+    // update solutions
     // clear existing circles
     console.debug(`Removing ${Global.caseMarkers.length} markers`);
     for (let key in Global.caseMarkers) {
@@ -135,7 +140,7 @@ function updateCaseStep() {
     // then add the new ones
     var fillColor = Global.DEBUG ? "#f00" : "#fff";
     var opacity = Global.DEBUG ? 0.5 : 0;
-    console.debug(`Adding ${step.solutions.length} new markers`);
+    console.debug(`Adding ${step.solutions ? step.solutions.length : 0} new markers`);
     for (let key in step.solutions) {
         let s = step.solutions[key];
         switch (s.type) {
@@ -150,7 +155,7 @@ function updateCaseStep() {
                     bubblingMouseEvents: false, // needed or else we cause a map contextmenu event
                 });
                 circle.addTo(Global.map);
-                circle.addEventListener("click", () => progressCase());
+                circle.addEventListener("click", () => solveStep());
                 Global.caseMarkers.push(circle);
                 break;
             }
@@ -160,16 +165,51 @@ function updateCaseStep() {
             }
         }
     }
+    return step.solutions ? step.solutions.length : 0;
 }
 
-function progressCase() {
+function unlockNextButton()
+{
+    document.getElementById("button_next").disabled = false;
+}
+function lockNextButton() {
+    document.getElementById("button_next").disabled = true;
+}
+function solveStep() {
     if (!Global.currentCase)
-    {
+        return;
+
+    let step = Global.currentCase.steps[Global.caseProgress];
+    if (!step)
+        return;
+
+    // show solution
+    document.getElementById("case_solution_title").textContent = step.solution_title;
+    document.getElementById("case_solution_text").textContent = step.solution_text;
+
+    // unlock button
+    unlockNextButton();
+}
+
+// Increases the case progress and updates the objective and solution text.
+function progressCase() {
+    if (!Global.currentCase) {
         alert("No case selected!");
         return;
     }
-    
+
+    //TODO: check end of case
     console.debug(`Increasing case step from ${Global.caseProgress}`);
     Global.caseProgress++;
-    updateCaseStep();
+    updateCase();
+}
+
+// used to update the case. if you want to progress, use progressCase();
+function updateCase()
+{
+    let amountSolutions = updateCaseStep();
+    if (amountSolutions > 0)
+        lockNextButton();
+    else
+        solveStep();
 }

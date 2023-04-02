@@ -31,12 +31,17 @@
         <option value="Placeholder">
     </select>
     <p id="case_objective"></p>
-    <button onclick="progressCase()">Next</button>
+    <div>
+        <h1 id="case_solution_title"></h1>
+        <p id="case_solution_text"></p>
+    </div>
+    <button id="button_next" onclick="progressCase()">Next</button>
     <div id="debug">
         <input type="checkbox" id="debug_toggle" onchange="Global.DEBUG = !Global.DEBUG"/>
         <label for="debug_toggle">DEBUG</label>
         <button onclick="clearMapDB()">Clear Map DB</button>
         <button onclick="clearCaseDB()">Clear Case DB</button>
+        <button onclick="progressCase()">Force Next</button>
     </div>
     <script>
         var Global = {
