@@ -80,7 +80,7 @@ function initMap() {
     Global.map.setView([0, 0], 0);
 }
 
-function saveTile(coords, blob) {
+async function saveTile(coords, blob) {
     url = getTileUrl(Global.baseLayer._url, coords);
     info = {
         key: url,
@@ -92,18 +92,26 @@ function saveTile(coords, blob) {
         createdAt: Date.now()
     };
 
-    LeafletOffline.saveTile(info, blob)
+    return LeafletOffline.saveTile(info, blob)
 }
 
 // Called from the map file upload
 function handleMapFile(event) {
+    alert("Loading Map. This can take up to 30 seconds depending on the map size. Press OK to continue.");
     console.debug("Got Map File");
     let files = event.target.files;
+    let promises = [];
     for (let i = 0; i < files.length; i++) {
         let file = files[i];
         console.debug(`Loading Map from ${file}`);
-        loadMapFromZip(file);
+        promises.push(loadMapFromZip(file));
     }
+
+    Promise.all(promises).then(() => 
+    {
+        // info at the end of load
+        alert(`Loaded Map.`);
+    });
 }
 // attach handler to input (in index.html)
 
@@ -127,17 +135,14 @@ function clearMapDB() {
     LeafletOffline.truncate();
 }
 
-var loadedTiles;
-function loadMapFromZip(f) {
+async function loadMapFromZip(f) {
     //TODO: warn user cause deleting
     // delete the current cache
     clearMapDB();
 
-    //TODO: sometimes reading doesnt fully read everything and you need multiple tries. idk why
-
-    loadedTiles = {};
-    JSZip.loadAsync(f)
+    return JSZip.loadAsync(f)
         .then((zip) => {
+            promises = [];
             // load images
             zip.forEach(function (path, entry) {
                 // only need files
@@ -155,28 +160,15 @@ function loadMapFromZip(f) {
                 if (!coords)
                     return;
 
-                loadedTiles[`${coords.z}/${coords.y}/${coords.x}`] = false;
-
-                entry.async("arraybuffer").then(c => {
+                let promise = entry.async("blob").then(blob => {
                     console.debug(
                         `loaded data for (x: ${coords.x}, y: ${coords.y}, z: ${coords.z}), url ${path}`
                     );
-                    let buffer = new Uint8Array(c);
-                    let blob = new Blob([buffer.buffer]);
-                    saveTile(coords, blob);
-                    loadedTiles[`${coords.z}/${coords.y}/${coords.x}`] = true;
+                    return saveTile(coords, blob);
                 });
+                promises.push(promise);
             });
+            // wait till all images are parsed //TODO: optimize the saving part as that takes the longest
+            return Promise.all(promises)
         });
-    //TODO: info at the end of load
-    //alert("Loaded Map.");
-}
-
-function printMissingTiles() {
-    console.log("Missing tiles");
-    for (let key in loadedTiles) {
-        let val = loadedTiles[key];
-        if (!val)
-            console.log(`Missing ${key}`);
-    }
 }

@@ -1,16 +1,20 @@
 function handleCaseFile(event) {
     console.debug("Got Case File(s)");
     let files = event.target.files;
+    let promises = []
     for (let i = 0; i < files.length; i++) {
         let file = files[i];
         console.debug(`Loading Case from ${file}`);
-        loadCaseJson(file);
+        promises.push(loadCaseJson(file));
     }
-    //TODO: inform user at the end of load
-    //alert(`Loaded ${files.length} Cases.`);
-
-    // refresh cases //TODO: do this at the end of the load
-    refreshCases();
+    
+    // wait for all files to load
+    Promise.all(promises).then(() =>
+    {
+        // refresh cases
+        refreshCases();
+        alert(`Loaded ${files.length} Cases.`);
+    });
 }
 
 const caseStoreName = "cases";
@@ -37,25 +41,28 @@ function openCaseDB() {
 }
 
 // Loads json from a file and saves it into the db
-function loadCaseJson(file) {
+async function loadCaseJson(file) {
     // load object into store. use json["id"] as key
-    // read json file
-    const reader = new FileReader();
-    reader.addEventListener('load', (event) => {
-        // fetch + parse as json
-        let url = event.target.result;
-        fetch(url).then(res => res.json())
-            .then(json => {
-                console.debug(json);
-                // open db
-                openCaseDB().then(db => {
-                    // save object in db
-                    db.put(caseStoreName, json);
+    return new Promise((resolve, reject) =>
+    {
+        // read json file
+        const reader = new FileReader();
+        reader.addEventListener('load', (event) => {
+            // fetch + parse as json
+            let url = event.target.result;
+            fetch(url).then(res => res.json())
+                .then(json => {
+                    console.debug(`Loaded case file ${file.name}`);
+                    console.debug(json);
+                    // open db
+                    openCaseDB().then(db => {
+                        // save object in db
+                        db.put(caseStoreName, json);
+                    }).then(resolve());
                 });
-            });
+        });
+        reader.readAsDataURL(file);
     });
-    reader.readAsDataURL(file);
-    console.debug(`Loaded case file ${file}`);
 }
 
 // Deletes a case from the db
@@ -168,6 +175,7 @@ function updateCaseStep() {
     return step.solutions ? step.solutions.length : 0;
 }
 
+// Enable/disable the "next" button
 function unlockNextButton()
 {
     document.getElementById("button_next").disabled = false;
@@ -175,6 +183,8 @@ function unlockNextButton()
 function lockNextButton() {
     document.getElementById("button_next").disabled = true;
 }
+
+// Solves the current step and shows the solution. Also unlocks the next button.
 function solveStep() {
     if (!Global.currentCase)
         return;

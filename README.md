@@ -17,4 +17,3 @@ Uses Leaflet to show the map.
         - on circle: set color, set radius
 - style markers
 - help page
-- notify user/refresh page after map loading is done
