@@ -5,13 +5,13 @@ Uses Leaflet to show the map.
 - allow images for cases + show the cards
 - map upload => zip upload, parse only whats there (maps, cases, case images...) 
 - ui
-- markers
-- mp?
+- mp:
+    - sync markers
+    - sync case progress
+    - sync case/map
+    - sync cursors
 - custom level to show how everything works
 - right click menu:
-    - create marker
-    - on marker: delete, set color
+    - on marker: set color
     - debug:
-        - show position
-        - create circle
-        - on circle: delete, set color, set radius
+        - on circle: set color, set radius

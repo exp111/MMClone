@@ -142,10 +142,12 @@ function updateCaseStep() {
             case "circle": {
                 var radius = s.diameter / 2;
                 var circle = L.circle([s.y + radius, s.x + radius], {
+                    contextmenu: true,
                     color: "none",
                     fillColor: fillColor,
                     fillOpacity: opacity,
-                    radius: radius
+                    radius: radius,
+                    bubblingMouseEvents: false, // needed or else we cause a map contextmenu event
                 });
                 circle.addTo(Global.map);
                 circle.addEventListener("click", () => progressCase());

@@ -30,8 +30,8 @@ function initMap() {
     }
 
     Global.map = L.map('map', {
-        //zoomSnap: 1,
-        //crs: c,
+        contextmenu: true,
+        contextmenuItems: [{}], // needs object inside to open
         crs: c,
         maxZoom: 6,
         minZoom: MAP_MIN_ZOOM,
@@ -47,7 +47,7 @@ function initMap() {
     });
 
     // hijack right click menu
-    Global.map.on("contextmenu", onMapRightClick);
+    Global.map.on("contextmenu.show", onMapRightClick);
     // create offline layer
     Global.baseLayer = LeafletOffline.tileLayerOffline("{z}/{y}/{x}.png", {
         minZoom: MAP_MIN_ZOOM,
@@ -80,10 +80,130 @@ function initMap() {
     Global.map.setView([0, 0], 0);
 }
 
-function onMapRightClick(e)
-{
-    if (Global.DEBUG)
-        L.popup().setLatLng(e.latlng).setContent(`<p>Pos: ${e.latlng}</p>`).addTo(Global.map).openOn(Global.map);
+function zoomIn() {
+    Global.map.zoomIn();
+}
+
+function zoomOut() {
+    Global.map.zoomOut();
+}
+
+function createCircle(e) {
+    let y = e.latlng.lat;
+    let x = e.latlng.lng;
+    let radius = 100;
+    let circle = L.circle([y + radius, x + radius], {
+        contextmenu: true,
+        color: "none",
+        fillColor: "#f00",
+        fillOpacity: 0.5,
+        radius: radius,
+        bubblingMouseEvents: false, // needed or else we cause a map contextmenu event
+    });
+    circle.addTo(Global.map);
+}
+
+function deleteCircle(e) {
+    let target = e.relatedTarget;
+    if (!target)
+        return;
+    //TODO: remove from global array if casemarker?
+    target.remove();
+}
+
+// Creates a marker at e.latlng
+function createMarker(e) {
+    let y = e.latlng.lat;
+    let x = e.latlng.lng;
+    let radius = 100;
+    let marker = L.marker([y + radius, x + radius], {
+        contextmenu: true,
+    });
+    marker.addTo(Global.map);
+    Global.markers.push(marker);
+}
+
+// Removes the given marker
+function deleteMarker(e) {
+    let target = e.relatedTarget;
+    if (!target)
+        return;
+
+    // remove from global array
+    for (let key in Global.markers) {
+        let val = Global.markers[key];
+        if (val == target) {
+            Global.markers.splice(key, 1);
+            break;
+        }
+    }
+
+    // remove from map
+    target.remove();
+}
+
+
+// Called on contextmenu, add our own items
+function onMapRightClick(e) {
+    // clear menu
+    e.contextmenu.removeAllItems();
+    // First context relevant ones
+    if (e.relatedTarget) {
+        let target = e.relatedTarget;
+        let addSeperator = true;
+        // marker
+        if (target instanceof(L.Marker)) {
+            e.contextmenu.addItem({
+                text: 'Delete Marker',
+                callback: deleteMarker
+            });
+            //TODO: let user set color
+        } else if (target instanceof(L.Circle)) {
+            // only add circle items on debug
+            if (Global.DEBUG) {
+                e.contextmenu.addItem({
+                    text: 'Delete Circle',
+                    callback: deleteCircle
+                });
+                //TODO: set radius by opening a popup, giving the circle to it and letting user change radius
+            } else {
+                addSeperator = false;
+            }
+        }
+
+        // add seperator
+        if (addSeperator)
+            e.contextmenu.addItem("-");
+    }
+
+    // Add marker //TODO: remove when on marker?
+    e.contextmenu.addItem({
+        text: "Add Marker",
+        callback: createMarker
+    });
+
+    // Zoom
+    e.contextmenu.addItem({
+        text: "Zoom in",
+        callback: zoomIn
+    });
+    e.contextmenu.addItem({
+        text: "Zoom out",
+        callback: zoomOut
+    });
+
+    // Debug items
+    if (Global.DEBUG) {
+        e.contextmenu.addItem("-");
+        e.contextmenu.addItem({
+            text: `Pos: ${e.latlng}`,
+            disabled: true
+        });
+        e.contextmenu.addItem({
+            text: "Add Circle",
+            callback: createCircle
+        });
+    }
 }
 
 function saveTile(coords, blob) {
@@ -129,12 +249,12 @@ function parseCoords(path) {
     }
 }
 
-function clearMapDB()
-{
+function clearMapDB() {
     LeafletOffline.truncate();
 }
 
 var loadedTiles;
+
 function loadMapFromZip(f) {
     //TODO: warn user cause deleting
     // delete the current cache
@@ -179,8 +299,7 @@ function loadMapFromZip(f) {
     //alert("Loaded Map.");
 }
 
-function printMissingTiles()
-{
+function printMissingTiles() {
     print("Missing tiles");
     for (let key in loadedTiles) {
         let val = loadedTiles[key];

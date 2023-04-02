@@ -16,6 +16,8 @@
     <script src="dependencies/idb/umd.js"></script>
     <script src="dependencies/leaflet.offline/bundle.js"></script>
     <script src="dependencies/jszip/jszip.min.js"></script>
+    <script src="dependencies/leaflet.contextmenu/leaflet.contextmenu.min.js"></script>
+    <link rel="stylesheet" href="dependencies/leaflet.contextmenu/leaflet.contextmenu.min.css" />
 </head>
 
 <body>
@@ -45,6 +47,7 @@
             currentCase: null,
             caseProgress: 0, //TODO: read from/save to idb,
             caseMarkers: [],
+            markers: [],
         }
     </script>
     <script src="map.js"></script>
