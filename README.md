@@ -15,3 +15,4 @@ Uses Leaflet to show the map.
     - on marker: set color
     - debug:
         - on circle: set color, set radius
+- style markers
