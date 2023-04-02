@@ -22,25 +22,31 @@
 
 <body>
     <div id="map"></div>
-    <label for="file_map">Upload Map:</label>
-    <input type="file" id="file_map" />
+    <label for="file_zip">Upload Zip:</label>
+    <input type="file" id="file_zip" />
     <label for="file_case">Upload Case:</label>
     <input type="file" id="file_case" multiple />
     <label for="select_case">Choose Case:</label>
     <select id="select_case" onchange="handleCaseChange(this)">
         <option value="Placeholder">
     </select>
+    <button onclick="loadTestMap()">Load Test Map</button>
     <p id="case_objective"></p>
     <div>
         <h1 id="case_solution_title"></h1>
         <p id="case_solution_text"></p>
     </div>
     <button id="button_next" onclick="progressCase()">Next</button>
+    <div>
+        <img id="case_img_front"/>
+        <img id="case_img_back"/>
+    </div>
     <div id="debug">
         <input type="checkbox" id="debug_toggle" onchange="Global.DEBUG = !Global.DEBUG"/>
         <label for="debug_toggle">DEBUG</label>
         <button onclick="clearMapDB()">Clear Map DB</button>
         <button onclick="clearCaseDB()">Clear Case DB</button>
+        <button onclick="clearCaseImgDB()">Clear Case Img DB</button>
         <button onclick="solveStep()">Solve</button>
         <button onclick="progressCase()">Force Next</button>
     </div>
@@ -67,8 +73,7 @@
     <script src="map.js"></script>
     <script src="case.js"></script>
     <script>
-        const zip = new JSZip();
-        document.getElementById("file_map").onchange = handleMapFile;
+        document.getElementById("file_zip").onchange = handleZipFile;
         document.getElementById("file_case").onchange = handleCaseFile;
         document.getElementById("debug").hidden = !Global.DEBUG; // hide if not debug
         document.getElementById("debug_toggle").checked = Global.DEBUG;

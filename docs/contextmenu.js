@@ -59,6 +59,7 @@ function deleteMarker(e) {
     target.remove();
 }
 
+// prints the currently selected target into the console
 function printTarget(e) {
     let target = e.relatedTarget;
     if (!target)
@@ -67,6 +68,7 @@ function printTarget(e) {
     console.log(target);
 }
 
+// creates a popup to let the user change the circle's radius
 function changeCircleRadius(e) {
     let target = e.relatedTarget;
     if (!target)

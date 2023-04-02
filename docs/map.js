@@ -35,24 +35,25 @@ function openMetaDB() {
 }
 
 const mapMetadataID = "map";
-async function loadMapMetadata()
-{
+async function loadMapMetadata() {
     const db = await openMetaDB();
     return await db.get(metadataStoreName, mapMetadataID);
 }
 
-async function saveMapMetadata(json)
-{
+async function saveMapMetadata(json) {
     openMetaDB().then(db => {
         // save object in db
         db.put(metadataStoreName, {
             ...json,
-            id: mapMetadataID });
+            id: mapMetadataID
+        });
     });
 }
 
 async function initMap() {
-    Global.mapMetadata = await loadMapMetadata() ?? Global.mapMetadata;
+    let meta = await loadMapMetadata();
+    if (meta)
+        Global.mapMetadata = meta;
     l = Math.pow(2, 6) * MAP_MAX_RESOLUTION;
     transformation = .5;
     u = transformation;
@@ -132,29 +133,29 @@ async function saveTile(coords, blob) {
 }
 
 // Called from the map file upload
-function handleMapFile(event) {
-    alert("Loading Map. This can take up to 30 seconds depending on the map size. Press OK to continue.");
-    console.debug("Got Map File");
+function handleZipFile(event) {
+    alert("Loading Zip. This can take up to 30 seconds depending on the map size. Press OK to continue.");
+    console.debug("Got Zip File");
     let files = event.target.files;
     let promises = [];
     for (let i = 0; i < files.length; i++) {
         let file = files[i];
-        console.debug(`Loading Map from ${file}`);
-        promises.push(loadMapFromZip(file));
+        console.debug(`Loading Zip ${file.name}`);
+        promises.push(loadFromZip(file));
     }
 
     Promise.all(promises).then(() => {
         // info at the end of load
-        alert(`Loaded Map.`);
+        console.log("done");
+        alert(`Loaded Zip.`);
     });
 }
 // attach handler to input (in index.html)
 
 // Parses coords from a map/ path. Else returns null
 function parseCoords(path) {
-    // map/6/9/9.png
-    let p = path.split("map/")[1]; // remove "img/"
-    p = p.split(".")[0]; // remove file ending
+    // 6/9/9.png
+    let p = path.split(".")[0]; // remove file ending
     nums = p.split("/"); // split by dirs
     if (nums.length != 3)
         return null;
@@ -170,30 +171,20 @@ function clearMapDB() {
     LeafletOffline.truncate();
 }
 
-async function loadMapFromZip(f) {
+//TODO: move into more "neutral" territory
+async function loadFromZip(f) {
     //TODO: warn user cause deleting
-    // delete the current cache
-    clearMapDB();
-
     return JSZip.loadAsync(f)
         .then((zip) => {
+            console.debug(zip);
             promises = [];
-            // load images
-            zip.forEach(function (path, entry) {
-                // only need files
+
+            // Load map
+            console.debug("Loading map files")
+            clearMapDB();
+            let mapTileCounter = 0;
+            zip.folder("map").forEach((path, entry) => {
                 if (entry.dir)
-                    return;
-
-                // Map metadata
-                if (path.endsWith("map.json"))
-                {
-                    let promise = entry.async("text").then(json => saveMapMetadata(JSON.parse(json)));
-                    promises.push(promise);
-                    return;
-                }
-
-                // map imgs are in path "map/"
-                if (!path.startsWith("map/"))
                     return;
 
                 // TODO: check file ending?
@@ -203,15 +194,63 @@ async function loadMapFromZip(f) {
                 if (!coords)
                     return;
 
+                mapTileCounter++;
                 let promise = entry.async("blob").then(blob => {
-                    console.debug(
-                        `loaded data for (x: ${coords.x}, y: ${coords.y}, z: ${coords.z}), url ${path}`
-                    );
                     return saveTile(coords, blob);
                 });
                 promises.push(promise);
             });
-            // wait till all images are parsed //TODO: optimize the saving part as that takes the longest
-            return Promise.all(promises)
+            console.debug(`Found ${mapTileCounter} Map Tiles.`);
+
+            // Map.json metadata
+            let mapJson = zip.file("map.json");
+            if (mapJson) {
+                console.debug("Loading map metadata");
+                let promise = mapJson.async("text").then(text => saveMapMetadata(JSON.parse(text)));
+                promises.push(promise);
+            }
+
+            // Cases
+            clearCaseDB();
+            clearCaseImgDB();
+            console.debug("Loading cases");
+            let caseCounter = 0;
+            let caseImgCounter = 0;
+            zip.folder("cases").forEach((path, entry) => {
+                // dir? save contained images
+                if (entry.dir) {
+                    zip.folder(entry.name).forEach((path, e) => {
+                        if (e.dir)
+                            return;
+                        //TODO: file ending check?
+
+                        caseImgCounter++;
+                        let promise = e.async("blob").then(blob => saveCaseImage(entry.name, path, blob));
+                        promises.push(promise);
+                    });
+                    return;
+                }
+
+                if (!entry.name.endsWith(".json"))
+                    return;
+
+                caseCounter++;
+                let promise = entry.async("text").then(text => {
+                    // parse json
+                    let json = JSON.parse(text);
+                    // save into db
+                    saveCaseJson(json);
+                });
+                promises.push(promise);
+            });
+            console.debug(`Found ${caseCounter} Cases and ${caseImgCounter} Case Images.`);
+
+            return Promise.all(promises);
         });
+}
+
+function loadTestMap() {
+    const path = "data/ghosthunt.zip"
+    alert("Fetching and loading Test Map. This can take a few seconds. Press OK to continue.");
+    fetch(path).then(res => res.blob()).then(blob => loadFromZip(blob)).then(() => alert(`Loaded Map. Refresh site.`))
 }

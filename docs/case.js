@@ -17,6 +17,7 @@ function handleCaseFile(event) {
 }
 
 const caseStoreName = "cases";
+const caseImgStoreName = "images";
 const caseDBName = "mmclone.cases";
 let caseDbPromise;
 // Returns a promise for the DB
@@ -33,6 +34,10 @@ function openCaseDB() {
                     keyPath: 'id'
                 });
                 caseStore.createIndex('id', 'id');
+                const caseImgStore = db.createObjectStore(caseImgStoreName, {
+                    keyPath: 'id'
+                });
+                caseImgStore.createIndex('id', 'id');
             }
         }
     });
@@ -47,19 +52,21 @@ async function loadCaseJson(file) {
         const reader = new FileReader();
         reader.addEventListener('load', (event) => {
             // fetch + parse as json
-            let url = event.target.result;
-            fetch(url).then(res => res.json())
-                .then(json => {
-                    console.debug(`Loaded case file ${file.name}`);
-                    console.debug(json);
-                    // open db
-                    openCaseDB().then(db => {
-                        // save object in db
-                        db.put(caseStoreName, json);
-                    }).then(resolve());
-                });
+            let text = event.target.result;
+            let json = JSON.parse(text);
+            console.debug(`Loaded case file ${file.name}`);
+            saveCaseJson(json).then(() => resolve());
         });
-        reader.readAsDataURL(file);
+        reader.readAsText(file);
+    });
+}
+
+async function saveCaseJson(json) {
+    console.debug(json);
+    // open db
+    return openCaseDB().then(db => {
+        // save object in db
+        return db.put(caseStoreName, json);
     });
 }
 
@@ -71,6 +78,25 @@ async function removeCase(key) {
 // Deletes all cases from the db
 async function clearCaseDB() {
     return (await openCaseDB()).clear(caseStoreName);
+}
+
+async function clearCaseImgDB() {
+    return (await openCaseDB()).clear(caseStoreName);
+}
+
+async function saveCaseImage(folder, name, blob) {
+    const db = await openCaseDB();
+    let prefix = folder.split("cases/")[1].split("/")[0]; // remove "cases/", then take the first folder after that
+    let id = `${prefix}_${name}`;
+    return db.put(caseImgStoreName, {
+        blob: blob,
+        id: id
+    });
+}
+
+async function getCaseImage(caseName, img) {
+    let key = `${caseName}_${img}`;
+    return (await openCaseDB()).get(caseImgStoreName, key).then(result => result && result.blob)
 }
 
 // helper to delete all children of a element
@@ -129,9 +155,17 @@ function updateCaseStep() {
     // update objective label
     let label = document.getElementById("case_objective");
     label.textContent = step.text ? step.text : "";
+    let objectiveImg = step.image_front;
+    if (!objectiveImg)
+        objectiveImg = `${step.id}_front.png`
+    getCaseImage(Global.currentCase.id, objectiveImg).then(img => {
+        if (img)
+            document.getElementById("case_img_front").src = URL.createObjectURL(img);;
+    });
     // clear solution
     document.getElementById("case_solution_title").textContent = "";
     document.getElementById("case_solution_text").textContent = "";
+    document.getElementById("case_img_back").src = "";
 
     // update solutions
     // clear existing circles
@@ -150,13 +184,12 @@ function updateCaseStep() {
         let s = step.solutions[key];
         switch (s.type) {
             case "circle": {
-                var radius = s.diameter / 2;
-                var circle = L.circle([s.y + radius, s.x + radius], {
+                var circle = L.circle([s.y + s.radius, s.x + s.radius], {
                     contextmenu: true,
                     color: "none",
                     fillColor: fillColor,
                     fillOpacity: opacity,
-                    radius: radius,
+                    radius: s.radius,
                     bubblingMouseEvents: false, // needed or else we cause a map contextmenu event
                 });
                 circle.addTo(Global.map);
@@ -194,6 +227,14 @@ function solveStep() {
     // show solution
     document.getElementById("case_solution_title").textContent = step.solution_title;
     document.getElementById("case_solution_text").textContent = step.solution_text;
+
+    let solutionImg = step.image_back;
+    if (!solutionImg)
+        solutionImg = `${step.id}_back.png`
+    getCaseImage(Global.currentCase.id, solutionImg).then(img => {
+        if (img)
+            document.getElementById("case_img_back").src = URL.createObjectURL(img);
+    });
 
     // unlock button
     unlockNextButton();
