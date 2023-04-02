@@ -45,6 +45,9 @@ function initMap() {
         maxBoundsViscosity: MAP_BOUNDS_VISCOSITY,
         attributionControl: false
     });
+
+    // hijack right click menu
+    Global.map.on("contextmenu", onMapRightClick);
     // create offline layer
     Global.baseLayer = LeafletOffline.tileLayerOffline("{z}/{y}/{x}.png", {
         minZoom: MAP_MIN_ZOOM,
@@ -58,7 +61,7 @@ function initMap() {
     });
 
     // let layer let from cache
-    Global.baseLayer.on('tileloadstart', (event) => {
+    Global.baseLayer.on("tileloadstart", (event) => {
         tile = event.tile;
         coords = event.coords;
         url = getTileUrl(Global.baseLayer._url, coords);
@@ -75,6 +78,12 @@ function initMap() {
     });
     Global.baseLayer.addTo(Global.map);
     Global.map.setView([0, 0], 0);
+}
+
+function onMapRightClick(e)
+{
+    if (Global.DEBUG)
+        L.popup().setLatLng(e.latlng).setContent(`<p>Pos: ${e.latlng}</p>`).addTo(Global.map).openOn(Global.map);
 }
 
 function saveTile(coords, blob) {
@@ -120,11 +129,16 @@ function parseCoords(path) {
     }
 }
 
+function clearMapDB()
+{
+    LeafletOffline.truncate();
+}
+
 var loadedTiles;
 function loadMapFromZip(f) {
     //TODO: warn user cause deleting
     // delete the current cache
-    LeafletOffline.truncate();
+    clearMapDB();
 
     //TODO: sometimes reading doesnt fully read everything and you need multiple tries. idk why
 

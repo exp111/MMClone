@@ -10,6 +10,8 @@ Uses Leaflet to show the map.
 - custom level to show how everything works
 - right click menu:
     - create marker
+    - on marker: delete, set color
     - debug:
         - show position
-        - create visible circle 
+        - create circle
+        - on circle: delete, set color, set radius

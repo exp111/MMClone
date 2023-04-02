@@ -27,14 +27,18 @@
     <label for="select_case">Choose Case:</label>
     <select id="select_case" onchange="handleCaseChange(this)">
         <option value="Placeholder">
-    </select> 
+    </select>
     <p id="case_objective"></p>
     <button onclick="progressCase()">Next</button>
-    <input type="checkbox" id="debug" onchange="Global.DEBUG = !Global.DEBUG"/>
-    <label for="debug">DEBUG</label>
+    <div id="debug">
+        <input type="checkbox" id="debug_toggle" onchange="Global.DEBUG = !Global.DEBUG"/>
+        <label for="debug_toggle">DEBUG</label>
+        <button onclick="clearMapDB()">Clear Map DB</button>
+        <button onclick="clearCaseDB()">Clear Case DB</button>
+    </div>
     <script>
         var Global = {
-            DEBUG: true,
+            DEBUG: window.location.protocol == "file:" || window.location.hostname  == "localhost",
             map: null,
             baseLayer: null,
             cases: {},
@@ -50,7 +54,7 @@
         document.getElementById("file_map").onchange = handleMapFile;
         document.getElementById("file_case").onchange = handleCaseFile;
         document.getElementById("debug").hidden = !Global.DEBUG; // hide if not debug
-        document.getElementById("debug").checked = Global.DEBUG;
+        document.getElementById("debug_toggle").checked = Global.DEBUG;
 
         initMap();
         refreshCases();

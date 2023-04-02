@@ -108,6 +108,8 @@ async function refreshCases() {
 function handleCaseChange(select) {
     let option = select.selectedOptions[0]
     let selected = Global.cases[option.value];
+    if (!selected)
+        return;
     Global.currentCase = selected;
     Global.caseProgress = 0;
     console.debug(`Selected case ${selected.name} (ID ${selected.id})`);
@@ -159,6 +161,12 @@ function updateCaseStep() {
 }
 
 function progressCase() {
+    if (!Global.currentCase)
+    {
+        alert("No case selected!");
+        return;
+    }
+    
     console.debug(`Increasing case step from ${Global.caseProgress}`);
     Global.caseProgress++;
     updateCaseStep();
