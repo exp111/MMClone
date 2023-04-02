@@ -29,14 +29,18 @@
         <option value="Placeholder">
     </select> 
     <p id="case_objective"></p>
-    <button onclick="Global.caseProgress++; updateCaseStep()">Next</button>
+    <button onclick="progressCase()">Next</button>
+    <input type="checkbox" id="debug" onchange="Global.DEBUG = !Global.DEBUG"/>
+    <label for="debug">DEBUG</label>
     <script>
         var Global = {
+            DEBUG: true,
             map: null,
             baseLayer: null,
             cases: {},
             currentCase: null,
-            caseProgress: 0 //TODO: read from/save to idb
+            caseProgress: 0, //TODO: read from/save to idb,
+            caseMarkers: [],
         }
     </script>
     <script src="map.js"></script>
@@ -45,6 +49,8 @@
         const zip = new JSZip();
         document.getElementById("file_map").onchange = handleMapFile;
         document.getElementById("file_case").onchange = handleCaseFile;
+        document.getElementById("debug").hidden = !Global.DEBUG; // hide if not debug
+        document.getElementById("debug").checked = Global.DEBUG;
 
         initMap();
         refreshCases();

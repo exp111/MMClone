@@ -89,8 +89,8 @@ async function refreshCases() {
         return;
 
     Global.cases = {}
-    for (let c in cases) {
-        let val = cases[c];
+    for (let key in cases) {
+        let val = cases[key];
         Global.cases[val["id"]] = val;
     }
 
@@ -122,4 +122,44 @@ function updateCaseStep() {
     label.textContent = step.text ? step.text : "";
 
     //TODO: update solutions
+    // clear existing circles
+    console.debug(`Removing ${Global.caseMarkers.length} markers`);
+    for (let key in Global.caseMarkers) {
+        let val = Global.caseMarkers[key];
+        val.remove();
+    }
+    Global.caseMarkers = [];
+
+    // then add the new ones
+    var fillColor = Global.DEBUG ? "#f00" : "#fff";
+    var opacity = Global.DEBUG ? 0.5 : 0;
+    console.debug(`Adding ${step.solutions.length} new markers`);
+    for (let key in step.solutions) {
+        let s = step.solutions[key];
+        switch (s.type) {
+            case "circle": {
+                var radius = s.diameter / 2;
+                var circle = L.circle([s.y + radius, s.x + radius], {
+                    color: "none",
+                    fillColor: fillColor,
+                    fillOpacity: opacity,
+                    radius: radius
+                });
+                circle.addTo(Global.map);
+                circle.addEventListener("click", () => progressCase());
+                Global.caseMarkers.push(circle);
+                break;
+            }
+            default: {
+                console.log(`Unknown Type ${s.type}`);
+                break;
+            }
+        }
+    }
+}
+
+function progressCase() {
+    console.debug(`Increasing case step from ${Global.caseProgress}`);
+    Global.caseProgress++;
+    updateCaseStep();
 }
