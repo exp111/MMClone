@@ -1,9 +1,5 @@
 const MAP_BOUNDS_VISCOSITY = 1;
-const MAP_WIDTH_IN_PIXELS = 24685;
-const MAP_HEIGHT_IN_PIXELS = 17513;
 const MAP_BASE_TILE_SIZE = 256;
-
-const MAP_MIN_ZOOM = 2;
 const MAP_BOUNDS_EXTENSION = 1e3;
 const MAP_MAX_RESOLUTION = 1;
 
@@ -15,7 +11,48 @@ function getTileUrl(urlTemplate, data) {
     });
 }
 
-function initMap() {
+const metadataStoreName = "metadata";
+const metaDBName = "mmclone.meta";
+let metaDbPromise;
+// Returns a promise for the DB
+function openMetaDB() {
+    if (metaDbPromise)
+        return metaDbPromise;
+
+    metaDbPromise = idb.openDB(metaDBName, 2, {
+        upgrade(db, oldVersion) {
+            // INFO: mitigrations here
+            // No store before => create new
+            if (oldVersion < 1) {
+                const metaStore = db.createObjectStore(metadataStoreName, {
+                    keyPath: 'id'
+                });
+                metaStore.createIndex('id', 'id');
+            }
+        }
+    });
+    return metaDbPromise;
+}
+
+const mapMetadataID = "map";
+async function loadMapMetadata()
+{
+    const db = await openMetaDB();
+    return await db.get(metadataStoreName, mapMetadataID);
+}
+
+async function saveMapMetadata(json)
+{
+    openMetaDB().then(db => {
+        // save object in db
+        db.put(metadataStoreName, {
+            ...json,
+            id: mapMetadataID });
+    });
+}
+
+async function initMap() {
+    Global.mapMetadata = await loadMapMetadata() ?? Global.mapMetadata;
     l = Math.pow(2, 6) * MAP_MAX_RESOLUTION;
     transformation = .5;
     u = transformation;
@@ -33,14 +70,14 @@ function initMap() {
         contextmenu: true,
         contextmenuItems: [{}], // needs object inside to open
         crs: c,
-        maxZoom: 6,
-        minZoom: MAP_MIN_ZOOM,
+        maxZoom: Global.mapMetadata.maxZoom,
+        minZoom: Global.mapMetadata.minZoom,
         zoomSnap: 1,
         zoomDelta: .75,
         wheelPxPerZoomLevel: 250,
         bounceAtZoomLimits: false,
         maxBounds: [c.unproject(L.point(-MAP_BOUNDS_EXTENSION, -MAP_BOUNDS_EXTENSION)), c.unproject(L.point(
-            MAP_WIDTH_IN_PIXELS + MAP_BOUNDS_EXTENSION, MAP_HEIGHT_IN_PIXELS +
+            Global.mapMetadata.width + MAP_BOUNDS_EXTENSION, Global.mapMetadata.height +
             MAP_BOUNDS_EXTENSION))],
         maxBoundsViscosity: MAP_BOUNDS_VISCOSITY,
         attributionControl: false
@@ -50,14 +87,13 @@ function initMap() {
     Global.map.on("contextmenu.show", onMapRightClick);
     // create offline layer
     Global.baseLayer = LeafletOffline.tileLayerOffline("{z}/{y}/{x}.png", {
-        minZoom: MAP_MIN_ZOOM,
-        maxZoom: 6,
+        minZoom: Global.mapMetadata.minZoom,
+        maxZoom: Global.mapMetadata.maxZoom,
         noWrap: true,
         tms: !1,
         edgeBufferTiles: 1,
         tileSize: MAP_BASE_TILE_SIZE,
-        bounds: [c.unproject(L.point(0, 0)), c.unproject(L.point(MAP_WIDTH_IN_PIXELS,
-            MAP_HEIGHT_IN_PIXELS))]
+        bounds: [c.unproject(L.point(0, 0)), c.unproject(L.point(Global.mapMetadata.width, Global.mapMetadata.height))]
     });
 
     // let layer let from cache
@@ -107,8 +143,7 @@ function handleMapFile(event) {
         promises.push(loadMapFromZip(file));
     }
 
-    Promise.all(promises).then(() => 
-    {
+    Promise.all(promises).then(() => {
         // info at the end of load
         alert(`Loaded Map.`);
     });
@@ -148,6 +183,14 @@ async function loadMapFromZip(f) {
                 // only need files
                 if (entry.dir)
                     return;
+
+                // Map metadata
+                if (path.endsWith("map.json"))
+                {
+                    let promise = entry.async("text").then(json => saveMapMetadata(JSON.parse(json)));
+                    promises.push(promise);
+                    return;
+                }
 
                 // map imgs are in path "map/"
                 if (!path.startsWith("map/"))

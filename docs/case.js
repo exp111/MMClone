@@ -7,10 +7,9 @@ function handleCaseFile(event) {
         console.debug(`Loading Case from ${file}`);
         promises.push(loadCaseJson(file));
     }
-    
+
     // wait for all files to load
-    Promise.all(promises).then(() =>
-    {
+    Promise.all(promises).then(() => {
         // refresh cases
         refreshCases();
         alert(`Loaded ${files.length} Cases.`);
@@ -19,13 +18,13 @@ function handleCaseFile(event) {
 
 const caseStoreName = "cases";
 const caseDBName = "mmclone.cases";
-let dbPromise;
+let caseDbPromise;
 // Returns a promise for the DB
 function openCaseDB() {
-    if (dbPromise)
-        return dbPromise;
+    if (caseDbPromise)
+        return caseDbPromise;
 
-    dbPromise = idb.openDB(caseDBName, 2, {
+    caseDbPromise = idb.openDB(caseDBName, 2, {
         upgrade(db, oldVersion) {
             // INFO: mitigrations here
             // No store before => create new
@@ -37,14 +36,13 @@ function openCaseDB() {
             }
         }
     });
-    return dbPromise;
+    return caseDbPromise;
 }
 
 // Loads json from a file and saves it into the db
 async function loadCaseJson(file) {
     // load object into store. use json["id"] as key
-    return new Promise((resolve, reject) =>
-    {
+    return new Promise((resolve, reject) => {
         // read json file
         const reader = new FileReader();
         reader.addEventListener('load', (event) => {
@@ -176,10 +174,10 @@ function updateCaseStep() {
 }
 
 // Enable/disable the "next" button
-function unlockNextButton()
-{
+function unlockNextButton() {
     document.getElementById("button_next").disabled = false;
 }
+
 function lockNextButton() {
     document.getElementById("button_next").disabled = true;
 }
@@ -215,8 +213,7 @@ function progressCase() {
 }
 
 // used to update the case. if you want to progress, use progressCase();
-function updateCase()
-{
+function updateCase() {
     let amountSolutions = updateCaseStep();
     if (amountSolutions > 0)
         lockNextButton();

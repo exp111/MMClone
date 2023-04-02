@@ -10,7 +10,7 @@ function createCircle(e) {
     let y = e.latlng.lat;
     let x = e.latlng.lng;
     let radius = 100;
-    let circle = L.circle([y + radius, x + radius], {
+    let circle = L.circle([y, x], {
         contextmenu: true,
         color: "none",
         fillColor: "#f00",
@@ -33,8 +33,7 @@ function deleteCircle(e) {
 function createMarker(e) {
     let y = e.latlng.lat;
     let x = e.latlng.lng;
-    let radius = 100;
-    let marker = L.marker([y + radius, x + radius], {
+    let marker = L.marker([y, x], {
         contextmenu: true,
     });
     marker.addTo(Global.map);
