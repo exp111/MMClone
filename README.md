@@ -15,7 +15,6 @@ Uses Leaflet to show the map.
         - on : print json
 - style markers
 - help page
-- make circle positions from the middle
 
 # How to create a map from a image
 To transform a image to raster tiles you can use libvips with this command:

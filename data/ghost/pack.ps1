@@ -1,0 +1,1 @@
+Compress-Archive -Force -LiteralPath "./cases/", "./map/", "./map.json" -DestinationPath "../../docs/data/ghosthunt.zip"

@@ -184,7 +184,7 @@ function updateCaseStep() {
         let s = step.solutions[key];
         switch (s.type) {
             case "circle": {
-                var circle = L.circle([s.y + s.radius, s.x + s.radius], {
+                var circle = L.circle([s.y, s.x], {
                     contextmenu: true,
                     color: "none",
                     fillColor: fillColor,
