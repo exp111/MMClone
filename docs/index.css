@@ -1,0 +1,110 @@
+#map,
+body,
+html {
+    width: 100vw;
+    height: 90%;
+    background: #fff;
+    z-index: 1;
+    margin: 0;
+    padding: 0;
+}
+
+.overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    bottom: 0;
+    left: 0;
+    z-index: 5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, .85);
+    transition: .3s;
+    overflow-y: hidden
+}
+
+#menu-overlay {
+    background-color: rgba(0, 0, 0, .95);
+    bottom: 100%;
+}
+
+.overlay button, .overlay-content, .overlay-input {
+    margin: 0 6px 6px;
+    padding: 0 8px 8px;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 36px;
+    color: #818181;
+    display: block;
+    transition: .3s;
+    /* TODO: change font*/
+    font-family: sans-serif;
+    text-align: center;
+    line-height: 36px;
+    background-color: transparent;
+    border: none;
+    font-weight: 700 !important
+}
+.overlay button {
+    cursor: pointer;
+}
+.overlay input {
+    position: relative;
+    top: 4px;
+    height: 36px;
+    width: 30px;
+}
+
+.overlay-input {
+    text-align: start;
+}
+
+.overlay button:hover {
+    color: #f1f1f1
+}
+
+.overlay button:focus {
+    outline: none;
+    border: none
+}
+
+.overlay .close-button {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    font-size: 60px;
+    font-family: Barlow, sans-serif;
+    z-index: 1;
+    -webkit-transition: opacity .4s linear;
+    -o-transition: opacity .4s linear;
+    transition: opacity .4s linear
+}
+
+.close-button.hidden {
+    opacity: 0
+}
+
+.overlay-button {
+    cursor: pointer;
+    position: absolute;
+    padding: 0;
+    outline: none;
+    z-index: 2
+}
+
+#menu-button {
+    right: 12px;
+    top: 12px;
+    background-color: transparent;
+    border: none;
+    margin: 0
+}
+
+#debug-menu-button {
+    right: 12px;
+    top: 90px;
+    background-color: transparent;
+    border: none;
+    margin: 0
+}
