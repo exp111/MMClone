@@ -147,6 +147,11 @@ function handleCaseChange(select) {
     console.debug(`Selected case ${selected.name} (ID ${selected.id})`);
 }
 
+function resetCase() {
+    Global.caseProgress = 0;
+    updateCase();
+}
+
 // Updates the objective text and markers. Returns the amount of solutions
 function updateCaseStep() {
     let step = Global.currentCase.steps[Global.caseProgress];
