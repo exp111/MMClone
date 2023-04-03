@@ -23,6 +23,12 @@
     <div id="menu" class="overlay" style="bottom: 100%">
         <button class="close-button" onclick="setMenuVisible('menu', false)">×</button>
         <div class="overlay-content">
+            <div class="overlay-select">
+                <label for="select_case">Choose Case:</label>
+                <select id="select_case" onchange="handleCaseChange(this)">
+                    <option value="Placeholder">
+                </select>
+            </div>
             <button onclick="askForFile(handleZipFile)">Upload Zip</button>
             <button onclick="askForFile(handleCaseFile)">Upload Case File</button>
             <button onclick="loadTestMap()">Load Test Map</button>
@@ -48,10 +54,6 @@
             <button onclick="progressCase()">Force Next</button>
         </div>
     </div>
-    <label for="select_case">Choose Case:</label>
-    <select id="select_case" onchange="handleCaseChange(this)">
-        <option value="Placeholder">
-    </select>
     <p id="case_objective"></p>
     <div>
         <h1 id="case_solution_title"></h1>

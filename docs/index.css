@@ -29,7 +29,7 @@ html {
     bottom: 100%;
 }
 
-.overlay button, .overlay-content, .overlay-input {
+.overlay button, .overlay-content, .overlay-input, .overlay-select {
     margin: 0 6px 6px;
     padding: 0 8px 8px;
     text-decoration: none;
@@ -46,6 +46,10 @@ html {
     border: none;
     font-weight: 700 !important
 }
+.overlay-select {
+    /*to remove the 8px margin */
+    margin: 0 8px;
+}
 .overlay button {
     cursor: pointer;
 }
@@ -54,6 +58,14 @@ html {
     top: 4px;
     height: 36px;
     width: 30px;
+    /* TODO: style checkbox*/
+}
+.overlay select {
+    position: relative;
+    top: -8px;
+    height: 36px;
+    border-radius: 0%;
+    /* TODO: style select*/
 }
 
 .overlay-input {
