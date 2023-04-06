@@ -3,6 +3,7 @@
 
 <head>
     <title>MM Clone</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="dependencies/leaflet/leaflet.js"></script>
     <link rel="stylesheet" href="dependencies/leaflet/leaflet.css" />
     <script src="dependencies/idb/umd.js"></script>
@@ -20,10 +21,7 @@
     <div id="map"></div>
     <!-- Menu -->
     <button id="menu-button" class="overlay-button" onclick="setMenuVisible('menu', 'bottom', true)">
-        <!--TODO: add menu icon -->
-        <div style="border-style: solid">
-            <h1>MENU</h1>
-        </div>
+        Menu
     </button>
     <div id="menu" class="overlay" style="bottom: 100%">
         <button class="close-button" onclick="setMenuVisible('menu', 'bottom', false)">×</button>
@@ -42,10 +40,7 @@
     </div>
     <!-- Debug Menu -->
     <button id="debug-menu-button" class="overlay-button" onclick="setMenuVisible('debug-menu', 'bottom', true)">
-        <!--TODO: add menu icon -->
-        <div style="border-style: solid">
-            <h1>DEBUG</h1>
-        </div>
+        Debug
     </button>
     <div id="debug-menu" class="overlay" style="bottom: 100%">
         <button class="close-button" onclick="setMenuVisible('debug-menu', 'bottom', false)">×</button>
@@ -68,10 +63,7 @@
     </div>
     <!-- Card Overlay -->
     <button id="card-overlay-button" class="overlay-button" onclick="setMenuVisible('card-menu', 'top', true)">
-        <!--TODO: add menu icon -->
-        <div style="border-style: solid">
-            <h1>?</h1>
-        </div>
+        ?
     </button>
     <div id="card-menu" class="overlay" style="top: 100%">
         <div class="swiper-container">
