@@ -94,9 +94,25 @@ async function saveCaseImage(folder, name, blob) {
     });
 }
 
-async function getCaseImage(caseName, img) {
+async function loadCaseImage(caseName, img) {
     let key = `${caseName}_${img}`;
     return (await openCaseDB()).get(caseImgStoreName, key).then(result => result && result.blob)
+}
+
+async function getStepImageFront(step)
+{
+    let img = step.image_front;
+    if (!img)
+        img = `${step.id}_front.png`
+    return loadCaseImage(Global.currentCase.id, img)
+}
+
+async function getStepImageBack(step)
+{
+    let img = step.image_back;
+    if (!img)
+        img = `${step.id}_back.png`
+    return loadCaseImage(Global.currentCase.id, img)
 }
 
 // helper to delete all children of a element
@@ -142,8 +158,10 @@ function handleCaseChange(select) {
     let selected = Global.cases[option.value];
     if (!selected)
         return;
+
     Global.currentCase = selected;
     Global.caseProgress = 0;
+    buildCards();
     updateCase();
     console.debug(`Selected case ${selected.name} (ID ${selected.id})`);
 }
@@ -161,17 +179,6 @@ function updateCaseStep() {
     // update objective label
     let label = document.getElementById("case_objective");
     label.textContent = step.text ? step.text : "";
-    let objectiveImg = step.image_front;
-    if (!objectiveImg)
-        objectiveImg = `${step.id}_front.png`
-    getCaseImage(Global.currentCase.id, objectiveImg).then(img => {
-        if (img)
-            document.getElementById("case_img_front").src = URL.createObjectURL(img);;
-    });
-    // clear solution
-    document.getElementById("case_solution_title").textContent = "";
-    document.getElementById("case_solution_text").textContent = "";
-    document.getElementById("case_img_back").src = "";
 
     // update solutions
     // clear existing circles
@@ -230,20 +237,16 @@ function solveStep() {
     if (!step)
         return;
 
-    // show solution
-    document.getElementById("case_solution_title").textContent = step.solution_title;
-    document.getElementById("case_solution_text").textContent = step.solution_text;
+    //INFO: if step is solved, open menu, flip card, unlock next card. thats all
+    // slide instantly to next current card
+    Global.UI.swiper.slideTo(Global.caseProgress, 0);
+    // open menu
+    setMenuVisible("card-menu", "top", true);
+    // flip card
+    flipCard(Global.caseProgress);
 
-    let solutionImg = step.image_back;
-    if (!solutionImg)
-        solutionImg = `${step.id}_back.png`
-    getCaseImage(Global.currentCase.id, solutionImg).then(img => {
-        if (img)
-            document.getElementById("case_img_back").src = URL.createObjectURL(img);
-    });
-
-    // unlock button
-    unlockNextButton();
+    // unlock next card
+    progressCase();
 }
 
 // Increases the case progress and updates the objective and solution text.
@@ -253,17 +256,22 @@ function progressCase() {
         return;
     }
 
-    //TODO: check end of case
     console.debug(`Increasing case step from ${Global.caseProgress}`);
     Global.caseProgress++;
+
+    //TODO: end of case animation or smth
+    if (Global.caseProgress == Global.currentCase.steps.length)
+    {
+        console.debug("Reached the end of the case.");
+        return;
+    }
+
+    // update cards
+    updateCards();
     updateCase();
 }
 
 // used to update the case. if you want to progress, use progressCase();
 function updateCase() {
-    let amountSolutions = updateCaseStep();
-    if (amountSolutions > 0)
-        lockNextButton();
-    else
-        solveStep();
+    updateCaseStep();
 }

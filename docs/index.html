@@ -2,8 +2,7 @@
 <html>
 
 <head>
-    <link rel="stylesheet" href="index.css">
-    </style>
+    <title>MM Clone</title>
     <script src="dependencies/leaflet/leaflet.js"></script>
     <link rel="stylesheet" href="dependencies/leaflet/leaflet.css" />
     <script src="dependencies/idb/umd.js"></script>
@@ -11,17 +10,23 @@
     <script src="dependencies/jszip/jszip.min.js"></script>
     <script src="dependencies/leaflet.contextmenu/leaflet.contextmenu.min.js"></script>
     <link rel="stylesheet" href="dependencies/leaflet.contextmenu/leaflet.contextmenu.min.css" />
+    <link rel="stylesheet" href="dependencies/swiper/swiper-bundle.min.css" />
+    <script src="dependencies/swiper/swiper-bundle.min.js"></script>
+    <!--INFO: include our changes after libs to own them-->
+    <link rel="stylesheet" href="index.css" />
 </head>
 
 <body>
     <div id="map"></div>
-    <button id="menu-button" class="overlay-button" onclick="setMenuVisible('menu', true)">
+    <!-- Menu -->
+    <button id="menu-button" class="overlay-button" onclick="setMenuVisible('menu', 'bottom', true)">
+        <!--TODO: add menu icon -->
         <div style="border-style: solid">
             <h1>MENU</h1>
         </div>
     </button>
     <div id="menu" class="overlay" style="bottom: 100%">
-        <button class="close-button" onclick="setMenuVisible('menu', false)">×</button>
+        <button class="close-button" onclick="setMenuVisible('menu', 'bottom', false)">×</button>
         <div class="overlay-content">
             <div class="overlay-select">
                 <label for="select_case">Choose Case:</label>
@@ -35,17 +40,19 @@
             <button onclick="resetCase()">Reset Case</button>
         </div>
     </div>
-    <button id="debug-menu-button" class="overlay-button" onclick="setMenuVisible('debug-menu', true)">
+    <!-- Debug Menu -->
+    <button id="debug-menu-button" class="overlay-button" onclick="setMenuVisible('debug-menu', 'bottom', true)">
+        <!--TODO: add menu icon -->
         <div style="border-style: solid">
             <h1>DEBUG</h1>
         </div>
     </button>
     <div id="debug-menu" class="overlay" style="bottom: 100%">
-        <button class="close-button" onclick="setMenuVisible('debug-menu', false)">×</button>
+        <button class="close-button" onclick="setMenuVisible('debug-menu', 'bottom', false)">×</button>
         <div class="overlay-content">
             <div class="overlay-input">
                 <input type="checkbox" id="debug_toggle" onchange="Global.DEBUG = !Global.DEBUG" />
-                <label for="debug_toggle">DEBUG</label>
+                <label for="debug_toggle">Debug</label>
             </div>
             <button onclick="clearMapDB()">Clear Map DB</button>
             <button onclick="clearCaseDB()">Clear Case DB</button>
@@ -54,15 +61,25 @@
             <button onclick="progressCase()">Force Next</button>
         </div>
     </div>
-    <p id="case_objective"></p>
-    <div>
-        <h1 id="case_solution_title"></h1>
-        <p id="case_solution_text"></p>
+    <!-- Objective -->
+    <div id="objective-overlay" class="overlay-button">
+        <p>Objective:</p>
+        <p id="case_objective"></p>
     </div>
-    <button id="button_next" onclick="progressCase()">Next</button>
-    <div>
-        <img id="case_img_front" />
-        <img id="case_img_back" />
+    <!-- Card Overlay -->
+    <button id="card-overlay-button" class="overlay-button" onclick="setMenuVisible('card-menu', 'top', true)">
+        <!--TODO: add menu icon -->
+        <div style="border-style: solid">
+            <h1>?</h1>
+        </div>
+    </button>
+    <div id="card-menu" class="overlay" style="top: 100%">
+        <div class="swiper-container">
+            <div class="swiper-wrapper">
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
+        <button class="close-button" onclick="setMenuVisible('card-menu', 'top', false)">×</button>
     </div>
     <script>
         var Global = {
@@ -94,6 +111,7 @@
 
         initMap();
         refreshCases();
+        initSwiper();
     </script>
 
 </body>

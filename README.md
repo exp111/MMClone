@@ -15,6 +15,9 @@ Uses Leaflet to show the map.
         - on : print json
 - style markers
 - help page
+- startZoom on map metadata => start zoomed in, centre of map
+- hide pointer on solution markers?
+- move secrets into private repo
 
 # How to create a map from a image
 To transform a image to raster tiles you can use libvips with this command:

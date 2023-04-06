@@ -1,3 +1,4 @@
+/* include comic font */
 @font-face {
     font-family: Bangers;
     font-style: normal;
@@ -5,17 +6,26 @@
     src: url(assets/fonts/Bangers-Regular.ttf);
 }
 
+/* Make map fullscreen. bg white */
 #map,
 body,
 html {
     width: 100vw;
-    height: 90%;
+    height: 100%;
     background: #fff;
     z-index: 1;
     margin: 0;
     padding: 0;
 }
 
+/* no scrollbar */
+body,
+html {
+    position: fixed;
+    overflow: hidden;
+}
+
+/* overlays on top, blur bg, fullscreen, animate changes */
 .overlay {
     position: fixed;
     width: 100%;
@@ -31,12 +41,25 @@ html {
     overflow-y: hidden
 }
 
-#menu-overlay {
-    background-color: rgba(0, 0, 0, .95);
-    bottom: 100%;
+/* Align content in center */
+.overlay .overlay-content {
+    text-align: center;
+    margin-top: 30px;
+    display: flex;
+    align-items: center;
+    flex-direction: column
 }
 
-.overlay button, .overlay-content, .overlay-input, .overlay-select {
+/* overlay specific style */
+#menu-overlay {
+    background-color: rgba(0, 0, 0, .95);
+    bottom: 100%; /* scroll in from the top */
+}
+
+.overlay button,
+.overlay-content,
+.overlay-input,
+.overlay-select {
     margin: 0 6px 6px;
     padding: 0 8px 8px;
     text-decoration: none;
@@ -45,21 +68,25 @@ html {
     color: #818181;
     display: block;
     transition: .3s;
-    /* TODO: change font*/
-    font-family: sans-serif;
+    font-family: Bangers, sans-serif;
     text-align: center;
     line-height: 36px;
     background-color: transparent;
     border: none;
     font-weight: 700 !important
 }
+
 .overlay-select {
     /*to remove the 8px margin */
     margin: 0 8px;
 }
+
+/* change the button mouse cursor */
 .overlay button {
     cursor: pointer;
 }
+
+/* checkbox */
 .overlay input {
     position: relative;
     top: 4px;
@@ -67,6 +94,8 @@ html {
     width: 30px;
     /* TODO: style checkbox*/
 }
+
+/* select */
 .overlay select {
     position: relative;
     top: -8px;
@@ -75,6 +104,7 @@ html {
     /* TODO: style select*/
 }
 
+/* input containers */
 .overlay-input {
     text-align: start;
 }
@@ -105,11 +135,30 @@ html {
 }
 
 .overlay-button {
-    cursor: pointer;
     position: absolute;
     padding: 0;
     outline: none;
     z-index: 2
+}
+
+.overlay-button .button {
+    cursor: pointer;
+}
+
+#card-overlay-button {
+    right: 24px;
+    bottom: 24px;
+    width: 75px;
+    background-color: transparent;
+    border: none;
+    margin: 0;
+}
+
+#objective-overlay {
+    left: 12px;
+    bottom: 12px;
+    background-color: white;
+    margin: 0
 }
 
 #menu-button {
@@ -126,4 +175,165 @@ html {
     background-color: transparent;
     border: none;
     margin: 0
+}
+
+/* TODO: clean up */
+.swiper-container {
+    width: 100%;
+    padding: 60px
+}
+
+.swiper-pagination {
+    bottom: 0 !important
+}
+
+.swiper-pagination-bullet {
+    width: 26px;
+    height: 32px;
+    text-align: center;
+    line-height: 32px;
+    font-size: 12px;
+    color: red;
+    opacity: .6;
+    border-radius: 0;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-size: initial
+}
+
+.swiper-pagination-bullet-active {
+    opacity: 1
+}
+
+.swiper-pagination-bullet.unsolvable {
+    background-image: url(assets/img/unsolvable.svg);
+    position: relative;
+    top: 1px
+}
+
+.swiper-pagination-bullet.completed {
+    background-image: url(assets/img/completed.svg);
+    position: relative;
+    top: -5px
+}
+
+.swiper-pagination-bullet.not-completed {
+    background-image: url(assets/img/not-completed.svg);
+    position: relative;
+    top: 1px
+}
+
+.swiper-pagination-bullet.locked {
+    background-image: url(assets/img/locked.svg);
+    position: relative;
+    left: 2px
+}
+
+.swiper-slide {
+    width: 240px;
+    height: 370px
+}
+
+@media (min-width:768px) and (min-height:600px) {
+    .swiper-slide {
+        width: 324px;
+        height: 500px
+    }
+}
+
+.card {
+    -webkit-perspective: 1000px;
+    perspective: 1000px;
+    -webkit-transition: -webkit-transform 1s;
+    transition: -webkit-transform 1s;
+    -o-transition: transform 1s;
+    transition: transform 1s;
+    transition: transform 1s, -webkit-transform 1s;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.card.flipped {
+    -webkit-transform: rotateY(180deg);
+    transform: rotateY(180deg);
+    -ms-transform: rotateY(180deg);
+}
+
+.swiper-slide-active.current:not(.flipped) {
+    cursor: pointer;
+}
+
+.card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    -webkit-transition: -webkit-transform 1.5s;
+    transition: -webkit-transform 1.5s;
+    -o-transition: transform 1.5s;
+    transition: transform 1.5s;
+    transition: transform 1.5s, -webkit-transform 1.5s;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d
+}
+
+.card-face {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    border-radius: 25px;
+    -webkit-box-shadow: 0 0 18px 0 rgba(0, 0, 0, .2);
+    box-shadow: 0 0 18px 0 rgba(0, 0, 0, .2);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden
+}
+
+.card-locked-overlay {
+    height: 100%;
+    width: 100%;
+    background: #000 url(assets/img/locked.svg) no-repeat 50%;
+    background-size: 10%;
+    opacity: .95;
+    border-radius: 24px;
+    -webkit-transition: opacity .4s linear;
+    -o-transition: opacity .4s linear;
+    transition: opacity .4s linear;
+    z-index: 1;
+}
+
+.card-solved-wrapper {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+.card-solved {
+    height: auto;
+    width: 90%;
+    opacity: 0;
+    -webkit-transform: rotate(15deg);
+    -ms-transform: rotate(15deg);
+    transform: rotate(15deg);
+    animation-name: pulse;
+    -webkit-animation-name: pulse;
+    animation-duration: .5s;
+    -webkit-animation-duration: .5s;
+    animation-fill-mode: forwards;
+    -webkit-animation-fill-mode: forwards;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden
+}
+
+.card-back {
+    -webkit-transform: rotateY(180deg);
+    transform: rotateY(180deg)
 }

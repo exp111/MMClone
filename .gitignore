@@ -7,4 +7,5 @@ js/
 # secrets
 const.py
 # test data
-data/mm1/
+data/*/
+!data/ghost/
