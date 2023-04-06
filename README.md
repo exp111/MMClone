@@ -16,10 +16,9 @@ Uses Leaflet to show the map.
 - help page
 - fix bounds on small images
 - mark solved cards better in ui
-- hide pointer on solution markers?
-- move secrets into private repo
 - fix pagination bullets being at the bottom
 - make objective display better on mobile
+- add shake on mobile/general cards after waiting too long?
 
 # How to create a map from a image
 To transform a image to raster tiles you can use libvips with this command:

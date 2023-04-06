@@ -36,6 +36,10 @@
             <button onclick="askForFile(handleCaseFile)">Upload Case File</button>
             <button onclick="loadTestMap()">Load Test Map</button>
             <button onclick="resetCase()">Reset Case</button>
+            <div class="overlay-input">
+                <input type="checkbox" id="marker_toggle" autocomplete="off" onchange="setMarkerCursor(this.checked)" />
+                <label for="marker_toggle">Show Solution Pointer</label>
+            </div>
         </div>
     </div>
     <!-- Debug Menu -->
@@ -46,7 +50,7 @@
         <button class="close-button" onclick="setMenuVisible('debug-menu', 'bottom', false)">×</button>
         <div class="overlay-content">
             <div class="overlay-input">
-                <input type="checkbox" id="debug_toggle" onchange="Global.DEBUG = !Global.DEBUG" />
+                <input type="checkbox" id="debug_toggle" onchange="Global.DEBUG = this.checked" />
                 <label for="debug_toggle">Debug</label>
             </div>
             <button onclick="clearMapDB()">Clear Map DB</button>
@@ -102,6 +106,7 @@
         initMap();
         refreshCases();
         initSwiper();
+        setMarkerCursor(false);
     </script>
 
 </body>

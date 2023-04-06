@@ -7,7 +7,7 @@ function setMenuVisible(id, direction, enabled) {
     let menu = document.getElementById(id);
     if (!menu)
         return;
-    
+
     let val = enabled ? "0%" : "100%";
     menu.style[direction] = val;
 }
@@ -179,4 +179,11 @@ function updatePaginationBullet(step, i) {
         style = "completed";
     }
     bullet.classList.add(style);
+}
+
+function setMarkerCursor(enabled) {
+    let root = document.querySelector(":root");
+    let val = enabled ? "pointer" : "inherit";
+    console.debug(`Setting --marker-cursor to ${val}`);
+    root.style.setProperty("--marker-cursor", val);
 }

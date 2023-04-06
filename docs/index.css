@@ -385,3 +385,7 @@ button.overlay-button {
         display: none;
     }
 }
+
+.leaflet-interactive {
+    cursor: var(--marker-cursor, "inherit") !important;
+}
