@@ -2,7 +2,6 @@ A Game Framework to load and play MicroMacro-like maps and cases.
 Uses Leaflet to show the map.
 
 ## TODO:
-- ui
 - mp:
     - sync markers
     - sync case progress
@@ -15,7 +14,9 @@ Uses Leaflet to show the map.
         - on : print json
 - style markers
 - help page
-- startZoom on map metadata => start zoomed in, centre of map
+- fix bounds on small images
+- better ui buttons
+- mark solved cards better in ui
 - hide pointer on solution markers?
 - move secrets into private repo
 

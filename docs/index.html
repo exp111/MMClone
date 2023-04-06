@@ -105,10 +105,8 @@
     <script src="contextmenu.js"></script>
     <script src="map.js"></script>
     <script src="case.js"></script>
+    <script src="debug.js"></script>
     <script>
-        document.getElementById("debug-menu-button").hidden = !Global.DEBUG; // hide if not debug
-        document.getElementById("debug_toggle").checked = Global.DEBUG;
-
         initMap();
         refreshCases();
         initSwiper();

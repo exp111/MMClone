@@ -55,6 +55,7 @@ function buildCards() {
                 let card = document.createElement("div");
                 card.classList.add("card-face");
                 card.classList.add(face);
+                card.classList.add("text-card");
                 return card
             }
 
@@ -83,7 +84,9 @@ function buildCards() {
 
         // front
         createCard(getStepImageFront, "card-front", (card) => {
-            card.textContent = step.text;
+            let header = document.createElement("h1");
+            header.textContent = step.text;
+            card.appendChild(header);
         });
         // back
         createCard(getStepImageBack, "card-back", (card) => {

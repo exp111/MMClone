@@ -241,6 +241,36 @@ html {
     }
 }
 
+/* Text cards */
+.text-card
+{
+    font-family: Bangers, sans-serif;
+    text-align: center;
+    background: white;
+}
+
+/* Front */
+.text-card.card-front h1
+{
+    position: relative;
+    top:30%;
+    font-size: xx-large;
+}
+
+/* Back */
+.text-card.card-back h1
+{
+    position: relative;
+    top:10%;
+}
+
+.text-card.card-back p
+{
+    position: relative;
+    top:30%;
+    font-size: x-large;
+}
+
 .card {
     -webkit-perspective: 1000px;
     perspective: 1000px;

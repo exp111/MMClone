@@ -2,6 +2,7 @@ const MAP_BOUNDS_VISCOSITY = 1;
 const MAP_BASE_TILE_SIZE = 256;
 const MAP_BOUNDS_EXTENSION = 1e3;
 const MAP_MAX_RESOLUTION = 1;
+const INITIAL_AREA = 2e3;
 
 // copy cause it sucks ass
 function getTileUrl(urlTemplate, data) {
@@ -78,8 +79,7 @@ async function initMap() {
         wheelPxPerZoomLevel: 250,
         bounceAtZoomLimits: false,
         maxBounds: [c.unproject(L.point(-MAP_BOUNDS_EXTENSION, -MAP_BOUNDS_EXTENSION)), c.unproject(L.point(
-            Global.mapMetadata.width + MAP_BOUNDS_EXTENSION, Global.mapMetadata.height +
-            MAP_BOUNDS_EXTENSION))],
+            Global.mapMetadata.width + MAP_BOUNDS_EXTENSION, Global.mapMetadata.height + MAP_BOUNDS_EXTENSION))],
         maxBoundsViscosity: MAP_BOUNDS_VISCOSITY,
         attributionControl: false
     });
@@ -91,7 +91,7 @@ async function initMap() {
         minZoom: Global.mapMetadata.minZoom,
         maxZoom: Global.mapMetadata.maxZoom,
         noWrap: true,
-        tms: !1,
+        tms: false,
         edgeBufferTiles: 1,
         tileSize: MAP_BASE_TILE_SIZE,
         bounds: [c.unproject(L.point(0, 0)), c.unproject(L.point(Global.mapMetadata.width, Global.mapMetadata.height))]
@@ -114,7 +114,12 @@ async function initMap() {
         });
     });
     Global.baseLayer.addTo(Global.map);
-    Global.map.setView([0, 0], 0);
+    
+    //INFO: need to set view once before moving
+    Global.map.setView([0,0], 0);
+    // zoom into middle of map
+    let startZoom = Global.mapMetadata.startZoom ? Global.mapMetadata.startZoom : Global.mapMetadata.minZoom;
+    Global.map.setView(Global.map.getCenter(), startZoom);
 }
 
 async function saveTile(coords, blob) {

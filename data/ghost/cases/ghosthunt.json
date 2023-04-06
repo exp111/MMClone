@@ -3,9 +3,9 @@
     "name": "Ghost Hunt",
     "steps": [{
         "id": "introduction",
-        "text": "",
+        "text": "Ghost Hunt",
         "solution_title": "Ghost Hunt",
-        "solution_text": "Can you find all ghosts? Press Next to start!",
+        "solution_text": "Can you find all ghosts?",
         "solutions": null
     }, {
         "id": "step1",
