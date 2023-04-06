@@ -1,3 +1,10 @@
+@font-face {
+    font-family: Bangers;
+    font-style: normal;
+    font-weight: 400;
+    src: url(assets/fonts/Bangers-Regular.ttf);
+}
+
 #map,
 body,
 html {
