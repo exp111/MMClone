@@ -130,7 +130,8 @@ async function refreshCases() {
     clearChildren(select);
     for (let key in Global.cases) {
         let val = Global.cases[key];
-        select.append(new Option(val["name"], key));
+        let text = val.difficulty ? `${val.name} (${val.difficulty})` : val.name
+        select.append(new Option(text, key));
     }
     // Manually call the change func
     handleCaseChange(select);
