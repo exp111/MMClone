@@ -137,16 +137,18 @@ html {
 
 .overlay-button {
     font-family: Bangers;
+    color: black;
     position: absolute;
     padding: 0;
     outline: none;
-    z-index: 2
+    z-index: 2;
 }
 
 button.overlay-button {
     cursor: pointer;
 }
 
+/* the card button */
 #card-overlay-button {
     right: 24px;
     bottom: 24px;
