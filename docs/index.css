@@ -368,10 +368,7 @@ button.overlay-button {
 }
 
 @media (hover:none) and (pointer:coarse) {
-    #objective-overlay {
-        display: none;
-    }
-    .leaflet-control-zoom {
+    .leaflet-control-zoom, .mobile-hide {
         display: none;
     }
 }

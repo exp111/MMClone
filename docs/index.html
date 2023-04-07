@@ -41,7 +41,7 @@
             <button onclick="resetCase()">Reset Case</button>
             <button id="debug-menu-button" onclick="setSubMenuVisible('menu-main', 'menu-debug', true)">Debug ></button>
             <button onclick="setSubMenuVisible('menu-main', 'menu-mp', true)">Multiplayer ></button>
-            <div class="overlay-input">
+            <div class="overlay-input mobile-hide">
                 <input type="checkbox" id="marker_toggle" autocomplete="off" onchange="setMarkerCursor(this.checked)" />
                 <label for="marker_toggle">Show Solution Pointer</label>
             </div>
@@ -68,7 +68,7 @@
         </div>
     </div>
     <!-- Objective -->
-    <div id="objective-overlay" class="overlay-button">
+    <div id="objective-overlay" class="overlay-button mobile-hide">
         <p>Objective:</p>
         <p id="case_objective"></p>
     </div>
