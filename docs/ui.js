@@ -3,6 +3,21 @@ Global.UI = {
 }
 const UNLOCK_CARD_ANIMATION_DURATION = 400;
 
+function setSubMenuVisible(mainID, subMenuID, enabled)
+{
+    let main = document.getElementById(mainID);
+    let subMenu = document.getElementById(subMenuID);
+    if (!main || !subMenu)
+        return;
+
+    const displayOn = "flex";
+    const displayOff = "none";
+    let val = enabled ? displayOn : displayOff;
+    let revVal = enabled ? displayOff : displayOn;
+    subMenu.style.display = val;
+    main.style.display = revVal;
+}
+
 function setMenuVisible(id, direction, enabled) {
     let menu = document.getElementById(id);
     if (!menu)

@@ -19,13 +19,15 @@
 
 <body>
     <div id="map"></div>
-    <!-- Menu -->
+
     <button id="menu-button" class="overlay-button" onclick="setMenuVisible('menu', 'bottom', true)">
         Menu
     </button>
-    <div id="menu" class="overlay" style="bottom: 100%">
+    <!-- Menu -->
+    <div id="menu" class="overlay" style="bottom: 100%; display: flex">
         <button class="close-button" onclick="setMenuVisible('menu', 'bottom', false)">×</button>
-        <div class="overlay-content">
+        <!-- Main Menu -->
+        <div id="menu-main" class="overlay-content">
             <div class="overlay-select">
                 <label for="select_case">Choose Case:</label>
                 <select id="select_case" onchange="handleCaseChange(this)">
@@ -36,19 +38,14 @@
             <button onclick="askForFile(handleCaseFile)">Upload Case File</button>
             <button onclick="loadTestMap()">Load Test Map</button>
             <button onclick="resetCase()">Reset Case</button>
+            <button id="debug-menu-button" onclick="setSubMenuVisible('menu-main', 'menu-debug', true)">Debug ></button>
             <div class="overlay-input">
                 <input type="checkbox" id="marker_toggle" autocomplete="off" onchange="setMarkerCursor(this.checked)" />
                 <label for="marker_toggle">Show Solution Pointer</label>
             </div>
         </div>
-    </div>
-    <!-- Debug Menu -->
-    <button id="debug-menu-button" class="overlay-button" onclick="setMenuVisible('debug-menu', 'bottom', true)">
-        Debug
-    </button>
-    <div id="debug-menu" class="overlay" style="bottom: 100%">
-        <button class="close-button" onclick="setMenuVisible('debug-menu', 'bottom', false)">×</button>
-        <div class="overlay-content">
+        <!-- Debug Sub Menu -->
+        <div id="menu-debug" class="overlay-content" style="display: none">
             <div class="overlay-input">
                 <input type="checkbox" id="debug_toggle" onchange="Global.DEBUG = this.checked" />
                 <label for="debug_toggle">Debug</label>
@@ -58,6 +55,7 @@
             <button onclick="clearCaseImgDB()">Clear Case Img DB</button>
             <button onclick="solveStep()">Solve</button>
             <button onclick="progressCase()">Force Next</button>
+            <button onclick="setSubMenuVisible('menu-main', 'menu-debug', false)">&lt; Back</button>
         </div>
     </div>
     <!-- Objective -->
