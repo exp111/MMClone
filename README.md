@@ -11,7 +11,7 @@ Uses Leaflet to show the map.
 - right click menu:
     - on marker: set color
     - debug:
-        - on circle: set color, set position, allow finer radius tuning
+        - on circle: set color, set position
         - on every interactive: print json
 - style markers
 - help page

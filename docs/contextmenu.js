@@ -101,9 +101,46 @@ function changeCircleRadius(e) {
     if (!target)
         return;
 
+    // put into a container
+    let container = document.createElement("div");
+    // style to make the inputs appear in the same line
+    container.style.display = "flex";
+    container.style["flex-direction"] = "row";
+
+    // slider
+    let slider = document.createElement("input");
+    slider.style.display = "block";
+    slider.type = "range";
+    slider.min = 0;
+    slider.max = 1000;
+    //INFO: set value after range or else it will clamp back
+    slider.value = target._mRadius;
+    container.appendChild(slider);
+
+    // finer input wheel
+    let fineInput = document.createElement("input");
+    fineInput.style.display = "block";
+    fineInput.style.width = "50px";
+    fineInput.type = "number";
+    fineInput.step = 0.5;
+    fineInput.value = target._mRadius;
+    container.appendChild(fineInput);
+
+    // change events
+    fineInput.oninput = () => {
+        let num = Number(fineInput.value);
+        Global.map._layers[target._leaflet_id].setRadius(num);
+        slider.value = num;
+    };
+    slider.oninput = () => {
+        let num = Number(slider.value);
+        Global.map._layers[target._leaflet_id].setRadius(num);
+        fineInput.value = num;
+    };
+    
     // create popup with input
     L.popup().setLatLng(e.latlng)
-        .setContent(`<input type="range" value=${target._mRadius} min=0 max=1000 oninput="Global.map._layers[${target._leaflet_id}].setRadius(this.value)"/>`)
+        .setContent(container)
         .addTo(Global.map).openOn(Global.map);
 }
 
