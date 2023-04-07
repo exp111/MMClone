@@ -62,6 +62,26 @@ function deleteMarker(e) {
         }
     }
 
+    sendDeleteMarker(target._latlng.lng, target._latlng.lat)
+
+    // remove from map
+    target.remove();
+}
+
+function deleteMarkerAt(x, y) {
+    // remove from global array
+    let target = null;
+    for (let key in Global.markers) {
+        let val = Global.markers[key];
+        if (val._latlng.lat == y && val._latlng.lng == x) {
+            target = val;
+            Global.markers.splice(key, 1);
+            break;
+        }
+    }
+    if (!target)
+        return;
+    
     // remove from map
     target.remove();
 }

@@ -7,11 +7,12 @@ Uses Leaflet to show the map.
     - sync cursors
     - more than 2 players
     - make connecting less cbt
+    - ping?
 - right click menu:
     - on marker: set color
     - debug:
         - on circle: set color, set position, allow finer radius tuning
-        - on : print json
+        - on every interactive: print json
 - style markers
 - help page
 - fix bounds on small images
@@ -19,7 +20,7 @@ Uses Leaflet to show the map.
 - fix pagination bullets being at the bottom
 - make objective display better on mobile
 - add shake on mobile/general cards after waiting too long?
-- fix finishing a case
+- add case finish animation
 
 # How to create a map from a image
 To transform a image to raster tiles you can use libvips with this command:

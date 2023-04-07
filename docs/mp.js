@@ -105,7 +105,12 @@ function onConnectionDataReceive(data) {
             createMarkerCall(x, y);
             break;
         }
-        //TODO: deletemarker
+        case "deleteMarker": {
+            let x = data.data.x;
+            let y = data.data.y;
+            deleteMarkerAt(x, y);
+            break;
+        }
         default: {
             console.debug(`Unknown data received: ${data}`);
             break;
@@ -116,6 +121,16 @@ function onConnectionDataReceive(data) {
 function sendCreateMarker(x, y) {
     sendDataMP({
         type: "createMarker",
+        data: {
+            x: x,
+            y: y
+        }
+    });
+}
+
+function sendDeleteMarker(x, y) {
+    sendDataMP({
+        type: "deleteMarker",
         data: {
             x: x,
             y: y
