@@ -149,7 +149,7 @@ function updateCards() {
         let card = Global.UI.swiper.slides[i];
         card.classList.remove("current");
 
-        // remove locked overlay if it exists
+        // remove locked overlay if it exists //TODO: rather hide it?
         if (i <= Global.caseProgress) {
             let locked = card.getElementsByClassName("card-locked-overlay");
             if (locked.length > 0) {

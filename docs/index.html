@@ -38,7 +38,7 @@
             <button onclick="askForFile(handleZipFile)">Upload Zip</button>
             <button onclick="askForFile(handleCaseFile)">Upload Case File</button>
             <button onclick="loadTestMap()">Load Test Map</button>
-            <button onclick="resetCase()">Reset Case</button>
+            <button onclick="resetCase(); setMenuVisible('menu', 'bottom', false);">Reset Case</button>
             <button id="debug-menu-button" onclick="setSubMenuVisible('menu-main', 'menu-debug', true)">Debug ></button>
             <button onclick="setSubMenuVisible('menu-main', 'menu-mp', true)">Multiplayer ></button>
             <div class="overlay-input mobile-hide">

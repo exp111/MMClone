@@ -162,13 +162,17 @@ function handleCaseChange(select) {
     Global.currentCase = selected;
     Global.caseProgress = 0;
     buildCards();
-    updateCase();
     console.debug(`Selected case ${selected.name} (ID ${selected.id})`);
 }
 
 function resetCase() {
+    if (!Global.currentCase)
+        return;
+    
     Global.caseProgress = 0;
-    updateCase();
+    // just rebuild cards lmao
+    buildCards();
+    console.debug(`Reset case ${Global.currentCase.name} (ID ${Global.currentCase.id})`);
 }
 
 // Updates the objective text and markers. Returns the amount of solutions
