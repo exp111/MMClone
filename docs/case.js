@@ -223,15 +223,6 @@ function updateCaseStep() {
     return step.solutions ? step.solutions.length : 0;
 }
 
-// Enable/disable the "next" button
-function unlockNextButton() {
-    document.getElementById("button_next").disabled = false;
-}
-
-function lockNextButton() {
-    document.getElementById("button_next").disabled = true;
-}
-
 function solveStep() {
     if (!Global.currentCase)
         return;
@@ -276,6 +267,8 @@ function progressCase() {
     console.debug(`Increasing case step from ${Global.caseProgress}`);
     Global.caseProgress++;
 
+    // update cards
+    updateCards();
     //TODO: end of case animation or smth
     if (Global.caseProgress == Global.currentCase.steps.length)
     {
@@ -283,8 +276,7 @@ function progressCase() {
         return;
     }
 
-    // update cards
-    updateCards();
+    // update the case
     updateCase();
 }
 
