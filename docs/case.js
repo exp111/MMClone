@@ -228,8 +228,21 @@ function lockNextButton() {
     document.getElementById("button_next").disabled = true;
 }
 
-// Solves the current step and shows the solution. Also unlocks the next button.
 function solveStep() {
+    if (!Global.currentCase)
+        return;
+
+    let step = Global.currentCase.steps[Global.caseProgress];
+    if (!step)
+        return;
+
+    // send mp
+    sendSolveStep()
+    // call rpc func
+    solveStepCall()
+}
+// Solves the current step and shows the solution. Also unlocks the next button.
+function solveStepCall() {
     if (!Global.currentCase)
         return;
 

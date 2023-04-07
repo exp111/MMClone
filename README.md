@@ -3,10 +3,10 @@ Uses Leaflet to show the map.
 
 ## TODO:
 - mp:
-    - sync markers
-    - sync case progress
     - sync case/map
     - sync cursors
+    - more than 2 players
+    - make connecting less cbt
 - right click menu:
     - on marker: set color
     - debug:

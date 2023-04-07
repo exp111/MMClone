@@ -166,7 +166,7 @@ button.overlay-button {
 #objective-overlay {
     left: 12px;
     bottom: 12px;
-    background-color: white;
+    background-color: transparent;
     margin: 0
 }
 

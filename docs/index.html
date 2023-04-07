@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="dependencies/leaflet.contextmenu/leaflet.contextmenu.min.css" />
     <link rel="stylesheet" href="dependencies/swiper/swiper-bundle.min.css" />
     <script src="dependencies/swiper/swiper-bundle.min.js"></script>
+    <script src="dependencies/peerjs/peerjs.min.js"></script>
     <!--INFO: include our changes after libs to own them-->
     <link rel="stylesheet" href="index.css" />
 </head>
@@ -39,6 +40,7 @@
             <button onclick="loadTestMap()">Load Test Map</button>
             <button onclick="resetCase()">Reset Case</button>
             <button id="debug-menu-button" onclick="setSubMenuVisible('menu-main', 'menu-debug', true)">Debug ></button>
+            <button onclick="setSubMenuVisible('menu-main', 'menu-mp', true)">Multiplayer ></button>
             <div class="overlay-input">
                 <input type="checkbox" id="marker_toggle" autocomplete="off" onchange="setMarkerCursor(this.checked)" />
                 <label for="marker_toggle">Show Solution Pointer</label>
@@ -56,6 +58,13 @@
             <button onclick="solveStep()">Solve</button>
             <button onclick="progressCase()">Force Next</button>
             <button onclick="setSubMenuVisible('menu-main', 'menu-debug', false)">&lt; Back</button>
+        </div>
+        <!-- MP Sub Menu -->
+        <div id="menu-mp" class="overlay-content" style="display: none">
+            <button id="mp-connect-button" onclick="onMPButtonClick()">Connect</button>
+            <button id="mp-peer-id" onclick="copyPeerID()">Not connected</button>
+            <button id="mp-connect-peer-button" style="display: none" onclick="onPeerConnectButtonClick()">Connect to Peer</button>
+            <button onclick="setSubMenuVisible('menu-main', 'menu-mp', false)">&lt; Back</button>
         </div>
     </div>
     <!-- Objective -->
@@ -100,6 +109,7 @@
     <script src="map.js"></script>
     <script src="case.js"></script>
     <script src="debug.js"></script>
+    <script src="mp.js"></script>
     <script>
         initMap();
         refreshCases();

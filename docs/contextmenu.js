@@ -33,6 +33,13 @@ function deleteCircle(e) {
 function createMarker(e) {
     let y = e.latlng.lat;
     let x = e.latlng.lng;
+    // send rpc
+    sendCreateMarker(x, y);
+    // call locally
+    createMarkerCall(x, y);
+}
+
+function createMarkerCall(x, y) {
     let marker = L.marker([y, x], {
         contextmenu: true,
     });
