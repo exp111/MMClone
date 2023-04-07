@@ -8,6 +8,7 @@ function askForFile(callback) {
 
 //TODO: move parsing funcs into map.js/case.js
 async function loadFromZip(f) {
+    //TODO: JSZip doesn't support windows style paths (\\)
     //TODO: warn user cause deleting
     return JSZip.loadAsync(f)
         .then((zip) => {
@@ -18,12 +19,12 @@ async function loadFromZip(f) {
             console.debug("Loading map files")
             clearMapDB();
             let mapTileCounter = 0;
-            zip.folder("map").forEach((path, entry) => {
+
+            function MapRead(path, entry) {
                 if (entry.dir)
                     return;
 
                 // TODO: check file ending?
-
                 // try to parse coords
                 let coords = parseCoords(path);
                 if (!coords)
@@ -34,7 +35,8 @@ async function loadFromZip(f) {
                     return saveTile(coords, blob);
                 });
                 promises.push(promise);
-            });
+            }
+            zip.folder("map").forEach(MapRead);
             console.debug(`Found ${mapTileCounter} Map Tiles.`);
 
             // Map.json metadata
@@ -52,7 +54,8 @@ async function loadFromZip(f) {
             let caseCounter = 0;
             let cases = [];
             let casePromises = [];
-            zip.folder("cases").forEach((path, entry) => {
+
+            function CaseRead(path, entry) {
                 if (entry.dir)
                     return;
 
@@ -69,7 +72,8 @@ async function loadFromZip(f) {
                     saveCaseJson(json);
                 });
                 casePromises.push(promise);
-            });
+            }
+            zip.folder("cases").forEach(CaseRead);
             console.debug(`Found ${caseCounter} Cases.`);
 
             // load case images

@@ -8,7 +8,7 @@ for zoom in [
     #"3x", # "
     #"4x" # 5 zoom levels
     ]:
-    for z in range(6):
+    for z in range(6+1):
         for y in range(64):
             for x in range(64):
                 dir = f"{zoom}/{z}/{y}"
@@ -21,6 +21,7 @@ for zoom in [
                 if res.status_code != 200:
                     print(f"Skipping {cur}")
                     break
+                    #continue
                 if not os.path.exists(outDir):
                     os.makedirs(outDir)
                 file = open(out, "wb")

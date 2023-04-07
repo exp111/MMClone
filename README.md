@@ -19,6 +19,8 @@ Uses Leaflet to show the map.
 - fix pagination bullets being at the bottom
 - make objective display better on mobile
 - add shake on mobile/general cards after waiting too long?
+- fix case reset
+- fix finishing a case
 
 # How to create a map from a image
 To transform a image to raster tiles you can use libvips with this command:
