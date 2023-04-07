@@ -9,7 +9,6 @@ Uses Leaflet to show the map.
     - make connecting less cbt
     - ping?
 - right click menu:
-    - on marker: set color
     - debug:
         - on circle: set color, set position
         - on every interactive: print json

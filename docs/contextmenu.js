@@ -47,6 +47,34 @@ function createMarkerCall(x, y) {
     Global.markers.push(marker);
 }
 
+function changeMarkerColor(e) {
+    let target = e.relatedTarget;
+    if (!target)
+        return;
+    
+    // slider
+    let slider = document.createElement("input");
+    slider.type = "range";
+    slider.min = 0;
+    slider.max = 360;
+    //INFO: set value after range or else it will clamp back
+    // find the cur value, else default to 0
+    const regex = /hue-rotate\((\d*)deg\)/;
+    let match = target._icon.style.filter.match(regex);
+    slider.value = match ? match[1] : 0;
+
+    slider.oninput = () => {
+        // hue rotate the icon
+        target._icon.style.filter = `hue-rotate(${slider.value}deg)`;
+    };
+
+    // create popup with input
+    // offset the popup to the top, so you can see the marker color
+    L.popup().setLatLng([target._latlng.lat - 150, target._latlng.lng])
+        .setContent(slider)
+        .openOn(Global.map);
+}
+
 // Removes the given marker
 function deleteMarker(e) {
     let target = e.relatedTarget;
@@ -129,15 +157,15 @@ function changeCircleRadius(e) {
     // change events
     fineInput.oninput = () => {
         let num = Number(fineInput.value);
-        Global.map._layers[target._leaflet_id].setRadius(num);
+        target.setRadius(num);
         slider.value = num;
     };
     slider.oninput = () => {
         let num = Number(slider.value);
-        Global.map._layers[target._leaflet_id].setRadius(num);
+        target.setRadius(num);
         fineInput.value = num;
     };
-    
+
     // create popup with input
     L.popup().setLatLng(e.latlng)
         .setContent(container)
@@ -154,6 +182,10 @@ function onMapRightClick(e) {
         let addSeperator = true;
         // marker
         if (target instanceof(L.Marker)) {
+            e.contextmenu.addItem({
+                text: 'Change Color',
+                callback: changeMarkerColor
+            });
             e.contextmenu.addItem({
                 text: 'Delete Marker',
                 callback: deleteMarker
