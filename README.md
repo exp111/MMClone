@@ -4,7 +4,7 @@ Uses Leaflet to show the map.
 ## TODO:
 - mp:
     - sync case/map
-    - sync cursors
+    - let users set color
     - let users select name?
     - make connecting less cbt
     - ping?

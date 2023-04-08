@@ -45,6 +45,10 @@
                 <input type="checkbox" id="marker_toggle" autocomplete="off" onchange="setMarkerCursor(this.checked)" />
                 <label for="marker_toggle">Show Solution Pointer</label>
             </div>
+            <div class="overlay-input mobile-hide">
+                <input type="checkbox" id="cursor_toggle" autocomplete="off" onchange="Global.MP.dontSendCursor = this.checked" />
+                <label for="cursor_toggle">Dont send Cursor Position</label>
+            </div>
         </div>
         <!-- Debug Sub Menu -->
         <div id="menu-debug" class="overlay-content" style="display: none;">

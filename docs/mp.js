@@ -4,6 +4,8 @@ Global.MP = {
     hosting: false,
     hostID: null,
     username: "",
+    cursors: {},
+    dontSendCursor: false,
 };
 
 // UI
@@ -117,8 +119,7 @@ function disconnectMP() {
 function onPeerError(err) {
     //TODO: do we need to clean up?
     console.log(`Peer Error: ${err} (${err.type})`);
-    switch (err.type)
-    {
+    switch (err.type) {
         case "unavailable-id":
             alert("ID already taken.");
             break;
@@ -161,6 +162,8 @@ function onPeerDisconnect() {
     setDisconnectHidden(true);
     hideLobbyButtons(false);
     updatePeerList();
+    // call content event
+    Disconnected();
 }
 
 // called upon receiving a new connection from a peer.
@@ -202,7 +205,7 @@ function hostOnConnectionOpen() {
     console.debug(`Sending peers ${peerList.length} to new peer.`);
     // send data
     connection.send({
-        type: "lobbyjoin",
+        type: "lobbyJoin",
         data: {
             peerList: peerList
         }
@@ -239,6 +242,8 @@ function onConnectionClose() {
     if (index > -1)
         Global.MP.connections.splice(index, 1);
     updatePeerList();
+    // call content event
+    PlayerDisconnected(connection);
 }
 
 // connects to a list of peers if we havent gotten a connection to them yet
@@ -260,10 +265,10 @@ function connectToPeers(peerList) {
 
 // called upon receiving data from a peer
 function onConnectionDataReceive(data) {
-    console.debug("Received data:");
-    console.debug(data);
+    let connection = this;
+    let sender = connection.peer;
     switch (data.type) {
-        case "lobbyjoin": {
+        case "lobbyJoin": {
             let peerList = data.data.peerList;
             if (!peerList) {
                 console.debug(`Got faulty LobbyJoin message`);
@@ -272,6 +277,12 @@ function onConnectionDataReceive(data) {
             console.debug(`Got LobbyJoin message (${peerList.length} Peers)`);
             connectToPeers(peerList);
             break;
+        }
+        case "cursorUpdate": {
+            let x = data.data.x;
+            let y = data.data.y;
+            cursorUpdate(sender, x, y);
+            return; // dont log
         }
         case "solveStep": {
             solveStepCall();
@@ -294,9 +305,71 @@ function onConnectionDataReceive(data) {
             break;
         }
     }
+    console.debug(`Received data from ${sender}:`);
+    console.debug(data);
+}
+
+// content events
+function PlayerDisconnected(connection) {
+    // remove the cursor
+    let peer = connection.peer;
+    let cursor = Global.MP.cursors[peer];
+    if (cursor) {
+        Global.MP.cursors[peer] = null;
+        cursor.remove();
+    }
+}
+
+function Disconnected() {
+    for (let key in Global.MP.cursors) {
+        let cursor = Global.MP.cursors[key];
+        cursor.remove();
+    };
+    Global.MP.cursors = []
+}
+
+function StringToColor(str) {
+    var hash = 0;
+    for (var i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    var colour = '#';
+    for (var i = 0; i < 3; i++) {
+        var value = (hash >> (i * 8)) & 0xFF;
+        colour += ('00' + value.toString(16)).substr(-2);
+    }
+    return colour;
+}
+
+function cursorUpdate(sender, x, y) {
+    let cursor = Global.MP.cursors[sender];
+    if (!cursor) {
+        console.debug(`Created cursor object for ${sender}`);
+        cursor = L.circle([y, x], {
+            color: "none",
+            fillColor: StringToColor(sender),
+            fillOpacity: 0.5,
+            radius: 70,
+        }).addTo(Global.map);
+        Global.MP.cursors[sender] = cursor;
+        return;
+    }
+
+    // update pos
+    cursor.setLatLng([y, x]);
 }
 
 // send data functions
+function sendCursorPos(x, y) {
+    sendDataMP({
+        type: "cursorUpdate",
+        data: {
+            x: x,
+            y: y
+        }
+    }, false);
+}
+
 function sendCreateMarker(x, y) {
     sendDataMP({
         type: "createMarker",
@@ -324,12 +397,14 @@ function sendSolveStep() {
 }
 
 // broadcasts data to all connections
-function sendDataMP(data) {
+function sendDataMP(data, nolog) {
     if (!Global.MP.peer || Global.MP.connections.length == 0)
         return;
 
-    console.debug("Sending Data:");
-    console.debug(data);
+    if (!nolog) {
+        console.debug("Sending Data:");
+        console.debug(data);
+    }
     Global.MP.connections.forEach((con) => {
         con.send(data);
     });

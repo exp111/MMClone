@@ -86,6 +86,7 @@ async function initMap() {
 
     // hijack right click menu
     Global.map.on("contextmenu.show", onMapRightClick);
+    Global.map.on("mousemove", onMapMouseMove);
     // create offline layer
     Global.baseLayer = LeafletOffline.tileLayerOffline("{z}/{y}/{x}.png", {
         minZoom: Global.mapMetadata.minZoom,
@@ -120,6 +121,13 @@ async function initMap() {
     // zoom into middle of map
     let startZoom = Global.mapMetadata.startZoom ? Global.mapMetadata.startZoom : Global.mapMetadata.minZoom;
     Global.map.setView(Global.map.getCenter(), startZoom);
+}
+
+function onMapMouseMove(e) {
+    //TODO: limit cursor updates
+    // send it
+    if (!Global.MP.dontSendCursor)
+        sendCursorPos(e.latlng.lng, e.latlng.lat);
 }
 
 async function saveTile(coords, blob) {
