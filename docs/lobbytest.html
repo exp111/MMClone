@@ -74,6 +74,7 @@
         peer.on("open", onPeerOpen);
         peer.on("connection", onPeerConnection);
         peer.on("disconnected", onPeerDisconnect);
+        setPeerID("Connecting...", true);
     }
 
     function onPeerOpen(id) {
@@ -195,7 +196,6 @@
         if (!id)
             return;
 
-        setPeerID("Connecting...", true);
         hostID = id;
         initPeer();
     }

@@ -61,9 +61,11 @@
         </div>
         <!-- MP Sub Menu -->
         <div id="menu-mp" class="overlay-content" style="display: none">
-            <button id="mp-connect-button" onclick="onMPButtonClick()">Connect</button>
-            <button id="mp-peer-id" onclick="copyPeerID()">Not connected</button>
-            <button id="mp-connect-peer-button" style="display: none" onclick="onPeerConnectButtonClick()">Connect to Peer</button>
+            <button id="mp-host-lobby" onclick="hostLobby()">Host Lobby</button>
+            <button id="mp-join-lobby" onclick="joinLobby()">Join Lobby</button>
+            <button id="mp-status" onclick="copyPeerID()" disabled>Not connected</button>
+            <div id="mp-players"></div>
+            <button id="mp-disconnect" onclick="disconnectMP()" style="display: none;">Disconnect</button>
             <button onclick="setSubMenuVisible('menu-main', 'menu-mp', false)">&lt; Back</button>
         </div>
     </div>

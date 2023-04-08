@@ -5,7 +5,8 @@ Uses Leaflet to show the map.
 - mp:
     - sync case/map
     - sync cursors
-    - more than 2 players
+    - nickname
+    - lobby name?
     - make connecting less cbt
     - ping?
 - right click menu:
@@ -20,6 +21,8 @@ Uses Leaflet to show the map.
 - make objective display better on mobile
 - add shake on mobile/general cards after waiting too long?
 - add case finish animation
+- save case progress
+- save settings
 
 # How to create a map from a image
 To transform a image to raster tiles you can use libvips with this command:

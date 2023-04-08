@@ -57,6 +57,11 @@ html {
     /* scroll in from the top */
 }
 
+#mp-players {
+    /* to add some space after the player list */
+    margin-bottom: 8px;
+}
+
 .overlay button,
 .overlay-content,
 .overlay-input,
