@@ -3,6 +3,7 @@ Global.MP = {
     connections: [],
     hosting: false,
     hostID: null,
+    username: "",
 };
 
 // UI
@@ -30,8 +31,12 @@ function updatePeerList() {
     let list = document.getElementById("mp-players");
     // clear
     list.innerHTML = "";
-    if (!Global.MP.peer) // dont add anything if we're not connected
+    list.style.display = "";
+    if (!Global.MP.peer) // hide if we're not connected
+    {
+        list.style.display = "none";
         return;
+    }
     // add header
     let header = document.createElement("div");
     header.textContent = "Players:";
@@ -46,6 +51,19 @@ function updatePeerList() {
         p.textContent = `#${i + 2}: ${con.peer}`;
         list.appendChild(p);
     });
+}
+
+function generateUsername() {
+    let input = document.getElementById("mp-username");
+    let passphrase = generatePassphrase();
+    Global.MP.username = passphrase;
+    input.textContent = `Name: ${passphrase}`;
+}
+
+function hideUsername(hidden) {
+    let input = document.getElementById("mp-username");
+    let display = hidden ? "none" : "";
+    input.style.display = display;
 }
 
 // MP functions
@@ -68,17 +86,23 @@ function Connect() {
     if (!id)
         return;
 
+    // we only have lowercase IDs
+    id = id.toLowerCase();
+
     Global.MP.hostID = id;
     initPeer();
 }
 
 // initializes the peer and connects to the peerjs server
 function initPeer() {
-    Global.MP.peer = new Peer();
+    let id = Global.MP.username;
+    Global.MP.peer = new Peer(id);
     Global.MP.peer.on("open", onPeerOpen);
     Global.MP.peer.on("disconnected", onPeerDisconnect);
     Global.MP.peer.on("connection", onPeerConnection);
+    Global.MP.peer.on("error", onPeerError);
     setPeerID("Connecting...", true);
+    hideUsername(true);
 }
 
 // disconnects from the server and any lobby
@@ -89,6 +113,22 @@ function disconnectMP() {
     Global.MP.peer.disconnect();
 }
 
+// called upon a peer error. most likely fatal
+function onPeerError(err) {
+    //TODO: do we need to clean up?
+    console.log(`Peer Error: ${err} (${err.type})`);
+    switch (err.type)
+    {
+        case "unavailable-id":
+            alert("ID already taken.");
+            break;
+        case "invalid-id":
+        case "peer-unavailable":
+            alert("Invalid ID.")
+            break;
+    }
+    disconnectMP();
+}
 // called upon connecting to the peerjs server
 function onPeerOpen(id) {
     console.log(`Assigned Peer ID: ${id}`);
@@ -111,10 +151,12 @@ function onPeerOpen(id) {
 
 // called upon disconnecting from the server. cleans up
 function onPeerDisconnect() {
-    Global.MP.peer.destroy();
+    //INFO: theoretically we could still reconnect as connections are still alive and such but i dont wanna
+    Global.MP.peer.destroy(); // this also destroys all connections
     Global.MP.peer = null;
     Global.MP.connections = [];
 
+    hideUsername(false);
     setPeerID("Disconnected", true);
     setDisconnectHidden(true);
     hideLobbyButtons(false);

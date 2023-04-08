@@ -5,8 +5,7 @@ Uses Leaflet to show the map.
 - mp:
     - sync case/map
     - sync cursors
-    - nickname
-    - lobby name?
+    - let users select name?
     - make connecting less cbt
     - ping?
 - right click menu:

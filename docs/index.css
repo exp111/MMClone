@@ -59,7 +59,8 @@ html {
 
 #mp-players {
     /* to add some space after the player list */
-    margin-bottom: 8px;
+    margin: 0 6px 6px;
+    padding: 0 8px 8px;
 }
 
 .overlay button,

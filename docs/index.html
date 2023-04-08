@@ -47,7 +47,7 @@
             </div>
         </div>
         <!-- Debug Sub Menu -->
-        <div id="menu-debug" class="overlay-content" style="display: none">
+        <div id="menu-debug" class="overlay-content" style="display: none;">
             <div class="overlay-input">
                 <input type="checkbox" id="debug_toggle" onchange="Global.DEBUG = this.checked" />
                 <label for="debug_toggle">Debug</label>
@@ -60,11 +60,12 @@
             <button onclick="setSubMenuVisible('menu-main', 'menu-debug', false)">&lt; Back</button>
         </div>
         <!-- MP Sub Menu -->
-        <div id="menu-mp" class="overlay-content" style="display: none">
+        <div id="menu-mp" class="overlay-content" style="display: none;">
+            <button id="mp-username" onclick="generateUsername()"></button>
             <button id="mp-host-lobby" onclick="hostLobby()">Host Lobby</button>
             <button id="mp-join-lobby" onclick="joinLobby()">Join Lobby</button>
             <button id="mp-status" onclick="copyPeerID()" disabled>Not connected</button>
-            <div id="mp-players"></div>
+            <div id="mp-players" style="display: none;"></div>
             <button id="mp-disconnect" onclick="disconnectMP()" style="display: none;">Disconnect</button>
             <button onclick="setSubMenuVisible('menu-main', 'menu-mp', false)">&lt; Back</button>
         </div>
@@ -112,11 +113,13 @@
     <script src="case.js"></script>
     <script src="debug.js"></script>
     <script src="mp.js"></script>
+    <script src="words.js"></script>
     <script>
         initMap();
         refreshCases();
         initSwiper();
         setMarkerCursor(false);
+        generateUsername();
     </script>
 
 </body>
