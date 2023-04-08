@@ -6,6 +6,8 @@ Global.MP = {
     username: "",
     cursors: {},
     dontSendCursor: false,
+    cursorUpdateLimit: 50,
+    lastCursorUpdate: 0,
 };
 
 // UI
@@ -323,7 +325,8 @@ function PlayerDisconnected(connection) {
 function Disconnected() {
     for (let key in Global.MP.cursors) {
         let cursor = Global.MP.cursors[key];
-        cursor.remove();
+        if (cursor)
+            cursor.remove();
     };
     Global.MP.cursors = []
 }
@@ -367,7 +370,7 @@ function sendCursorPos(x, y) {
             x: x,
             y: y
         }
-    }, false);
+    }, true);
 }
 
 function sendCreateMarker(x, y) {

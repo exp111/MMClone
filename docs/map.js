@@ -126,8 +126,16 @@ async function initMap() {
 function onMapMouseMove(e) {
     //TODO: limit cursor updates
     // send it
-    if (!Global.MP.dontSendCursor)
-        sendCursorPos(e.latlng.lng, e.latlng.lat);
+    if (!Global.MP.dontSendCursor && Global.MP.peer)
+    {
+        let now = new Date();
+        let diff = now - Global.MP.lastCursorUpdate;
+        if (diff > Global.MP.cursorUpdateLimit)
+        {
+            Global.MP.lastCursorUpdate = now;
+            sendCursorPos(e.latlng.lng, e.latlng.lat);
+        }
+    }
 }
 
 async function saveTile(coords, blob) {

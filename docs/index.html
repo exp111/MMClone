@@ -49,6 +49,10 @@
                 <input type="checkbox" id="cursor_toggle" autocomplete="off" onchange="Global.MP.dontSendCursor = this.checked" />
                 <label for="cursor_toggle">Dont send Cursor Position</label>
             </div>
+            <div class="overlay-input mobile-hide">
+                <input type="range" id="cursor_update_limit" min="0" max="250" value="50" autocomplete="off" onchange="Global.MP.cursorUpdateLimit = this.value" />
+                <label for="cursor_update_limit">Cursor Update Delay</label>
+            </div>
         </div>
         <!-- Debug Sub Menu -->
         <div id="menu-debug" class="overlay-content" style="display: none;">

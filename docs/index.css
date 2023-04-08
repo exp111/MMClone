@@ -94,7 +94,7 @@ html {
 }
 
 /* checkbox */
-.overlay input {
+.overlay input[type="checkbox"] {
     position: relative;
     top: 4px;
     height: 36px;
