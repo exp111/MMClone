@@ -44,6 +44,8 @@ function initSwiper() {
 
 function buildCards() {
     console.debug("Building cards...");
+    let orientation = Global.currentCase.orientation ? Global.currentCase.orientation : "vertical";
+    let cardClass = `card-${orientation}`;
     // remove old stuff if it exists
     Global.UI.swiper.removeAllSlides();
     // add for each step a new card
@@ -52,6 +54,7 @@ function buildCards() {
         let card = document.createElement("div");
         card.classList.add("swiper-slide");
         card.classList.add("card");
+        card.classList.add(cardClass);
         card.addEventListener("click", () => onSlideClick(i));
         // inner
         let inner = document.createElement("div");

@@ -238,15 +238,23 @@ button.overlay-button {
     left: 2px
 }
 
-.swiper-slide {
+.card-vertical {
     width: 240px;
-    height: 370px
+    height: 370px;
+}
+.card-horizontal {
+    height: 240px;
+    width: 370px;
 }
 
 @media (min-width:768px) and (min-height:600px) {
-    .swiper-slide {
+    .card-vertical {
         width: 324px;
-        height: 500px
+        height: 500px;
+    }
+    .card-horizontal {
+        height: 324px;
+        width: 500px;
     }
 }
 
