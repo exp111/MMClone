@@ -66,8 +66,9 @@ function copyPeerID() {
         return;
 
     navigator.clipboard.writeText(Global.MP.peer.id);
+    // notify the user
     console.log("Copied ID to clipboard.");
-    //TODO: notify user
+    alert("Copied ID to clipboard.");
 }
 
 function onPeerConnectButtonClick() {

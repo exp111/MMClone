@@ -1,0 +1,240 @@
+<html>
+
+<head>
+    <script src="dependencies/peerjs/peerjs.min.js"></script>
+</head>
+
+<body>
+    <button id="host-lobby" onclick="hostLobby()">Host Lobby</button>
+    <button id="join-lobby" onclick="joinLobby()">Join Lobby</button>
+    <button id="peer-id" onclick="copyPeerID()" disabled>Not connected</button>
+    <button id="disconnect" onclick="disconnect()" disabled>Disconnect</button>
+
+    <div>
+        DEBUG:
+        <button onclick="initPeer()">Init</button>
+        <button onclick="Connect()">Connect</button>
+        <button onclick="sendData({test: true})">Send Data</button>
+        <button onclick="closeConnections()">Close Connections</button>
+        <button onclick="updatePeerList()">update peer list</button>
+    </div>
+
+    <div id="peer-list">
+
+    </div>
+</body>
+<script>
+    var peer = null;
+    var connections = [];
+    var hosting = false;
+    var hostID = null;
+
+    function hideLobbyButtons(hidden) {
+        let hostLobby = document.getElementById("host-lobby");
+        let joinLobby = document.getElementById("join-lobby");
+        let display = hidden ? "none" : "";
+        hostLobby.style.display = display;
+        joinLobby.style.display = display;
+    }
+    function setDisconnectDisabled(disabled) {
+        let disconnect = document.getElementById("disconnect");
+        disconnect.disabled = disabled;
+    }
+
+    function setPeerID(text, disabled) {
+        let peerID = document.getElementById("peer-id");
+        peerID.textContent = text;
+        peerID.disabled = disabled;
+    }
+
+    function updatePeerList() {
+        let list = document.getElementById("peer-list");
+        // clear
+        list.innerHTML = "";
+        // add
+        connections.forEach((con, i) => {
+            let p = document.createElement("p");
+            p.textContent = `${i}: ${con.peer}`;
+            list.appendChild(p);
+        });
+    }
+
+    function hostLobby() {
+        hosting = true;
+        initPeer();
+    }
+
+    function joinLobby() {
+        hosting = false;
+        Connect();
+    }
+
+    function initPeer() {
+        peer = new Peer();
+        peer.on("open", onPeerOpen);
+        peer.on("connection", onPeerConnection);
+        peer.on("disconnected", onPeerDisconnect);
+    }
+
+    function onPeerOpen(id) {
+        console.log(`Assigned Peer ID: ${id}`);
+        if (hosting) {
+            setPeerID(`Peer ID: ${id}`, false);
+        } else // join host
+        {
+            console.log(`Connecting to ${hostID}`);
+            if (hostID)
+                ConnectTo(hostID);
+        }
+        setDisconnectDisabled(false);
+        hideLobbyButtons(true);
+    }
+
+    function onPeerDisconnect() {
+        peer.destroy();
+        peer = null;
+        connections = [];
+
+        setPeerID("Disconnected", true);
+        setDisconnectDisabled(true);
+        hideLobbyButtons(false);
+    }
+
+    function onPeerConnection(connection) {
+        console.log(`new connection from ${connection.peer}`);
+        connection.on("close", onConnectionClose);
+        connection.on("data", onConnectionDataReceive);
+        // if we're hosting, inform them of all the other peers
+        if (hosting) {
+            // inform them after the connection is ready to read/write
+            connection.on("open", hostOnConnectionOpen);
+        }
+        // add the connection to our peerlist
+        connections.push(connection);
+        updatePeerList();
+    }
+
+    function hostOnConnectionOpen() {
+        let connection = this;
+        // build peerlist
+        let peerList = [];
+        connections.forEach((con) => {
+            if (con.peer != connection.peer)
+                peerList.push(con.peer);
+        });
+        console.log(`Sending peers ${peerList.length} to new peer.`);
+        // send data
+        connection.send({
+            type: "lobbyjoin",
+            data: {
+                peerList: peerList
+            }
+        });
+    }
+
+    function onConnectionClose() {
+        let connection = this;
+        console.log(`Closed connection ${connection.peer}`);
+        let index = connections.indexOf(connection);
+        if (index > -1)
+            connections.splice(index, 1);
+        updatePeerList();
+    }
+
+    function onConnectionDataReceive(data) {
+        let connection = this;
+        console.log(`Received data: ${data} from ${connection.peer}`);
+        if (!data.type)
+            return;
+        switch (data.type) {
+            case "lobbyjoin": {
+                let peerList = data.data.peerList;
+                if (!peerList) {
+                    console.log(`Got faulty LobbyJoin message`);
+                    return;
+                }
+                console.log(`Got LobbyJoin message (${peerList.length} Peers)`);
+                connectToPeers(peerList);
+                break;
+            }
+            default:
+                break;
+        }
+    }
+
+    function connectToPeers(peerList) {
+        if (!peerList)
+            return;
+
+        peerList.forEach((p) => {
+            if (p == peer.id) // self id
+                return;
+
+            if (connections.find((c) => c.peer == p)) // already connected
+                return;
+
+            console.log(`Connecting to ${p}...`)
+            ConnectTo(p);
+        });
+    }
+
+    function onConnectionOpen() {
+        let connection = this;
+        console.log(`new connection to ${connection.peer}`);
+
+        // add host status
+        if (!hosting && connections.length == 0) {
+            setPeerID(`Connected to ${connection.peer}`, true);
+        }
+        connections.push(connection);
+        updatePeerList();
+    }
+
+    function Connect() {
+        let id = prompt("Enter the Peer ID");
+        if (!id)
+            return;
+
+        setPeerID("Connecting...", true);
+        hostID = id;
+        initPeer();
+    }
+
+    function ConnectTo(id) {
+        let connection = peer.connect(id);
+        connection.on("open", onConnectionOpen);
+        connection.on("close", onConnectionClose);
+        connection.on("data", onConnectionDataReceive);
+    }
+
+    function copyPeerID() {
+        if (!peer)
+            return;
+
+        navigator.clipboard.writeText(peer.id);
+        // notify the user
+        console.log("Copied ID to clipboard.");
+        alert("Copied ID to clipboard.");
+    }
+
+    function sendData(data) {
+        connections.forEach((con) => {
+            con.send(data);
+        });
+    }
+
+    function closeConnections() {
+        connections.forEach((con) => {
+            con.close();
+        });
+    }
+
+    function disconnect() {
+        if (!peer)
+            return;
+
+        peer.disconnect();
+    }
+</script>
+
+</html>
