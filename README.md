@@ -10,8 +10,7 @@ Uses Leaflet to show the map.
     - ping?
 - right click menu:
     - debug:
-        - on circle: set color, set position
-        - on every interactive: print json
+        - on circle: set color
 - style markers
 - help page
 - fix bounds on small images
@@ -22,6 +21,7 @@ Uses Leaflet to show the map.
 - add case finish animation
 - save case progress
 - save settings
+- optimize loading
 
 # How to create a map from a image
 To transform a image to raster tiles you can use libvips with this command:

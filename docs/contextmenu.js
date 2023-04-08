@@ -51,7 +51,7 @@ function changeMarkerColor(e) {
     let target = e.relatedTarget;
     if (!target)
         return;
-    
+
     // slider
     let slider = document.createElement("input");
     slider.type = "range";
@@ -109,7 +109,7 @@ function deleteMarkerAt(x, y) {
     }
     if (!target)
         return;
-    
+
     // remove from map
     target.remove();
 }
@@ -121,6 +121,30 @@ function printTarget(e) {
         return;
 
     console.log(target);
+}
+
+function printTargetJSON(e) {
+    let target = e.relatedTarget;
+    if (!target)
+        return;
+
+    if (target instanceof(L.Circle)) {
+        /*
+        {
+            "type": "circle",
+            "x": 7242,
+            "y": 13370,
+            "radius": 290
+        }*/
+        let object = {
+            type: "circle",
+            x: target._latlng.lng,
+            y: target._latlng.lat,
+            radius: target._mRadius
+        };
+        let str = JSON.stringify(object);
+        console.log(str);
+    }
 }
 
 // creates a popup to let the user change the circle's radius
@@ -172,6 +196,52 @@ function changeCircleRadius(e) {
         .addTo(Global.map).openOn(Global.map);
 }
 
+// creates a popup to let the user change the target's position
+function changePosition(e) {
+    let target = e.relatedTarget;
+    if (!target)
+        return;
+
+    // put into a container
+    let container = document.createElement("div");
+    // style to make the inputs appear in the same line
+    container.style.display = "flex";
+    container.style["flex-direction"] = "row";
+
+    // x
+    let inputX = document.createElement("input");
+    inputX.style.display = "block";
+    inputX.style.width = "60px";
+    inputX.type = "number";
+    inputX.step = 1;
+    inputX.value = target._latlng.lng;
+    container.appendChild(inputX);
+
+    // y
+    let inputY = document.createElement("input");
+    inputY.style.display = "block";
+    inputY.style.width = "60px";
+    inputY.type = "number";
+    inputY.step = 1;
+    inputY.value = target._latlng.lat;
+    container.appendChild(inputY);
+
+    // change events
+    inputX.oninput = () => {
+        let num = Number(inputX.value);
+        target.setLatLng([target._latlng.lat, num]);
+    };
+    inputY.oninput = () => {
+        let num = Number(inputY.value);
+        target.setLatLng([num, target._latlng.lng]);
+    };
+
+    // create popup with input
+    L.popup().setLatLng(e.latlng)
+        .setContent(container)
+        .addTo(Global.map).openOn(Global.map);
+}
+
 // Called on contextmenu, add our own items
 function onMapRightClick(e) {
     // clear menu
@@ -199,6 +269,10 @@ function onMapRightClick(e) {
                     callback: changeCircleRadius
                 });
                 e.contextmenu.addItem({
+                    text: 'Change Position',
+                    callback: changePosition
+                });
+                e.contextmenu.addItem({
                     text: 'Delete Circle',
                     callback: deleteCircle
                 });
@@ -211,6 +285,10 @@ function onMapRightClick(e) {
             e.contextmenu.addItem({
                 text: 'Print in Console',
                 callback: printTarget
+            });
+            e.contextmenu.addItem({
+                text: 'Print as JSON',
+                callback: printTargetJSON
             });
         }
 
