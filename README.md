@@ -22,6 +22,8 @@ Uses Leaflet to show the map.
 - save case progress
 - save settings
 - optimize loading
+- support multi-steps (each step gets a "depends on" array? `step1.dependsOn = [step1,step2]`?)
+- support steps with multiple needed solutions (`step.neededSolutions`?)
 
 # How to create a map from a image
 To transform a image to raster tiles you can use libvips with this command:

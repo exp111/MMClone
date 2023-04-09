@@ -1,0 +1,81 @@
+<html>
+
+<head>
+
+</head>
+
+<body>
+    <div>
+        <button onclick="loadJson()">Load JSON</button>
+    </div>
+    <div>
+        <textarea id="textarea" style="width: 100%; height: 35%"></textarea>
+    </div>
+    <div>
+        <label for="x_manip">X</label>
+        <input id="x_manip" type="text" value="val" />
+    </div>
+    <div>
+        <label for="y_manip">Y</label>
+        <input id="y_manip" type="text" value="val" />
+    </div>
+    <div>
+        <label for="radius_manip">Radius</label>
+        <input id="radius_manip" type="text" value="val" />
+    </div>
+    <button onclick="run()">Run</button>
+    <div>
+        <textarea id="output" style="width: 100%; height: 35%"></textarea>
+    </div>
+</body>
+<script>
+    var json = null;
+
+    function loadJson() {
+        let input = document.createElement("input");
+        input.type = "file";
+        input.onchange = (e) => {
+            let files = event.target.files;
+            let f = files[0];
+            let reader = new FileReader();
+            reader.addEventListener("load",
+                () => {
+                    let result = reader.result;
+                    document.getElementById("textarea").textContent = result;
+                    json = JSON.parse(result);
+                });
+            reader.readAsText(f);
+        };
+        input.click();
+    }
+
+    function run() {
+        let out = document.getElementById("output");
+        let xFunc = document.getElementById("x_manip").value;
+        let yFunc = document.getElementById("y_manip").value;
+        let radiusFunc = document.getElementById("radius_manip").value;
+
+        function call(val, str) {
+            let temp = 0;
+            eval(`temp = ${str}`);
+            return temp;
+        }
+
+        let res = JSON.parse(JSON.stringify(json));
+        //TODO: copy obj
+        json.steps.forEach((step, stepI) => {
+            if (step.solutions) {
+                step.solutions.forEach((sol, solI) => {
+                    if (sol.type == "circle") {
+                        res.steps[stepI].solutions[solI].x = call(sol.x, xFunc);
+                        res.steps[stepI].solutions[solI].y = call(sol.y, yFunc);
+                        res.steps[stepI].solutions[solI].radius = call(sol.radius, radiusFunc);
+                    }
+                });
+            }
+        });
+        out.textContent = JSON.stringify(res);
+    }
+</script>
+
+</html>
