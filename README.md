@@ -21,7 +21,7 @@ Uses Leaflet to show the map.
 - add case finish animation
 - save case progress
 - save settings
-- optimize loading
+- optimize loading (zip limited?)
 - support multi-steps (each step gets a "depends on" array? `step1.dependsOn = [step1,step2]`?)
 - support steps with multiple needed solutions (`step.neededSolutions`?)
 

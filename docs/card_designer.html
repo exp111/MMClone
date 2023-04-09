@@ -1,0 +1,95 @@
+<body>
+
+    <head>
+        <style>
+            @font-face {
+                font-family: Bangers;
+                font-style: normal;
+                font-weight: 400;
+                src: url(assets/fonts/Bangers-Regular.ttf);
+            }
+
+            body {
+                background: grey;
+                font-family: Bangers;
+            }
+
+
+            #card-intro,
+            #card-game {
+                background: white;
+                display: flex;
+            }
+
+            .card {
+                position: relative;
+                border: 8px solid #000;
+                border-radius: 15px;
+                margin: 15px;
+            }
+
+            .card-vertical {
+                width: 324px;
+                height: 500px;
+            }
+
+            .card-horizontal {
+                height: 324px;
+                width: 500px;
+            }
+
+            #card-intro .card-page {
+                position: absolute;
+                border: 2px solid #000;
+                border-radius: 6px;
+                top: 6px;
+                right: 6px;
+                width: 30px;
+                height: 24px;
+                line-height: 24px;
+                text-align: center;
+            }
+
+            #card-intro .card-icon {
+                position: absolute;
+                border: 2px solid #000;
+                border-radius: 6px;
+                top: 6px;
+                right: 50px;
+                width: 30px;
+                height: 24px;
+                line-height: 24px;
+                text-align: center;
+            }
+
+            #card-intro .card-title {
+                padding-top: 85px;
+                text-align: center;
+                -webkit-text-stroke: 3px;
+                -webkit-text-fill-color: transparent;
+                font-size: 65px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="card-intro">
+            <div class="card card-front card-vertical">
+                <div class="card-page">1/9</div>
+                <div class="card-icon">F</div>
+                <div class="card-title">Heisse<br>Fritten</div>
+            </div>
+            <div class="card card-back card-vertical">
+
+            </div>
+        </div>
+        <div id="card-game">
+            <div class="card card-front card-horizontal">
+
+            </div>
+            <div class="card card-back card-horizontal">
+
+            </div>
+        </div>
+    </body>
+</body>
