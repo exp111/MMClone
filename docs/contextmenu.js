@@ -13,6 +13,7 @@ function createCircle(e) {
         sendCreateCircle(x, y);
     createCircleCall(x, y);
 }
+
 function createCircleCall(x, y) {
     let radius = 100;
     let circle = L.circle([y, x], {
@@ -38,9 +39,8 @@ function deleteCircle(e) {
     target.remove();
 }
 
-let findCircle = function (x,y) {
-    targetLoop:
-    for (let key in Global.map._targets) {
+let findCircle = function (x, y) {
+    targetLoop: for (let key in Global.map._targets) {
         let val = Global.map._targets[key];
         if (val && val instanceof(L.Circle)) {
             // check if its not a cursor lmao
@@ -53,6 +53,7 @@ let findCircle = function (x,y) {
     }
     return null;
 }
+
 function deleteCircleAt(x, y) {
     let circle = findCircle(x, y);
     if (!circle)
@@ -67,6 +68,7 @@ function changeCircleRadiusCall(x, y, radius) {
         return;
     circle.setRadius(radius);
 }
+
 function changeCirclePositionCall(x, y, newX, newY) {
     let circle = findCircle(x, y);
     if (!circle)
@@ -168,7 +170,7 @@ function printTarget(e) {
     console.log(target);
 }
 
-let getTargetJSON = function(target) {
+let getTargetJSON = function (target) {
     if (target instanceof(L.Circle)) {
         /*
         {
@@ -188,6 +190,7 @@ let getTargetJSON = function(target) {
     }
     return null;
 }
+
 function printTargetJSON(e) {
     let target = e.relatedTarget;
     if (!target)
@@ -199,6 +202,7 @@ function printTargetJSON(e) {
 
     console.log(json);
 }
+
 function copyTargetJSON(e) {
     let target = e.relatedTarget;
     if (!target)
@@ -319,6 +323,30 @@ function changePosition(e) {
         .addTo(Global.map).openOn(Global.map);
 }
 
+function toggleEditing(e) {
+    let target = e.relatedTarget;
+    if (!target)
+        return;
+
+    if (!target.editing)
+        return;
+
+    console.log(target.editing);
+    if (target.editing.enabled())
+        target.editing.disable();
+    else
+        target.editing.enable();
+}
+
+//TODO: edit move + resize events. cant access the old pos
+/*function onDrawEditMove(e) {
+
+}
+
+function onDrawEditResize(e) {
+    console.log(e);
+}*/
+
 // Called on contextmenu, add our own items
 function onMapRightClick(e) {
     // clear menu
@@ -330,11 +358,11 @@ function onMapRightClick(e) {
         // marker
         if (target instanceof(L.Marker)) {
             e.contextmenu.addItem({
-                text: 'Change Color',
+                text: "Change Color",
                 callback: changeMarkerColor
             });
             e.contextmenu.addItem({
-                text: 'Delete Marker',
+                text: "Delete Marker",
                 callback: deleteMarker
             });
             //TODO: let user set color
@@ -342,17 +370,23 @@ function onMapRightClick(e) {
             // only add circle items on debug
             if (Global.DEBUG.enabled) {
                 e.contextmenu.addItem({
-                    text: 'Change Radius',
+                    text: "Change Radius",
                     callback: changeCircleRadius
                 });
                 e.contextmenu.addItem({
-                    text: 'Change Position',
+                    text: "Change Position",
                     callback: changePosition
                 });
                 e.contextmenu.addItem({
-                    text: 'Delete Circle',
+                    text: "Delete Circle",
                     callback: deleteCircle
                 });
+                if (target.editing) {
+                    e.contextmenu.addItem({
+                        text: target.editing.enabled() ? "Disable editing" : "Enable editing",
+                        callback: toggleEditing
+                    });
+                }
             } else {
                 addSeperator = false;
             }

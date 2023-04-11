@@ -87,6 +87,8 @@ async function initMap() {
     // hijack right click menu
     Global.map.on("contextmenu.show", onMapRightClick);
     Global.map.on("mousemove", onMapMouseMove);
+    Global.map.on("draw:editmove", onDrawEditMove);
+    Global.map.on("draw:editresize", onDrawEditResize);
     // create offline layer
     Global.baseLayer = LeafletOffline.tileLayerOffline("{z}/{y}/{x}.png", {
         minZoom: Global.mapMetadata.minZoom,
