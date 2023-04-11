@@ -166,6 +166,7 @@ function handleZipFile(event) {
     console.debug("Got Zip File");
     let files = event.target.files;
     let promises = [];
+    let start = new Date();
     for (let i = 0; i < files.length; i++) {
         let file = files[i];
         console.debug(`Loading Zip ${file.name}`);
@@ -174,8 +175,9 @@ function handleZipFile(event) {
 
     Promise.all(promises).then(() => {
         // info at the end of load
-        console.log("done");
-        alert(`Loaded Zip. Refreshing site.`);
+        let txt = `Loaded Zip in ${(new Date() - start) / 1000} seconds. Refreshing site.`;
+        console.log(txt);
+        alert(txt);
         if (!Global.DEBUG.enabled)
             window.location.reload();
     });
@@ -204,8 +206,11 @@ function clearMapDB() {
 function loadTestMap() {
     const path = "data/ghosthunt.zip";
     alert("Fetching and loading Test Map. This can take a few seconds. Press OK to continue.");
+    let start = new Date();
     fetch(path).then(res => res.blob()).then(blob => loadFromZip(blob)).then(() => {
-        alert(`Loaded Map. Refreshing site.`);
+        let txt = `Loaded Map in ${(new Date() - start) / 1000} seconds. Refreshing site.`;
+        console.log(txt);
+        alert(txt);
         if (!Global.DEBUG.enabled)
             window.location.reload();
     });
