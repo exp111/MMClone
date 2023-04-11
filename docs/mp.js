@@ -210,6 +210,7 @@ function hostOnConnectionOpen() {
         type: "lobbyJoin",
         data: {
             peerList: peerList,
+            map: Global.mapMetadata ? Global.mapMetadata.name : "",
             caseID: Global.currentCase ? Global.currentCase.id : "",
             caseProgress: Global.caseProgress,
             markerID: Global.MAP.nextMarkerID,
@@ -280,6 +281,7 @@ function onConnectionDataReceive(data) {
                 console.debug(`Got faulty LobbyJoin message`);
                 return;
             }
+            let map = data.data.map;
             let caseID = data.data.caseID;
             let caseProgress = data.data.caseProgress;
             let markerID = data.data.markerID;
@@ -287,6 +289,11 @@ function onConnectionDataReceive(data) {
             Global.MAP.nextMarkerID = markerID;
             Global.DEBUG.nextShapeID = shapeID;
             
+            if (Global.mapMetadata && Global.mapMetadata.name != map) {
+                let txt = `The host is using a different map (${map}). This may cause problems.`;
+                console.log(txt);
+                alert(txt);
+            }
             // connect to peers
             console.debug(`Got LobbyJoin message (${peerList.length} Peers)`);
             connectToPeers(peerList);

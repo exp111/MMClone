@@ -3,7 +3,7 @@ Uses Leaflet to show the map.
 
 ## TODO:
 - mp:
-    - sync case/map:
+    - sync case:
         - sync casechange during a lobby
     - let users set color
     - let users select name?
