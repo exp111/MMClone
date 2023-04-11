@@ -6,7 +6,7 @@
         "text": "Ghost Hunt",
         "solution_title": "Ghost Hunt",
         "solution_text": "Can you find all ghosts?",
-        "solutions": null
+        "solution": null
     }, {
         "id": "step1",
         "text": "Find the next ghost!",
@@ -14,12 +14,12 @@
         "solution_text": "",
         "image_front": "ghost1.png",
         "image_back": "ghost1.png",
-        "solutions": [{
+        "solution": {
             "type": "circle",
             "x": 22.5,
             "y": 112.5,
             "radius": 2
-        }]
+        }
     }, {
         "id": "step2",
         "text": "Find the next ghost!",
@@ -27,12 +27,12 @@
         "solution_text": "",
         "image_front": "ghost2.png",
         "image_back": "ghost2.png",
-        "solutions": [{
+        "solution": {
             "type": "circle",
             "x": 58.5,
             "y": 103.5,
             "radius": 2
-        }]
+        }
     }, {
         "id": "step3",
         "text": "Find the next ghost!",
@@ -40,12 +40,12 @@
         "solution_text": "",
         "image_front": "ghost3.png",
         "image_back": "ghost3.png",
-        "solutions": [{
+        "solution": {
             "type": "circle",
             "x": 42.5,
             "y": 104.5,
             "radius": 2
-        }]
+        }
     }, {
         "id": "step4",
         "text": "Find the next ghost",
@@ -53,12 +53,12 @@
         "solution_text": "",
         "image_front": "ghost4.png",
         "image_back": "ghost4.png",
-        "solutions": [{
+        "solution": {
             "type": "circle",
             "x": 12,
             "y": 86.5,
             "radius": 1.5
-        }]
+        }
     }, {
         "id": "step5",
         "text": "Find the next ghost",
@@ -66,12 +66,12 @@
         "solution_text": "",
         "image_front": "ghost5.png",
         "image_back": "ghost5.png",
-        "solutions": [{
+        "solution": {
             "type": "circle",
             "x": 45,
             "y": 78.5,
             "radius": 1.5
-        }]
+        }
     }, {
         "id": "step6",
         "text": "Find the next ghost!",
@@ -79,12 +79,12 @@
         "solution_text": "",
         "image_front": "ghost6.png",
         "image_back": "ghost6.png",
-        "solutions": [{
+        "solution": {
             "type": "circle",
             "x": 57,
             "y": 48.5,
             "radius": 2
-        }]
+        }
     }, {
         "id": "step7",
         "text": "Find the next ghost!",
@@ -92,12 +92,12 @@
         "solution_text": "",
         "image_front": "ghost7.png",
         "image_back": "ghost7.png",
-        "solutions": [{
+        "solution": {
             "type": "circle",
             "x": 16,
             "y": 42,
             "radius": 2
-        }]
+        }
     }, {
         "id": "step8",
         "text": "Find the next ghost!",
@@ -105,12 +105,12 @@
         "solution_text": "",
         "image_front": "ghost8.png",
         "image_back": "ghost8.png",
-        "solutions": [{
+        "solution": {
             "type": "circle",
             "x": 2,
             "y": 37,
             "radius": 2.5
-        }]
+        }
     },
     {
         "id": "step9",
@@ -119,12 +119,12 @@
         "solution_text": "",
         "image_front": "ghost9.png",
         "image_back": "ghost9.png",
-        "solutions": [{
+        "solution": {
             "type": "circle",
             "x": 54.5,
             "y": 31,
             "radius": 2
-        }]
+        }
     }, {
         "id": "step10",
         "text": "Find the next ghost!",
@@ -132,12 +132,12 @@
         "solution_text": "",
         "image_front": "ghost10.png",
         "image_back": "ghost10.png",
-        "solutions": [{
+        "solution": {
             "type": "circle",
             "x": 61,
             "y": 14,
             "radius": 2
-        }]
+        }
     }, {
         "id": "step11",
         "text": "Find the next ghost!",
@@ -145,12 +145,12 @@
         "solution_text": "",
         "image_front": "ghost11.png",
         "image_back": "ghost11.png",
-        "solutions": [{
+        "solution": {
             "type": "circle",
             "x": 35.5,
             "y": 12,
             "radius": 2
-        }]
+        }
     }, {
         "id": "step12",
         "text": "Find the next ghost!",
@@ -158,12 +158,12 @@
         "solution_text": "",
         "image_front": "ghost12.png",
         "image_back": "ghost12.png",
-        "solutions": [{
+        "solution": {
             "type": "circle",
             "x": 52.5,
             "y": 111,
             "radius": 2
-        }]
+        }
     }, {
         "id": "step13",
         "text": "Find the next ghost!",
@@ -171,12 +171,12 @@
         "solution_text": "",
         "image_front": "ghost13.png",
         "image_back": "ghost13.png",
-        "solutions": [{
+        "solution": {
             "type": "circle",
             "x": 19,
             "y": 11,
             "radius": 2
-        }]
+        }
     }, {
         "id": "step14",
         "text": "Find the next ghost!",
@@ -184,11 +184,11 @@
         "solution_text": "You found all ghosts!",
         "image_front": "ghost14.png",
         "image_back": "ghost14.png",
-        "solutions": [{
+        "solution": {
             "type": "circle",
             "x": 3,
             "y": 3,
             "radius": 2
-        }]
+        }
     }]
 }
