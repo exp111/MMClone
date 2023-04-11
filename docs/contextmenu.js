@@ -168,11 +168,7 @@ function printTarget(e) {
     console.log(target);
 }
 
-function printTargetJSON(e) {
-    let target = e.relatedTarget;
-    if (!target)
-        return;
-
+let getTargetJSON = function(target) {
     if (target instanceof(L.Circle)) {
         /*
         {
@@ -188,8 +184,34 @@ function printTargetJSON(e) {
             radius: target._mRadius
         };
         let str = JSON.stringify(object);
-        console.log(str);
+        return str;
     }
+    return null;
+}
+function printTargetJSON(e) {
+    let target = e.relatedTarget;
+    if (!target)
+        return;
+
+    let json = getTargetJSON(target);
+    if (!json)
+        return;
+
+    console.log(json);
+}
+function copyTargetJSON(e) {
+    let target = e.relatedTarget;
+    if (!target)
+        return;
+
+    let json = getTargetJSON(target);
+    if (!json)
+        return;
+
+    navigator.clipboard.writeText(json);
+    // notify the user
+    console.log("Copied JSON to clipboard.");
+    alert("Copied JSON to clipboard.");
 }
 
 // creates a popup to let the user change the circle's radius
@@ -344,6 +366,10 @@ function onMapRightClick(e) {
             e.contextmenu.addItem({
                 text: 'Print as JSON',
                 callback: printTargetJSON
+            });
+            e.contextmenu.addItem({
+                text: 'Copy JSON',
+                callback: copyTargetJSON
             });
         }
 
