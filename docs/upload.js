@@ -1,8 +1,9 @@
 // opens a file input and calls the callback when a file is selected
-function askForFile(callback) {
+function askForFile(callback, accept) {
     let input = document.createElement("input");
     input.type = "file";
     input.onchange = callback;
+    input.accept = accept;
     input.click();
 }
 

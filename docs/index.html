@@ -35,8 +35,8 @@
                     <option value="Placeholder">
                 </select>
             </div>
-            <button onclick="askForFile(handleZipFile)">Upload Zip</button>
-            <button onclick="askForFile(handleCaseFile)">Upload Case File</button>
+            <button onclick="askForFile(handleZipFile, '.zip')">Upload Zip</button>
+            <button onclick="askForFile(handleCaseFile, '.json')">Upload Case File</button>
             <button onclick="loadTestMap()">Load Test Map</button>
             <button onclick="resetCase(); setMenuVisible('menu', 'bottom', false);">Reset Case</button>
             <button id="debug-menu-button" onclick="setSubMenuVisible('menu-main', 'menu-debug', true)">Debug ></button>
