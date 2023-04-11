@@ -391,3 +391,10 @@ button.overlay-button {
 .leaflet-interactive {
     cursor: var(--marker-cursor, "inherit") !important;
 }
+
+.leaflet-marker-draggable {
+    border-width: 2px;
+}
+.leaflet-edit-resize {
+    border-radius: 100%;
+}

@@ -1,3 +1,8 @@
+Global.MAP = {
+    markers: {},
+    nextMarkerID: 0,
+}
+
 const MAP_BOUNDS_VISCOSITY = 1;
 const MAP_BASE_TILE_SIZE = 256;
 const MAP_BOUNDS_EXTENSION = 1e3;
@@ -87,8 +92,8 @@ async function initMap() {
     // hijack right click menu
     Global.map.on("contextmenu.show", onMapRightClick);
     Global.map.on("mousemove", onMapMouseMove);
-    //Global.map.on("draw:editmove", onDrawEditMove);
-    //Global.map.on("draw:editresize", onDrawEditResize);
+    Global.map.on("draw:editmove", onDrawEditMove);
+    Global.map.on("draw:editresize", onDrawEditResize);
     // create offline layer
     Global.baseLayer = LeafletOffline.tileLayerOffline("{z}/{y}/{x}.png", {
         minZoom: Global.mapMetadata.minZoom,
@@ -204,4 +209,12 @@ function loadTestMap() {
         if (!Global.DEBUG.enabled)
             window.location.reload();
     });
+}
+
+function getNextMarkerID() {
+    // get next free id
+    while (Global.MAP.markers[Global.MAP.nextMarkerID])
+        Global.MAP.nextMarkerID++;
+    // return id
+    return Global.MAP.nextMarkerID;
 }

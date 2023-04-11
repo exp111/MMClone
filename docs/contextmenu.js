@@ -9,12 +9,13 @@ function zoomOut() {
 function createCircle(e) {
     let y = e.latlng.lat;
     let x = e.latlng.lng;
+    let id = getNextShapeID();
     if (Global.DEBUG.sync)
-        sendCreateCircle(x, y);
-    createCircleCall(x, y);
+        sendCreateCircle(id, x, y);
+    createCircleCall(id, x, y);
 }
 
-function createCircleCall(x, y) {
+function createCircleCall(id, x, y) {
     let radius = 100;
     let circle = L.circle([y, x], {
         contextmenu: true,
@@ -24,53 +25,44 @@ function createCircleCall(x, y) {
         radius: radius,
         bubblingMouseEvents: false, // needed or else we cause a map contextmenu event
     });
+    circle.ID = id; //TODO: better way to attach data?
     circle.addTo(Global.map);
+    Global.DEBUG.shapes[id] = circle;
+    // increment id
+    Global.DEBUG.nextShapeID = id + 1;
 }
 
 function deleteCircle(e) {
     let target = e.relatedTarget;
     if (!target)
         return;
-    let y = e.latlng.lat;
-    let x = e.latlng.lng;
+
+    let id = target.ID;
     if (Global.DEBUG.sync)
-        sendDeleteCircle(x, y);
+        sendDeleteCircle(id);
     //TODO: remove from global array if casemarker?
     target.remove();
+    Global.DEBUG.shapes[id] = null;
 }
 
-let findCircle = function (x, y) {
-    targetLoop: for (let key in Global.map._targets) {
-        let val = Global.map._targets[key];
-        if (val && val instanceof(L.Circle)) {
-            // check if its not a cursor lmao
-            for (let k in Global.MP.cursors) {
-                if (val == Global.MP.cursors[k])
-                    continue targetLoop; // this is a cursor, continue
-            }
-            return val;
-        }
-    }
-    return null;
-}
-
-function deleteCircleAt(x, y) {
-    let circle = findCircle(x, y);
+function deleteCircleCall(id) {
+    let circle = Global.DEBUG.shapes[id];
     if (!circle)
         return;
     //TODO: remove from global array if casemarker?
     circle.remove();
+    Global.DEBUG.shapes[id] = null;
 }
 
-function changeCircleRadiusCall(x, y, radius) {
-    let circle = findCircle(x, y);
+function changeCircleRadiusCall(id, radius) {
+    let circle = Global.DEBUG.shapes[id];
     if (!circle)
         return;
     circle.setRadius(radius);
 }
 
-function changeCirclePositionCall(x, y, newX, newY) {
-    let circle = findCircle(x, y);
+function changeCirclePositionCall(id, newX, newY) {
+    let circle = Global.DEBUG.shapes[id];
     if (!circle)
         return;
     circle.setLatLng([newY, newX]);
@@ -80,18 +72,20 @@ function changeCirclePositionCall(x, y, newX, newY) {
 function createMarker(e) {
     let y = e.latlng.lat;
     let x = e.latlng.lng;
+    let id = getNextMarkerID();
     // send rpc
-    sendCreateMarker(x, y);
+    sendCreateMarker(id, x, y);
     // call locally
-    createMarkerCall(x, y);
+    createMarkerCall(id, x, y);
 }
 
-function createMarkerCall(x, y) {
+function createMarkerCall(id, x, y) {
     let marker = L.marker([y, x], {
         contextmenu: true,
     });
     marker.addTo(Global.map);
-    Global.markers.push(marker);
+    Global.MAP.markers[id] = marker;
+    Global.MAP.nextMarkerID = id + 1;
 }
 
 function changeMarkerColor(e) {
@@ -129,33 +123,21 @@ function deleteMarker(e) {
         return;
 
     // remove from global array
-    for (let key in Global.markers) {
-        let val = Global.markers[key];
-        if (val == target) {
-            Global.markers.splice(key, 1);
-            break;
-        }
-    }
+    Global.MAP.markers[target.ID] = null;
 
-    sendDeleteMarker(target._latlng.lng, target._latlng.lat)
+    sendDeleteMarker(target.ID)
 
     // remove from map
     target.remove();
 }
 
-function deleteMarkerAt(x, y) {
+function deleteMarker(id) {
     // remove from global array
-    let target = null;
-    for (let key in Global.markers) {
-        let val = Global.markers[key];
-        if (val._latlng.lat == y && val._latlng.lng == x) {
-            target = val;
-            Global.markers.splice(key, 1);
-            break;
-        }
-    }
+    let target = Global.MAP.markers[target.ID];
     if (!target)
         return;
+
+    Global.MAP.markers[target.ID] = null;
 
     // remove from map
     target.remove();
@@ -254,14 +236,14 @@ function changeCircleRadius(e) {
         let num = Number(fineInput.value);
         target.setRadius(num);
         if (Global.DEBUG.sync)
-            sendChangeCircleRadius(target._latlng.lng, target._latlng.lat, num);
+            sendChangeCircleRadius(target.ID, num);
         slider.value = num;
     };
     slider.oninput = () => {
         let num = Number(slider.value);
         target.setRadius(num);
         if (Global.DEBUG.sync)
-            sendChangeCircleRadius(target._latlng.lng, target._latlng.lat, num);
+            sendChangeCircleRadius(target.ID, num);
         fineInput.value = num;
     };
 
@@ -306,14 +288,14 @@ function changePosition(e) {
         let num = Number(inputX.value);
         let y = target._latlng.lat;
         if (Global.DEBUG.sync)
-            sendChangeCirclePosition(target._latlng.lng, target._latlng.lat, num, y);
+            sendChangeCirclePosition(target.ID, num, y);
         target.setLatLng([y, num]);
     };
     inputY.oninput = () => {
         let num = Number(inputY.value);
         let x = target._latlng.lng;
         if (Global.DEBUG.sync)
-            sendChangeCirclePosition(target._latlng.lng, target._latlng.lat, x, num);
+            sendChangeCirclePosition(target.ID, x, num);
         target.setLatLng([num, x]);
     };
 
@@ -338,14 +320,24 @@ function toggleEditing(e) {
         target.editing.enable();
 }
 
-//TODO: edit move + resize events. cant access the old pos
-/*function onDrawEditMove(e) {
-
+// edit move + resize events
+function onDrawEditMove(e) {
+    let target = e.layer;
+    if (!target)
+        return;
+    
+    if (Global.DEBUG.sync)
+        sendChangeCirclePosition(target.ID, target._latlng.lng, target._latlng.lat);
 }
 
 function onDrawEditResize(e) {
-    console.log(e);
-}*/
+    let target = e.layer;
+    if (!target)
+        return;
+    
+    if (Global.DEBUG.sync)
+        sendChangeCircleRadius(target.ID, target._mRadius);
+}
 
 // Called on contextmenu, add our own items
 function onMapRightClick(e) {

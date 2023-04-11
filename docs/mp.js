@@ -209,7 +209,9 @@ function hostOnConnectionOpen() {
     connection.send({
         type: "lobbyJoin",
         data: {
-            peerList: peerList
+            peerList: peerList,
+            markerID: Global.MAP.nextMarkerID,
+            shapeID: Global.DEBUG.nextShapeID
         }
     });
 }
@@ -271,6 +273,10 @@ function onConnectionDataReceive(data) {
     let sender = connection.peer;
     switch (data.type) {
         case "lobbyJoin": {
+            let markerID = data.data.markerID;
+            let shapeID = data.data.shapeID;
+            Global.MAP.nextMarkerID = markerID;
+            Global.DEBUG.nextShapeID = shapeID;
             let peerList = data.data.peerList;
             if (!peerList) {
                 console.debug(`Got faulty LobbyJoin message`);
@@ -297,42 +303,40 @@ function onConnectionDataReceive(data) {
             break;
         }
         case "createMarker": {
+            let id = data.data.id;
             let x = data.data.x;
             let y = data.data.y;
-            createMarkerCall(x, y);
+            createMarkerCall(id, x, y);
             break;
         }
         case "deleteMarker": {
-            let x = data.data.x;
-            let y = data.data.y;
-            deleteMarkerAt(x, y);
+            let id = data.data.id;
+            deleteMarker(x, y);
             break;
         }
         case "createCircle": {
+            let id = data.data.id;
             let x = data.data.x;
             let y = data.data.y;
-            createCircleCall(x, y);
+            createCircleCall(id, x, y);
             break;
         }
         case "deleteCircle": {
-            let x = data.data.x;
-            let y = data.data.y;
-            deleteCircleAt(x, y);
+            let id = data.data.id;
+            deleteCircleCall(id);
             break;
         }
         case "changeCircleRadius": {
-            let x = data.data.x;
-            let y = data.data.y;
+            let id = data.data.id;
             let radius = data.data.radius;
-            changeCircleRadiusCall(x, y, radius);
+            changeCircleRadiusCall(id, radius);
             return; // dont log
         }
         case "changeCirclePosition": {
-            let x = data.data.x;
-            let y = data.data.y;
+            let id = data.data.id;
             let newX = data.data.newX;
             let newY = data.data.newY;
-            changeCirclePositionCall(x, y, newX, newY);
+            changeCirclePositionCall(id, newX, newY);
             return; // dont log
         }
         default: {
@@ -406,63 +410,61 @@ function sendCursorPos(x, y) {
     }, true);
 }
 
-function sendCreateMarker(x, y) {
+function sendCreateMarker(id, x, y) {
     sendDataMP({
         type: "createMarker",
         data: {
+            id: id,
             x: x,
             y: y
         }
     });
 }
 
-function sendDeleteMarker(x, y) {
+function sendDeleteMarker(id) {
     sendDataMP({
         type: "deleteMarker",
         data: {
-            x: x,
-            y: y
+            id: id
         }
     });
 }
 
-function sendCreateCircle(x, y) {
+function sendCreateCircle(id, x, y) {
     sendDataMP({
         type: "createCircle",
         data: {
+            id: id,
             x: x,
             y: y
         }
     });
 }
 
-function sendDeleteCircle(x, y) {
+function sendDeleteCircle(id) {
     sendDataMP({
         type: "deleteCircle",
         data: {
-            x: x,
-            y: y
+            id: id
         }
     });
 }
 
-function sendChangeCircleRadius(x, y, radius) {
+function sendChangeCircleRadius(id, radius) {
     sendDataMP({
         type: "changeCircleRadius",
         data: {
-            x: x,
-            y: y,
+            id: id,
             radius: radius
         }
     }, true);
 }
 
-function sendChangeCirclePosition(x, y, newX, newY) {
+function sendChangeCirclePosition(id, newX, newY) {
     sendDataMP({
         type: "changeCirclePosition",
         data: {
-            x: x,
-            y: y,
+            id: id,
             newX: newX,
             newY: newY
         }
