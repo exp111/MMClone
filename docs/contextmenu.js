@@ -37,12 +37,11 @@ function deleteCircle(e) {
     if (!target)
         return;
 
-    let id = target.ID;
+    // send, if enabled
     if (Global.DEBUG.sync)
-        sendDeleteCircle(id);
-    //TODO: remove from global array if casemarker?
-    target.remove();
-    Global.DEBUG.shapes[id] = null;
+        sendDeleteCircle(target.ID);
+    // call locally
+    deleteCircleCall(target.ID);
 }
 
 function deleteCircleCall(id) {
@@ -83,6 +82,7 @@ function createMarkerCall(id, x, y) {
     let marker = L.marker([y, x], {
         contextmenu: true,
     });
+    marker.ID = id; //TODO: better way to attach data?
     marker.addTo(Global.map);
     Global.MAP.markers[id] = marker;
     Global.MAP.nextMarkerID = id + 1;
@@ -122,23 +122,20 @@ function deleteMarker(e) {
     if (!target)
         return;
 
-    // remove from global array
-    Global.MAP.markers[target.ID] = null;
-
+    // send 
     sendDeleteMarker(target.ID)
-
-    // remove from map
-    target.remove();
+    // call locally
+    deleteMarkerCall(target.ID);
+    
 }
 
-function deleteMarker(id) {
+function deleteMarkerCall(id) {
     // remove from global array
-    let target = Global.MAP.markers[target.ID];
+    let target = Global.MAP.markers[id];
     if (!target)
         return;
 
     Global.MAP.markers[target.ID] = null;
-
     // remove from map
     target.remove();
 }

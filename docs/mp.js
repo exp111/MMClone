@@ -317,7 +317,7 @@ function onConnectionDataReceive(data) {
         }
         case "deleteMarker": {
             let id = data.data.id;
-            deleteMarker(x, y);
+            deleteMarkerCall(id);
             break;
         }
         case "createCircle": {

@@ -1,18 +1,22 @@
 Global.DEBUG = {
     enabled: window.location.protocol == "file:" || window.location.hostname == "localhost",
-    sync: false,
+    sync: true,
     shapes: {},
     nextShapeID: 0,
 }
 
-document.getElementById("debug-menu-button").style.display = (Global.DEBUG.enabled ? "" : "none"); // hide if not debug
-document.getElementById("debug_toggle").checked = Global.DEBUG.enabled;
+function syncDebugUI() {
+    document.getElementById("debug-menu-button").style.display = (Global.DEBUG.enabled ? "" : "none"); // hide if not debug
+    document.getElementById("debug_toggle").checked = Global.DEBUG.enabled;
+    document.getElementById("debug_sync_toggle").checked = Global.DEBUG.sync;
+}
+
+syncDebugUI();
 
 //TODO: print circle to json
 function enableDebug() {
     Global.DEBUG.enabled = true;
-    document.getElementById("debug-menu-button").style.display = "";
-    document.getElementById("debug_toggle").checked = true;
+    syncDebugUI();
 }
 
 function getNextShapeID() {
