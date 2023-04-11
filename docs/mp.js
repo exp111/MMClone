@@ -302,6 +302,33 @@ function onConnectionDataReceive(data) {
             deleteMarkerAt(x, y);
             break;
         }
+        case "createCircle": {
+            let x = data.data.x;
+            let y = data.data.y;
+            createCircleCall(x, y);
+            break;
+        }
+        case "deleteCircle": {
+            let x = data.data.x;
+            let y = data.data.y;
+            deleteCircleAt(x, y);
+            break;
+        }
+        case "changeCircleRadius": {
+            let x = data.data.x;
+            let y = data.data.y;
+            let radius = data.data.radius;
+            changeCircleRadiusCall(x, y, radius);
+            return; // dont log
+        }
+        case "changeCirclePosition": {
+            let x = data.data.x;
+            let y = data.data.y;
+            let newX = data.data.newX;
+            let newY = data.data.newY;
+            changeCirclePositionCall(x, y, newX, newY);
+            return; // dont log
+        }
         default: {
             console.debug(`Unknown data received: ${data}`);
             break;
@@ -391,6 +418,48 @@ function sendDeleteMarker(x, y) {
             y: y
         }
     });
+}
+
+function sendCreateCircle(x, y) {
+    sendDataMP({
+        type: "createCircle",
+        data: {
+            x: x,
+            y: y
+        }
+    });
+}
+function sendDeleteCircle(x, y) {
+    sendDataMP({
+        type: "deleteCircle",
+        data: {
+            x: x,
+            y: y
+        }
+    });
+}
+
+function sendChangeCircleRadius(x, y, radius) {
+    sendDataMP({
+        type: "changeCircleRadius",
+        data: {
+            x: x,
+            y: y,
+            radius: radius
+        }
+    }, true);
+}
+
+function sendChangeCirclePosition(x, y, newX, newY) {
+    sendDataMP({
+        type: "changeCirclePosition",
+        data: {
+            x: x,
+            y: y,
+            newX: newX,
+            newY: newY
+        }
+    }, true);
 }
 
 function sendSolveStep() {

@@ -8,6 +8,7 @@ Uses Leaflet to show the map.
     - let users select name?
     - make connecting less cbt
     - ping?
+    - optimize mp debug circle sync
 - right click menu:
     - debug:
         - on circle: set color

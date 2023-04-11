@@ -169,7 +169,7 @@ function handleZipFile(event) {
         // info at the end of load
         console.log("done");
         alert(`Loaded Zip. Refreshing site.`);
-        if (!Global.DEBUG)
+        if (!Global.DEBUG.enabled)
             window.location.reload();
     });
 }
@@ -199,7 +199,7 @@ function loadTestMap() {
     alert("Fetching and loading Test Map. This can take a few seconds. Press OK to continue.");
     fetch(path).then(res => res.blob()).then(blob => loadFromZip(blob)).then(() => {
         alert(`Loaded Map. Refreshing site.`);
-        if (!Global.DEBUG)
+        if (!Global.DEBUG.enabled)
             window.location.reload();
     });
 }

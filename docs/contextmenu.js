@@ -9,6 +9,11 @@ function zoomOut() {
 function createCircle(e) {
     let y = e.latlng.lat;
     let x = e.latlng.lng;
+    if (Global.DEBUG.sync)
+        sendCreateCircle(x, y);
+    createCircleCall(x, y);
+}
+function createCircleCall(x, y) {
     let radius = 100;
     let circle = L.circle([y, x], {
         contextmenu: true,
@@ -25,8 +30,48 @@ function deleteCircle(e) {
     let target = e.relatedTarget;
     if (!target)
         return;
+    let y = e.latlng.lat;
+    let x = e.latlng.lng;
+    if (Global.DEBUG.sync)
+        sendDeleteCircle(x, y);
     //TODO: remove from global array if casemarker?
     target.remove();
+}
+
+let findCircle = function (x,y) {
+    targetLoop:
+    for (let key in Global.map._targets) {
+        let val = Global.map._targets[key];
+        if (val && val instanceof(L.Circle)) {
+            // check if its not a cursor lmao
+            for (let k in Global.MP.cursors) {
+                if (val == Global.MP.cursors[k])
+                    continue targetLoop; // this is a cursor, continue
+            }
+            return val;
+        }
+    }
+    return null;
+}
+function deleteCircleAt(x, y) {
+    let circle = findCircle(x, y);
+    if (!circle)
+        return;
+    //TODO: remove from global array if casemarker?
+    circle.remove();
+}
+
+function changeCircleRadiusCall(x, y, radius) {
+    let circle = findCircle(x, y);
+    if (!circle)
+        return;
+    circle.setRadius(radius);
+}
+function changeCirclePositionCall(x, y, newX, newY) {
+    let circle = findCircle(x, y);
+    if (!circle)
+        return;
+    circle.setLatLng([newY, newX]);
 }
 
 // Creates a marker at e.latlng
@@ -182,11 +227,15 @@ function changeCircleRadius(e) {
     fineInput.oninput = () => {
         let num = Number(fineInput.value);
         target.setRadius(num);
+        if (Global.DEBUG.sync)
+            sendChangeCircleRadius(target._latlng.lng, target._latlng.lat, num);
         slider.value = num;
     };
     slider.oninput = () => {
         let num = Number(slider.value);
         target.setRadius(num);
+        if (Global.DEBUG.sync)
+            sendChangeCircleRadius(target._latlng.lng, target._latlng.lat, num);
         fineInput.value = num;
     };
 
@@ -229,11 +278,17 @@ function changePosition(e) {
     // change events
     inputX.oninput = () => {
         let num = Number(inputX.value);
-        target.setLatLng([target._latlng.lat, num]);
+        let y = target._latlng.lat;
+        if (Global.DEBUG.sync)
+            sendChangeCirclePosition(target._latlng.lng, target._latlng.lat, num, y);
+        target.setLatLng([y, num]);
     };
     inputY.oninput = () => {
         let num = Number(inputY.value);
-        target.setLatLng([num, target._latlng.lng]);
+        let x = target._latlng.lng;
+        if (Global.DEBUG.sync)
+            sendChangeCirclePosition(target._latlng.lng, target._latlng.lat, x, num);
+        target.setLatLng([num, x]);
     };
 
     // create popup with input
@@ -263,7 +318,7 @@ function onMapRightClick(e) {
             //TODO: let user set color
         } else if (target instanceof(L.Circle)) {
             // only add circle items on debug
-            if (Global.DEBUG) {
+            if (Global.DEBUG.enabled) {
                 e.contextmenu.addItem({
                     text: 'Change Radius',
                     callback: changeCircleRadius
@@ -281,7 +336,7 @@ function onMapRightClick(e) {
             }
         }
 
-        if (Global.DEBUG) {
+        if (Global.DEBUG.enabled) {
             e.contextmenu.addItem({
                 text: 'Print in Console',
                 callback: printTarget
@@ -314,7 +369,7 @@ function onMapRightClick(e) {
     });
 
     // Debug items
-    if (Global.DEBUG) {
+    if (Global.DEBUG.enabled) {
         e.contextmenu.addItem("-");
         e.contextmenu.addItem({
             text: `Pos: ${e.latlng}`,

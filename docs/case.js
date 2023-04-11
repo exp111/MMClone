@@ -194,8 +194,8 @@ function updateCaseStep() {
     Global.caseMarkers = [];
 
     // then add the new ones
-    var fillColor = Global.DEBUG ? "#f00" : "#fff";
-    var opacity = Global.DEBUG ? 0.5 : 0;
+    var fillColor = Global.DEBUG.enabled ? "#f00" : "#fff";
+    var opacity = Global.DEBUG.enabled ? 0.5 : 0;
     console.debug(`Adding ${step.solutions ? step.solutions.length : 0} new markers`);
     for (let key in step.solutions) {
         let s = step.solutions[key];

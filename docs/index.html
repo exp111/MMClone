@@ -57,7 +57,7 @@
         <!-- Debug Sub Menu -->
         <div id="menu-debug" class="overlay-content" style="display: none;">
             <div class="overlay-input">
-                <input type="checkbox" id="debug_toggle" onchange="Global.DEBUG = this.checked" />
+                <input type="checkbox" id="debug_toggle" autocomplete="off" onchange="Global.DEBUG.enabled = this.checked" />
                 <label for="debug_toggle">Debug</label>
             </div>
             <button onclick="clearMapDB()">Clear Map DB</button>
@@ -65,6 +65,10 @@
             <button onclick="clearCaseImgDB()">Clear Case Img DB</button>
             <button onclick="solveStep()">Solve</button>
             <button onclick="progressCase()">Force Next</button>
+            <div class="overlay-input">
+                <input type="checkbox" id="debug_sync_toggle" autocomplete="off" onchange="Global.DEBUG.sync = this.checked" />
+                <label for="debug_sync_toggle">Sync</label>
+            </div>
             <button onclick="setSubMenuVisible('menu-main', 'menu-debug', false)">&lt; Back</button>
         </div>
         <!-- MP Sub Menu -->
@@ -97,7 +101,6 @@
     </div>
     <script>
         var Global = {
-            DEBUG: window.location.protocol == "file:" || window.location.hostname == "localhost",
             map: null,
             baseLayer: null,
             cases: {},
