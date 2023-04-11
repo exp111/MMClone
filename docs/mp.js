@@ -298,8 +298,16 @@ function onConnectionDataReceive(data) {
             console.debug(`Got LobbyJoin message (${peerList.length} Peers)`);
             connectToPeers(peerList);
             // change the case
-            changeCase(caseID);
-            setCaseProgress(caseProgress);
+            if (changeCase(caseID))
+            {
+                setCaseProgress(caseProgress);
+            }
+            else
+            {
+                let txt = `The host is using a case you don't have (${caseID}). This may cause problems.`;
+                console.log(txt);
+                alert(txt);
+            }
             break;
         }
         case "cursorUpdate": {

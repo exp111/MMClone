@@ -172,11 +172,12 @@ function changeCase(id) {
     if (!index)
     {
         console.log(`Case with ID ${id} not found.`);
-        return;
+        return false;
     }
     select.selectedIndex = index;
     // select event doesnt trigger
     handleCaseChange(id);
+    return true;
 }
 function handleCaseChange(id) {
     let selected = Global.cases[id];
