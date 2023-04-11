@@ -290,6 +290,12 @@ function onConnectionDataReceive(data) {
             solveStepCall();
             break;
         }
+        case "incrementNode": {
+            let id = data.data.id;
+            let solved = data.data.solved;
+            incrementNode(id, solved);
+            break;
+        }
         case "createMarker": {
             let x = data.data.x;
             let y = data.data.y;
@@ -429,6 +435,7 @@ function sendCreateCircle(x, y) {
         }
     });
 }
+
 function sendDeleteCircle(x, y) {
     sendDataMP({
         type: "deleteCircle",
@@ -466,6 +473,16 @@ function sendSolveStep() {
     sendDataMP({
         type: "solveStep"
     });
+}
+
+function sendIncrementNode(id, solved) {
+    sendDataMP({
+        type: "incrementNode",
+        data: {
+            id: id,
+            solved: solved
+        },
+    })
 }
 
 // broadcasts data to all connections

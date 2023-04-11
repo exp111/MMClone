@@ -128,7 +128,7 @@ function onSlideClick(index) {
     if (index == Global.UI.swiper.activeIndex && index == Global.caseProgress) {
         let curStep = Global.currentCase.steps[Global.caseProgress];
         // unlock if unsolvable
-        if (curStep.solutions == null || curStep.solutions.length == 0) {
+        if (curStep.solution == null) { //TODO: can we like do this not in the ui context
             solveStep();
             return;
         }
@@ -183,7 +183,7 @@ function updatePaginationBullet(step, i) {
     bullet.classList.remove("unsolvable", "completed", "not-completed", "locked");
     // apply new ones
     let style = "";
-    if (step.solutions == null || step.solutions.length == 0) // no solutions
+    if (step.solution) // no solutions
     {
         style = "unsolvable";
     } else if (i > Global.caseProgress) // locked
@@ -204,4 +204,11 @@ function setMarkerCursor(enabled) {
     let val = enabled ? "pointer" : "inherit";
     console.debug(`Setting --marker-cursor to ${val}`);
     root.style.setProperty("--marker-cursor", val);
+}
+
+function updateObjective(text, current, max) {
+    let label = document.getElementById("case_objective");
+    console.log(text);
+    console.log(current);
+    label.textContent = current != null ? `${text} ${current}/${max}` : text;
 }

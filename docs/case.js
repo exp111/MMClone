@@ -1,3 +1,8 @@
+Global.CASE = {
+    objective: [],
+    nodes: [],
+}
+
 function handleCaseFile(event) {
     console.debug("Got Case File(s)");
     let files = event.target.files;
@@ -99,16 +104,14 @@ async function loadCaseImage(caseName, img) {
     return (await openCaseDB()).get(caseImgStoreName, key).then(result => result && result.blob)
 }
 
-async function getStepImageFront(step)
-{
+async function getStepImageFront(step) {
     let img = step.image_front;
     if (!img)
         img = `${step.id}_front.png`
     return loadCaseImage(Global.currentCase.id, img)
 }
 
-async function getStepImageBack(step)
-{
+async function getStepImageBack(step) {
     let img = step.image_back;
     if (!img)
         img = `${step.id}_back.png`
@@ -168,22 +171,18 @@ function handleCaseChange(select) {
 function resetCase() {
     if (!Global.currentCase)
         return;
-    
+
     Global.caseProgress = 0;
     // just rebuild cards lmao
     buildCards();
     console.debug(`Reset case ${Global.currentCase.name} (ID ${Global.currentCase.id})`);
 }
 
-// Updates the objective text and markers. Returns the amount of solutions
+// Updates the objective text and markers.
 function updateCaseStep() {
     let step = Global.currentCase.steps[Global.caseProgress];
     if (!step)
         return;
-    // update objective label
-    let label = document.getElementById("case_objective");
-    label.textContent = step.text ? step.text : "";
-
     // update solutions
     // clear existing circles
     console.debug(`Removing ${Global.caseMarkers.length} markers`);
@@ -194,33 +193,139 @@ function updateCaseStep() {
     Global.caseMarkers = [];
 
     // then add the new ones
-    var fillColor = Global.DEBUG.enabled ? "#f00" : "#fff";
-    var opacity = Global.DEBUG.enabled ? 0.5 : 0;
-    console.debug(`Adding ${step.solutions ? step.solutions.length : 0} new markers`);
-    for (let key in step.solutions) {
-        let s = step.solutions[key];
-        switch (s.type) {
-            case "circle": {
-                var circle = L.circle([s.y, s.x], {
-                    contextmenu: true,
-                    color: "none",
-                    fillColor: fillColor,
-                    fillOpacity: opacity,
-                    radius: s.radius,
-                    bubblingMouseEvents: false, // needed or else we cause a map contextmenu event
-                });
-                circle.addTo(Global.map);
-                circle.addEventListener("click", () => solveStep());
-                Global.caseMarkers.push(circle);
-                break;
-            }
-            default: {
-                console.log(`Unknown Type ${s.type}`);
-                break;
-            }
+    let root = buildStepNodes(step);
+    // update objective label
+    Global.CASE.objective = step.text ? step.text : "";
+    if (root && root.counter != null) {
+        updateObjective(Global.CASE.objective, root.counter, root.children.length);
+    } else
+        updateObjective(Global.CASE.objective, null, null);
+
+    console.debug(`Built ${Global.CASE.nodes.length} nodes.`);
+    console.debug(`Added ${Global.caseMarkers.length} new markers`);
+}
+
+function buildStepNodes(step) {
+    Global.CASE.nodes = [];
+    if (step.solution) {
+        return buildStepNode(step.solution, null)
+    }
+    return null;
+}
+
+function solveParent(node) {
+    // mark this node as done
+    node.done = true;
+    // pass to parent
+    if (node.parent == null)
+        solveStep();
+    else
+        solveNode(node.parent);
+}
+
+function solveNode(node) {
+    if (node.done)
+        return;
+
+    console.debug(`Solving node ${node.type}`);
+    switch (node.type) {
+        case "or":
+        case "circle": {
+            solveParent(node);
+            break;
+        }
+        case "and": {
+            let solved = incrementNodeCall(node);
+            // only inform other clients if the node wasnt solved. else solveStep should do it (in hopes of defeating potential desync)
+            if (!solved) // also send all done nodes to the other clients
+                sendIncrementNode(node.id, node.children.filter(n => n.done).map(n => n.id));
+            break;
+        }
+        default: {
+            console.log(`solveNode: Unknown Type ${s.type}`);
+            break;
         }
     }
-    return step.solutions ? step.solutions.length : 0;
+}
+
+function incrementNode(id, solved) {
+    let node = Global.CASE.nodes[id];
+    if (!node || node.done)
+        return;
+
+    // increment the node counter
+    incrementNodeCall(node);
+    // mark all solved nodes as done
+    solved.forEach((i) => {
+        let node = Global.CASE.nodes[i];
+        if (node)
+            node.done = true;
+    })
+}
+
+// increments the counter on a node. returns true if the node was solved.
+function incrementNodeCall(node) {
+    node.counter++;
+    if (node.counter >= node.children.length) {
+        solveParent(node);
+        return true;
+    }
+
+    //TODO: delete all done children?
+
+    // only update the top node
+    if (node.parent == null)
+        updateObjective(Global.CASE.objective, node.counter, node.children.length);
+    return false;
+}
+
+function buildStepNode(node, parent) {
+    // create new node
+    let id = Global.CASE.nodes.length;
+    let n = {
+        type: node.type,
+        id: id,
+        parent: parent,
+        children: [],
+    };
+    Global.CASE.nodes[id] = n;
+
+    switch (node.type) {
+        case "circle": {
+            const fillColor = Global.DEBUG.enabled ? "#f00" : "#fff";
+            const opacity = Global.DEBUG.enabled ? 0.5 : 0;
+            var circle = L.circle([node.y, node.x], {
+                contextmenu: true,
+                color: "none",
+                fillColor: fillColor,
+                fillOpacity: opacity,
+                radius: node.radius,
+                bubblingMouseEvents: false, // needed or else we cause a map contextmenu event
+            });
+            circle.addTo(Global.map);
+            circle.addEventListener("click", () => solveNode(n));
+            Global.caseMarkers.push(circle);
+            break;
+        }
+        case "and": {
+            n.counter = 0;
+            node.nodes.forEach((child) => {
+                n.children.push(buildStepNode(child, n));
+            });
+            break;
+        }
+        case "or": {
+            node.nodes.forEach((child) => {
+                n.children.push(buildStepNode(child, n));
+            });
+            break;
+        }
+        default: {
+            console.log(`buildStepNode: Unknown Type ${s.type}`);
+            break;
+        }
+    }
+    return n;
 }
 
 function solveStep() {
@@ -270,8 +375,7 @@ function progressCase() {
     // update cards
     updateCards();
     //TODO: end of case animation or smth
-    if (Global.caseProgress == Global.currentCase.steps.length)
-    {
+    if (Global.caseProgress == Global.currentCase.steps.length) {
         console.debug("Reached the end of the case.");
         return;
     }
