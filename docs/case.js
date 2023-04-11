@@ -383,6 +383,17 @@ function solveStepCall() {
     progressCase();
 }
 
+function setCaseProgress(progress) {
+    if (progress == Global.caseProgress)
+        return;
+    
+    // set to progress - 1
+    Global.caseProgress = progress - 1;
+    // then solve that step to do all the necessary stuff
+    solveStepCall();
+    //TODO: dont rely on solvestep?
+}
+
 // Increases the case progress and updates the objective and solution text.
 function progressCase() {
     if (!Global.currentCase) {

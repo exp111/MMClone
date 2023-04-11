@@ -3,7 +3,8 @@ Uses Leaflet to show the map.
 
 ## TODO:
 - mp:
-    - sync case/map
+    - sync case/map:
+        - sync casechange during a lobby
     - let users set color
     - let users select name?
     - make connecting less cbt
@@ -19,6 +20,7 @@ Uses Leaflet to show the map.
 - make objective display better on mobile
 - add shake on mobile/general cards after waiting too long?
 - add case finish animation
+- add possibility to (temporarily) see unflipped card?
 - save case progress
 - save settings
 - optimize loading (zip limited?)
@@ -31,5 +33,5 @@ To transform a image to raster tiles you can use libvips with this command:
 
 
 Problems:
-- libvips v8.14.2 didn't work for me for some reason. i used v8.14.1
+- libvips v8.14.2 doesn't contain dzsave rn because of some licensing issues. use v8.14.1
 - if images are too small, you may need to adjust the zoom level manually. for a 1080x1920 image i had to use min zoom 8, max zoom 11

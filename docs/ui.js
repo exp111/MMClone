@@ -3,8 +3,7 @@ Global.UI = {
 }
 const UNLOCK_CARD_ANIMATION_DURATION = 400;
 
-function setSubMenuVisible(mainID, subMenuID, enabled)
-{
+function setSubMenuVisible(mainID, subMenuID, enabled) {
     let main = document.getElementById(mainID);
     let subMenu = document.getElementById(subMenuID);
     if (!main || !subMenu)
@@ -152,6 +151,11 @@ function updateCards() {
         let card = Global.UI.swiper.slides[i];
         card.classList.remove("current");
 
+        // flip unflipped cards
+        if (i < Global.caseProgress) {
+            if (!card.classList.contains("flipped"))
+                card.classList.add("flipped");
+        }
         // remove locked overlay if it exists //TODO: rather hide it?
         if (i <= Global.caseProgress) {
             let locked = card.getElementsByClassName("card-locked-overlay");

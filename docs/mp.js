@@ -211,6 +211,7 @@ function hostOnConnectionOpen() {
         data: {
             peerList: peerList,
             caseID: Global.currentCase ? Global.currentCase.id : "",
+            caseProgress: Global.caseProgress,
             markerID: Global.MAP.nextMarkerID,
             shapeID: Global.DEBUG.nextShapeID,
         }
@@ -280,6 +281,7 @@ function onConnectionDataReceive(data) {
                 return;
             }
             let caseID = data.data.caseID;
+            let caseProgress = data.data.caseProgress;
             let markerID = data.data.markerID;
             let shapeID = data.data.shapeID;
             Global.MAP.nextMarkerID = markerID;
@@ -290,6 +292,7 @@ function onConnectionDataReceive(data) {
             connectToPeers(peerList);
             // change the case
             changeCase(caseID);
+            setCaseProgress(caseProgress);
             break;
         }
         case "cursorUpdate": {
