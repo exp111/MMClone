@@ -210,8 +210,9 @@ function hostOnConnectionOpen() {
         type: "lobbyJoin",
         data: {
             peerList: peerList,
+            caseID: Global.currentCase ? Global.currentCase.id : "",
             markerID: Global.MAP.nextMarkerID,
-            shapeID: Global.DEBUG.nextShapeID
+            shapeID: Global.DEBUG.nextShapeID,
         }
     });
 }
@@ -273,17 +274,22 @@ function onConnectionDataReceive(data) {
     let sender = connection.peer;
     switch (data.type) {
         case "lobbyJoin": {
-            let markerID = data.data.markerID;
-            let shapeID = data.data.shapeID;
-            Global.MAP.nextMarkerID = markerID;
-            Global.DEBUG.nextShapeID = shapeID;
             let peerList = data.data.peerList;
             if (!peerList) {
                 console.debug(`Got faulty LobbyJoin message`);
                 return;
             }
+            let caseID = data.data.caseID;
+            let markerID = data.data.markerID;
+            let shapeID = data.data.shapeID;
+            Global.MAP.nextMarkerID = markerID;
+            Global.DEBUG.nextShapeID = shapeID;
+            
+            // connect to peers
             console.debug(`Got LobbyJoin message (${peerList.length} Peers)`);
             connectToPeers(peerList);
+            // change the case
+            changeCase(caseID);
             break;
         }
         case "cursorUpdate": {

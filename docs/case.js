@@ -152,13 +152,34 @@ async function refreshCases() {
         let text = val.difficulty ? `${val.name} (${val.difficulty})` : val.name
         select.append(new Option(text, key));
     }
+    let option = select.selectedOptions[0];
+    let id = option.value;
     // Manually call the change func
-    handleCaseChange(select);
+    handleCaseChange(id);
 }
 
-function handleCaseChange(select) {
-    let option = select.selectedOptions[0]
-    let selected = Global.cases[option.value];
+function changeCase(id) {
+    let select = document.getElementById("select_case");
+    let index = null;
+    for (let i in select.options) {
+        let opt = select.options[i];
+        if (opt.value == id)
+        {
+            index = i;
+            break;
+        }
+    }
+    if (!index)
+    {
+        console.log(`Case with ID ${id} not found.`);
+        return;
+    }
+    select.selectedIndex = index;
+    // select event doesnt trigger
+    handleCaseChange(id);
+}
+function handleCaseChange(id) {
+    let selected = Global.cases[id];
     if (!selected)
         return;
 

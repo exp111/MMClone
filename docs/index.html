@@ -33,7 +33,7 @@
         <div id="menu-main" class="overlay-content">
             <div class="overlay-select">
                 <label for="select_case">Choose Case:</label>
-                <select id="select_case" onchange="handleCaseChange(this)">
+                <select id="select_case" onchange="handleCaseChange(this.selectedOptions[0].value)">
                     <option value="Placeholder">
                 </select>
             </div>
