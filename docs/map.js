@@ -122,9 +122,9 @@ async function initMap() {
         });
     });
     Global.baseLayer.addTo(Global.map);
-    
+
     //INFO: need to set view once before moving
-    Global.map.setView([0,0], 0);
+    Global.map.setView([0, 0], 0);
     // zoom into middle of map
     let startZoom = Global.mapMetadata.startZoom ? Global.mapMetadata.startZoom : Global.mapMetadata.minZoom;
     Global.map.setView(Global.map.getCenter(), startZoom);
@@ -133,19 +133,53 @@ async function initMap() {
 function onMapMouseMove(e) {
     //TODO: limit cursor updates
     // send it
-    if (!Global.MP.dontSendCursor && Global.MP.peer)
-    {
+    if (!Global.MP.dontSendCursor && Global.MP.peer) {
         let now = new Date();
         let diff = now - Global.MP.lastCursorUpdate;
-        if (diff > Global.MP.cursorUpdateLimit)
-        {
+        if (diff > Global.MP.cursorUpdateLimit) {
             Global.MP.lastCursorUpdate = now;
             sendCursorPos(e.latlng.lng, e.latlng.lat);
         }
     }
 }
 
-async function saveTile(coords, blob) {
+const tileStoreName = 'tileStore';
+const urlTemplateIndex = 'urlTemplate';
+let tileDbPromise = null;
+
+function openTilesDataBase() {
+    if (tileDbPromise) {
+        return tileDbPromise;
+    }
+    tileDbPromise = idb.openDB('leaflet.offline', 2, {
+        upgrade(db, oldVersion) {
+            idb.deleteDB('leaflet_offline');
+            idb.deleteDB('leaflet_offline_areas');
+
+            if (oldVersion < 1) {
+                const tileStore = db.createObjectStore(tileStoreName, {
+                    keyPath: 'key',
+                });
+                tileStore.createIndex(urlTemplateIndex, 'urlTemplate');
+                tileStore.createIndex('z', 'z');
+            }
+        },
+    });
+    return tileDbPromise;
+}
+async function openMapTransaction() {
+    return (await openTilesDataBase()).transaction(tileStoreName, "readwrite");
+}
+
+function createTileDBObj(coords, blob) {
+    let info = createTileDBInfo(coords);
+    return {
+        blob,
+        ...info,
+    };
+}
+
+function createTileDBInfo(coords) {
     url = getTileUrl(Global.baseLayer._url, coords);
     info = {
         key: url,
@@ -156,8 +190,11 @@ async function saveTile(coords, blob) {
         urlTemplate: Global.baseLayer._url,
         createdAt: Date.now()
     };
-
-    return LeafletOffline.saveTile(info, blob)
+    return info;
+}
+async function saveTile(coords, blob) {
+    let info = createTileDBInfo(coords);
+    return LeafletOffline.saveTile(info, blob);
 }
 
 // Called from the map file upload

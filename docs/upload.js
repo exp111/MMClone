@@ -12,12 +12,13 @@ async function loadFromZip(f) {
     //TODO: JSZip doesn't support windows style paths (\\)
     //TODO: warn user cause deleting
     return JSZip.loadAsync(f)
-        .then((zip) => {
+        .then(async (zip) => {
             console.debug(zip);
             promises = [];
+            mapFiles = [];
 
             // Load map
-            console.debug("Loading map files")
+            console.debug("Loading map files");
             clearMapDB();
             let mapTileCounter = 0;
 
@@ -33,7 +34,7 @@ async function loadFromZip(f) {
 
                 mapTileCounter++;
                 let promise = entry.async("blob").then(blob => {
-                    return saveTile(coords, blob);
+                    mapFiles.push(createTileDBObj(coords, blob));
                 });
                 promises.push(promise);
             }
@@ -97,6 +98,15 @@ async function loadFromZip(f) {
                 console.debug(`Found ${caseImgCounter} Case Images.`);
             });
 
-            return Promise.all(promises);
+            await Promise.all(promises);
+            // save files in one transaction
+            console.log("Saving map files to db.");
+            let tx = await openMapTransaction();
+            let store = tx.store;
+            mapFiles.forEach((f) => {
+                store.put(f);
+            });
+            tx.commit();
+            return tx.done;
         });
 }
