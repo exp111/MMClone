@@ -212,7 +212,5 @@ function setMarkerCursor(enabled) {
 
 function updateObjective(text, current, max) {
     let label = document.getElementById("case_objective");
-    console.log(text);
-    console.log(current);
     label.textContent = current != null ? `${text} ${current}/${max}` : text;
 }

@@ -288,7 +288,7 @@ function onConnectionDataReceive(data) {
             let shapeID = data.data.shapeID;
             Global.MAP.nextMarkerID = markerID;
             Global.DEBUG.nextShapeID = shapeID;
-            
+
             if (Global.mapMetadata && Global.mapMetadata.name != map) {
                 let txt = `The host is using a different map (${map}). This may cause problems.`;
                 console.log(txt);
@@ -298,12 +298,9 @@ function onConnectionDataReceive(data) {
             console.debug(`Got LobbyJoin message (${peerList.length} Peers)`);
             connectToPeers(peerList);
             // change the case
-            if (changeCase(caseID))
-            {
+            if (changeCase(caseID)) {
                 setCaseProgress(caseProgress);
-            }
-            else
-            {
+            } else {
                 let txt = `The host is using a case you don't have (${caseID}). This may cause problems.`;
                 console.log(txt);
                 alert(txt);
@@ -324,6 +321,16 @@ function onConnectionDataReceive(data) {
             let id = data.data.id;
             let solved = data.data.solved;
             incrementNode(id, solved);
+            break;
+        }
+        case "changeCase": {
+            let id = data.data.id;
+            if (!changeCase(id))
+                console.log(`Failed changing case to case ${id}`);
+            break;
+        }
+        case "resetCase": {
+            resetCaseCall();
             break;
         }
         case "createMarker": {
@@ -509,6 +516,20 @@ function sendIncrementNode(id, solved) {
             solved: solved
         },
     })
+}
+
+function sendChangeCase(id) {
+    sendDataMP({
+        type: "changeCase",
+        data: {
+            id: id
+        }
+    });
+}
+function sendResetCase() {
+    sendDataMP({
+        type: "resetCase"
+    });
 }
 
 // broadcasts data to all connections

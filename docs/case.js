@@ -175,11 +175,15 @@ function changeCase(id) {
         return false;
     }
     select.selectedIndex = index;
-    // select event doesnt trigger
-    handleCaseChange(id);
+    // select event doesnt trigger, call manually
+    handleCaseChangeCall(id);
     return true;
 }
 function handleCaseChange(id) {
+    sendChangeCase(id);
+    handleCaseChangeCall(id);
+}
+function handleCaseChangeCall(id) {
     let selected = Global.cases[id];
     if (!selected)
         return;
@@ -191,6 +195,14 @@ function handleCaseChange(id) {
 }
 
 function resetCase() {
+    if (!Global.currentCase)
+        return;
+
+    sendResetCase();
+    resetCaseCall();
+}
+
+function resetCaseCall() {
     if (!Global.currentCase)
         return;
 
