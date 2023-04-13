@@ -26,3 +26,21 @@ function getNextShapeID() {
     // return id
     return Global.DEBUG.nextShapeID;
 }
+
+const hostName = "exp-host";
+const joinName = "exp-join";
+function debugHost() {
+    Global.MP.username = hostName;
+    hostLobby();
+    // hide menu
+    setMenuVisible("debug-menu", "bottom", false);
+}
+
+function debugJoin() {
+    Global.MP.username = `${joinName}-${Math.floor(Math.random() * 1000).toString()}`;
+    Global.MP.hostID = hostName;
+    // skip the input step
+    initPeer();
+    // hide menu
+    setMenuVisible("debug-menu", "bottom", false);
+}

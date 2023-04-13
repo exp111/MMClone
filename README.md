@@ -27,7 +27,6 @@ Uses Leaflet to show the map.
 - save settings
 - optimize loading (zip limited?)
 - support multi-steps (each step gets a "depends on" array? `step1.dependsOn = [step1,step2]`?)
-- debug quick mp connect
 - show step progress (1/4) somewhere on mobile (card menu? corner?)
 - finer file load progress bar (hook put onsuccess?)
 - performance test loading (seperate zip and idb tests)
