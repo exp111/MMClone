@@ -1,3 +1,5 @@
+![icon](icon.png)
+
 A Game Framework to load and play MicroMacro-like maps and cases.
 Uses Leaflet to show the map.
 
