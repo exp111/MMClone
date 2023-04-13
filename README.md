@@ -11,7 +11,6 @@ Uses Leaflet to show the map.
     - ping? => do direction effect on border when ping off screen
     - notify user that other user has changed/reset case
     - host migration/close lobby when host leaves
-    - sync marker color
 - right click menu:
     - debug:
         - on circle: set color

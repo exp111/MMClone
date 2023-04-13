@@ -72,13 +72,15 @@ function createMarker(e) {
     let y = e.latlng.lat;
     let x = e.latlng.lng;
     let id = getNextMarkerID();
+    // player color 2 hsl + ~marker offset hue, clamp to hue color spectrum
+    let clr = (HexToHSL(StringToColor(Global.MP.username)).h + 185) % 360;
     // send rpc
-    sendCreateMarker(id, x, y);
+    sendCreateMarker(id, clr, x, y);
     // call locally
-    createMarkerCall(id, x, y);
+    createMarkerCall(id, clr, x, y);
 }
 
-function createMarkerCall(id, x, y) {
+function createMarkerCall(id, clr, x, y) {
     let marker = L.marker([y, x], {
         contextmenu: true,
     });
@@ -86,6 +88,8 @@ function createMarkerCall(id, x, y) {
     marker.addTo(Global.map);
     Global.MAP.markers[id] = marker;
     Global.MAP.nextMarkerID = id + 1;
+    // change color
+    changeMarkerColorCall(id, clr);
 }
 
 function changeMarkerColor(e) {
@@ -105,8 +109,10 @@ function changeMarkerColor(e) {
     slider.value = match ? match[1] : 0;
 
     slider.oninput = () => {
-        // hue rotate the icon
-        target._icon.style.filter = `hue-rotate(${slider.value}deg)`;
+        let clr = slider.value;
+        let id = target.ID;
+        sendChangeMarkerColor(id, clr);
+        changeMarkerColorCall(id, clr)
     };
 
     // create popup with input
@@ -114,6 +120,15 @@ function changeMarkerColor(e) {
     L.popup().setLatLng([target._latlng.lat - 150, target._latlng.lng])
         .setContent(slider)
         .openOn(Global.map);
+}
+
+function changeMarkerColorCall(id, deg) {
+    let target = Global.MAP.markers[id];
+    if (!target)
+        return;
+
+    // hue rotate the icon
+    target._icon.style.filter = `hue-rotate(${deg}deg)`;
 }
 
 // Removes the given marker
@@ -126,7 +141,6 @@ function deleteMarker(e) {
     sendDeleteMarker(target.ID)
     // call locally
     deleteMarkerCall(target.ID);
-    
 }
 
 function deleteMarkerCall(id) {
@@ -135,7 +149,7 @@ function deleteMarkerCall(id) {
     if (!target)
         return;
 
-    Global.MAP.markers[target.ID] = null;
+    Global.MAP.markers[id] = null;
     // remove from map
     target.remove();
 }
@@ -322,7 +336,7 @@ function onDrawEditMove(e) {
     let target = e.layer;
     if (!target)
         return;
-    
+
     if (Global.DEBUG.sync)
         sendChangeCirclePosition(target.ID, target._latlng.lng, target._latlng.lat);
 }
@@ -331,7 +345,7 @@ function onDrawEditResize(e) {
     let target = e.layer;
     if (!target)
         return;
-    
+
     if (Global.DEBUG.sync)
         sendChangeCircleRadius(target.ID, target._mRadius);
 }

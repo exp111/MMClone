@@ -337,7 +337,14 @@ function onConnectionDataReceive(data) {
             let id = data.data.id;
             let x = data.data.x;
             let y = data.data.y;
-            createMarkerCall(id, x, y);
+            let clr = data.data.clr;
+            createMarkerCall(id, clr, x, y);
+            break;
+        }
+        case "changeMarkerColor": {
+            let id = data.data.id;
+            let clr = data.data.clr;
+            changeMarkerColorCall(id, clr);
             break;
         }
         case "deleteMarker": {
@@ -399,19 +406,6 @@ function Disconnected() {
     Global.MP.cursors = []
 }
 
-function StringToColor(str) {
-    var hash = 0;
-    for (var i = 0; i < str.length; i++) {
-        hash = str.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    var colour = '#';
-    for (var i = 0; i < 3; i++) {
-        var value = (hash >> (i * 8)) & 0xFF;
-        colour += ('00' + value.toString(16)).substr(-2);
-    }
-    return colour;
-}
-
 function cursorUpdate(sender, x, y) {
     let cursor = Global.MP.cursors[sender];
     if (!cursor) {
@@ -441,13 +435,24 @@ function sendCursorPos(x, y) {
     }, true);
 }
 
-function sendCreateMarker(id, x, y) {
+function sendCreateMarker(id, clr, x, y) {
     sendDataMP({
         type: "createMarker",
         data: {
             id: id,
+            clr: clr,
             x: x,
             y: y
+        }
+    });
+}
+
+function sendChangeMarkerColor(id, clr) {
+    sendDataMP({
+        type: "changeMarkerColor",
+        data: {
+            id: id,
+            clr: clr
         }
     });
 }
@@ -526,6 +531,7 @@ function sendChangeCase(id) {
         }
     });
 }
+
 function sendResetCase() {
     sendDataMP({
         type: "resetCase"

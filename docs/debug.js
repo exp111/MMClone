@@ -33,7 +33,7 @@ function debugHost() {
     Global.MP.username = hostName;
     hostLobby();
     // hide menu
-    setMenuVisible("debug-menu", "bottom", false);
+    setMenuVisible("menu", "bottom", false);
 }
 
 function debugJoin() {
@@ -42,5 +42,5 @@ function debugJoin() {
     // skip the input step
     initPeer();
     // hide menu
-    setMenuVisible("debug-menu", "bottom", false);
+    setMenuVisible("menu", "bottom", false);
 }
