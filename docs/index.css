@@ -190,7 +190,12 @@ button.overlay-button {
 /* TODO: clean up */
 .swiper-container {
     width: 100%;
-    padding: 60px
+    padding: 60px;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    overflow: hidden;
+    list-style: none;
 }
 
 .swiper-pagination {
@@ -243,6 +248,7 @@ button.overlay-button {
     width: 240px;
     height: 370px;
 }
+
 .card-horizontal {
     height: 240px;
     width: 370px;
@@ -253,6 +259,7 @@ button.overlay-button {
         width: 324px;
         height: 500px;
     }
+
     .card-horizontal {
         height: 324px;
         width: 500px;
@@ -381,48 +388,53 @@ button.overlay-button {
 
 @keyframes pulse {
     0% {
-     opacity:0;
-     -webkit-transform:rotate(15deg);
-     transform:rotate(15deg)
+        opacity: 0;
+        -webkit-transform: rotate(15deg);
+        transform: rotate(15deg)
     }
+
     10% {
-     opacity:.5;
-     -webkit-transform-origin:50% 50%;
-     transform-origin:50% 50%;
-     -webkit-transform:rotate(13deg) scale(5);
-     transform:rotate(13deg) scale(5);
-     -webkit-transition:all .3s cubic-bezier(.6,.04,.98,.335);
-     -o-transition:all .3s cubic-bezier(.6,.04,.98,.335);
-     transition:all .3s cubic-bezier(.6,.04,.98,.335)
+        opacity: .5;
+        -webkit-transform-origin: 50% 50%;
+        transform-origin: 50% 50%;
+        -webkit-transform: rotate(13deg) scale(5);
+        transform: rotate(13deg) scale(5);
+        -webkit-transition: all .3s cubic-bezier(.6, .04, .98, .335);
+        -o-transition: all .3s cubic-bezier(.6, .04, .98, .335);
+        transition: all .3s cubic-bezier(.6, .04, .98, .335)
     }
+
     to {
-     opacity:1;
-     -webkit-transform:scale(1);
-     transform:scale(1)
+        opacity: 1;
+        -webkit-transform: scale(1);
+        transform: scale(1)
     }
-   }
-   @-webkit-keyframes pulse {
+}
+
+@-webkit-keyframes pulse {
     0% {
-     opacity:0;
-     -webkit-transform:rotate(15deg);
-     transform:rotate(15deg)
+        opacity: 0;
+        -webkit-transform: rotate(15deg);
+        transform: rotate(15deg)
     }
+
     10% {
-     opacity:.5;
-     -webkit-transform-origin:50% 50%;
-     transform-origin:50% 50%;
-     -webkit-transform:rotate(13deg) scale(5);
-     transform:rotate(13deg) scale(5);
-     -webkit-transition:all .3s cubic-bezier(.6,.04,.98,.335);
-     -o-transition:all .3s cubic-bezier(.6,.04,.98,.335);
-     transition:all .3s cubic-bezier(.6,.04,.98,.335)
+        opacity: .5;
+        -webkit-transform-origin: 50% 50%;
+        transform-origin: 50% 50%;
+        -webkit-transform: rotate(13deg) scale(5);
+        transform: rotate(13deg) scale(5);
+        -webkit-transition: all .3s cubic-bezier(.6, .04, .98, .335);
+        -o-transition: all .3s cubic-bezier(.6, .04, .98, .335);
+        transition: all .3s cubic-bezier(.6, .04, .98, .335)
     }
+
     to {
-     opacity:1;
-     -webkit-transform:scale(1);
-     transform:scale(1)
+        opacity: 1;
+        -webkit-transform: scale(1);
+        transform: scale(1)
     }
-   }
+}
 
 .card-back {
     -webkit-transform: rotateY(180deg);
@@ -430,7 +442,9 @@ button.overlay-button {
 }
 
 @media (hover:none) and (pointer:coarse) {
-    .leaflet-control-zoom, .mobile-hide {
+
+    .leaflet-control-zoom,
+    .mobile-hide {
         display: none;
     }
 }
@@ -442,6 +456,7 @@ button.overlay-button {
 .leaflet-marker-draggable {
     border-width: 2px;
 }
+
 .leaflet-edit-resize {
     border-radius: 100%;
 }

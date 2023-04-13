@@ -17,7 +17,6 @@ Uses Leaflet to show the map.
 - help page + first time landing page/tutorial
 - fix bounds on small images
 - mark solved cards better in ui
-- fix pagination bullets being at the bottom
 - make objective display better on mobile
 - add shake on mobile/general cards after waiting too long?
 - add case finish animation
