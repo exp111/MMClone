@@ -199,7 +199,10 @@ async function saveTile(coords, blob) {
 
 // Called from the map file upload
 function handleZipFile(event) {
-    alert("Loading Zip. This can take up to 30 seconds depending on the map size. Press OK to continue.");
+    // hide menu
+    setMenuVisible("menu", "bottom", false);
+    // show load menu
+    setMenuVisible("load-menu", "top", true);
     console.debug("Got Zip File");
     let files = event.target.files;
     let promises = [];

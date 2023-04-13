@@ -27,7 +27,7 @@
         Menu
     </button>
     <!-- Menu -->
-    <div id="menu" class="overlay" style="bottom: 100%; display: flex">
+    <div id="menu" class="overlay" style="bottom: 100%;">
         <button class="close-button" onclick="setMenuVisible('menu', 'bottom', false)">×</button>
         <!-- Main Menu -->
         <div id="menu-main" class="overlay-content">
@@ -94,12 +94,19 @@
         ?
     </button>
     <div id="card-menu" class="overlay" style="top: 100%">
+        <button class="close-button" onclick="setMenuVisible('card-menu', 'top', false)">×</button>
         <div class="swiper-container">
             <div class="swiper-wrapper">
             </div>
             <div class="swiper-pagination"></div>
         </div>
-        <button class="close-button" onclick="setMenuVisible('card-menu', 'top', false)">×</button>
+    </div>
+    <!-- Load Menu -->
+    <div id="load-menu" class="overlay" style="top: 100%">
+        <button class="close-button" onclick="setMenuVisible('load-menu', 'top', false)">×</button>
+        <div class="overlay-header">Loading ZIP. This can take up to 30 seconds...</div>
+        <label id="load-text" for="load-progress" class="overlay-content">Loading...</label>
+        <progress id="load-progress" max="100" value="0"></progress>
     </div>
     <script>
         var Global = {

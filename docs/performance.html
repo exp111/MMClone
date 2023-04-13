@@ -1,0 +1,168 @@
+<html>
+
+<head>
+    <script src="dependencies/jszip/jszip.min.js"></script>
+    <script src="dependencies/idb/umd.js"></script>
+    <script src="https://unpkg.com/dexie@latest/dist/dexie.min.js"></script>
+</head>
+
+<body>
+    <div>
+        <button onclick="loadZip()">Load ZIP</button>
+        <button onclick="testZIPIDBTX()">Test ZIP Load + IDB Transaction put</button>
+        <button onclick="testZIPDexie()">Test ZIP Load + Dexie bulk put</button>
+    </div>
+</body>
+<script>
+    var json = null;
+
+    function time(start) {
+        return (new Date() - start) / 1000;
+    }
+
+    function loadZip() {
+        let input = document.createElement("input");
+        input.type = "file";
+        input.accept = ".zip";
+        input.onchange = (e) => {
+            let file = e.target.files[0];
+            let start = new Date();
+
+            function log(str, notify) {
+                let txt = (`${str} (${time(start)} seconds)`);
+                console.log(txt);
+                if (notify)
+                    alert(txt);
+            }
+            return JSZip.loadAsync(file).then(async zip => {
+                console.log(zip);
+                promises = [];
+                files = [];
+                log(`Load zip`);
+                for (let path in zip.files) {
+                    let entry = zip.files[path];
+                    let promise = entry.async("blob").then((blob) => console.debug(path));
+                    promises.push(promise);
+                }
+
+                log(`Waiting for files`);
+                await Promise.all(promises);
+                log(`Done`, true);
+            });
+        };
+        input.click();
+    }
+
+    function testZIPIDBTX() {
+        let input = document.createElement("input");
+        input.type = "file";
+        input.accept = ".zip";
+        input.onchange = (e) => {
+            let file = e.target.files[0];
+            let start = new Date();
+
+            function log(str, notify) {
+                let txt = (`${str} (${time(start)} seconds)`);
+                console.log(txt);
+                if (notify)
+                    alert(txt);
+            }
+            return JSZip.loadAsync(file).then(async zip => {
+                console.log(zip);
+                promises = [];
+                files = [];
+                log(`Load zip`);
+                for (let path in zip.files) {
+                    let entry = zip.files[path];
+                    let promise = entry.async("blob").then((blob) => files.push({
+                        blob,
+                        ...{
+                            "path": path
+                        }
+                    }));
+                    promises.push(promise);
+                }
+
+                log(`Waiting for files`);
+                await Promise.all(promises);
+
+                let db = await idb.openDB("db", 1, {
+                    upgrade(db, oldVersion) {
+                        // INFO: mitigrations here
+                        // No store before => create new
+                        if (oldVersion < 1) {
+                            const store = db.createObjectStore("store", {
+                                keyPath: 'path'
+                            });
+                            store.createIndex('path', 'path');
+                        }
+                    }
+                });
+                log("db created");
+                let tx = db.transaction("store", "readwrite");
+                let store = tx.store;
+                files.forEach(f => {
+                    store.add(f);
+                });
+                log(`waiting for tx`);
+                tx.commit();
+                await tx.done;
+                log(`Done`, true);
+                // clean up
+                idb.deleteDB("db");
+            });
+        };
+        input.click();
+    }
+
+    function testZIPDexie() {
+        let input = document.createElement("input");
+        input.type = "file";
+        input.accept = ".zip";
+        input.onchange = (e) => {
+            let file = e.target.files[0];
+            let start = new Date();
+
+            function log(str, notify) {
+                let txt = (`${str} (${time(start)} seconds)`);
+                console.log(txt);
+                if (notify)
+                    alert(txt);
+            }
+            return JSZip.loadAsync(file).then(async zip => {
+                console.log(zip);
+                promises = [];
+                files = [];
+                log(`Load zip`);
+                for (let path in zip.files) {
+                    let entry = zip.files[path];
+                    let promise = entry.async("blob").then((blob) => files.push({
+                        blob,
+                        ...{
+                            "path": path
+                        }
+                    }));
+                    promises.push(promise);
+                }
+
+                log(`Waiting for files`);
+                await Promise.all(promises);
+
+                const db = new Dexie("db");
+                db.version(1).stores({
+                    store: "path"
+                });
+                log("db created");
+                let put = db.store.bulkPut(files);
+                log(`waiting for put`);
+                await put;
+                log(`Done`, true);
+                // clean up
+                db.delete();
+            });
+        };
+        input.click();
+    }
+</script>
+
+</html>

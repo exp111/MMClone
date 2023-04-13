@@ -63,9 +63,14 @@ html {
     padding: 0 8px 8px;
 }
 
+#load-menu {
+    flex-direction: column;
+}
+
 .overlay button,
 .overlay-content,
 .overlay-input,
+.overlay-header,
 .overlay-select {
     margin: 0 6px 6px;
     padding: 0 8px 8px;
@@ -111,6 +116,11 @@ html {
     /* TODO: style select*/
 }
 
+.overlay-header {
+    font-size: 40px;
+    margin-bottom: 8px;
+}
+
 /* input containers */
 .overlay-input {
     text-align: start;
@@ -152,6 +162,13 @@ html {
 
 button.overlay-button {
     cursor: pointer;
+}
+
+#load-progress {
+    height: 30px;
+    width: 50%;
+    border-radius: 0px;
+    border: none;
 }
 
 /* the card button */

@@ -7,10 +7,21 @@ function askForFile(callback, accept) {
     input.click();
 }
 
+let start = new Date();
+function setProgressBar(text, val) {
+    console.debug(`${text} (${(new Date() - start) / 1000} seconds)`);
+    let progress = document.getElementById("load-progress");
+    let loadText = document.getElementById("load-text");
+    loadText.textContent = text;
+    progress.value = val;
+    //TODO: set text
+}
 //TODO: move parsing funcs into map.js/case.js
 async function loadFromZip(f) {
     //TODO: JSZip doesn't support windows style paths (\\)
     //TODO: warn user cause deleting
+    start = new Date();
+    setProgressBar("Opening file...", 0);
     return JSZip.loadAsync(f)
         .then(async (zip) => {
             console.debug(zip);
@@ -18,7 +29,7 @@ async function loadFromZip(f) {
             mapFiles = [];
 
             // Load map
-            console.debug("Loading map files");
+            setProgressBar("Loading map files...", 10);
             clearMapDB();
             let mapTileCounter = 0;
 
@@ -39,12 +50,12 @@ async function loadFromZip(f) {
                 promises.push(promise);
             }
             zip.folder("map").forEach(MapRead);
-            console.debug(`Found ${mapTileCounter} Map Tiles.`);
+            console.debug(`Found ${mapTileCounter} Map Tiles...`);
 
             // Map.json metadata
             let mapJson = zip.file("map.json");
             if (mapJson) {
-                console.debug("Loading map metadata");
+                setProgressBar("Loading map metadata", 20);
                 let promise = mapJson.async("text").then(text => saveMapMetadata(JSON.parse(text)));
                 promises.push(promise);
             }
@@ -52,7 +63,7 @@ async function loadFromZip(f) {
             // Cases
             clearCaseDB();
             clearCaseImgDB();
-            console.debug("Loading cases");
+            setProgressBar("Loading cases...", 25);
             let caseCounter = 0;
             let cases = [];
             let casePromises = [];
@@ -80,7 +91,7 @@ async function loadFromZip(f) {
 
             // load case images
             Promise.all(casePromises).then(() => {
-                console.debug("Loading case images.");
+                setProgressBar("Loading case images...", 40);
                 let caseImgCounter = 0;
                 for (let key in cases) {
                     let id = cases[key];
@@ -100,13 +111,15 @@ async function loadFromZip(f) {
 
             await Promise.all(promises);
             // save files in one transaction
-            console.log("Saving map files to db.");
+            setProgressBar("Saving map files to db...", 60);
             let tx = await openMapTransaction();
             let store = tx.store;
             mapFiles.forEach((f) => {
                 store.put(f);
             });
             tx.commit();
-            return tx.done;
+            setProgressBar(`Waiting for transaction...`, 70);
+            await tx.done;
+            setProgressBar(`Done.`, 100);
         });
 }
