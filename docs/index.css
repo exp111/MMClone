@@ -361,6 +361,8 @@ button.overlay-button {
 }
 
 .card-solved {
+    z-index: 2;
+    content: url(assets/img/solved.png);
     height: auto;
     width: 90%;
     opacity: 0;
@@ -376,6 +378,51 @@ button.overlay-button {
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden
 }
+
+@keyframes pulse {
+    0% {
+     opacity:0;
+     -webkit-transform:rotate(15deg);
+     transform:rotate(15deg)
+    }
+    10% {
+     opacity:.5;
+     -webkit-transform-origin:50% 50%;
+     transform-origin:50% 50%;
+     -webkit-transform:rotate(13deg) scale(5);
+     transform:rotate(13deg) scale(5);
+     -webkit-transition:all .3s cubic-bezier(.6,.04,.98,.335);
+     -o-transition:all .3s cubic-bezier(.6,.04,.98,.335);
+     transition:all .3s cubic-bezier(.6,.04,.98,.335)
+    }
+    to {
+     opacity:1;
+     -webkit-transform:scale(1);
+     transform:scale(1)
+    }
+   }
+   @-webkit-keyframes pulse {
+    0% {
+     opacity:0;
+     -webkit-transform:rotate(15deg);
+     transform:rotate(15deg)
+    }
+    10% {
+     opacity:.5;
+     -webkit-transform-origin:50% 50%;
+     transform-origin:50% 50%;
+     -webkit-transform:rotate(13deg) scale(5);
+     transform:rotate(13deg) scale(5);
+     -webkit-transition:all .3s cubic-bezier(.6,.04,.98,.335);
+     -o-transition:all .3s cubic-bezier(.6,.04,.98,.335);
+     transition:all .3s cubic-bezier(.6,.04,.98,.335)
+    }
+    to {
+     opacity:1;
+     -webkit-transform:scale(1);
+     transform:scale(1)
+    }
+   }
 
 .card-back {
     -webkit-transform: rotateY(180deg);

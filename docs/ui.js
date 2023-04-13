@@ -140,8 +140,27 @@ function onSlideClick(index) {
     Global.UI.swiper.slideTo(index);
 }
 
-function flipCard(index) {
-    Global.UI.swiper.slides[index].classList.toggle("flipped");
+// flips a card. if "stamp" is true, the card will be stamped
+function flipCard(index, stamp) {
+    let card = Global.UI.swiper.slides[index];
+    let inner = card.getElementsByClassName("card-inner")[0];
+
+    if (stamp) {
+        // first stamp with solve
+        let wrap = document.createElement("div");
+        wrap.classList.add("card-face", "card-solved-wrapper");
+        let solved = document.createElement("img");
+        solved.classList.add("card-solved");
+        wrap.appendChild(solved);
+        inner.appendChild(wrap);
+        setTimeout(() => {
+            // then flip
+            card.classList.add("flipped");
+        }, 600);
+    } else // only flip
+    {
+        card.classList.add("flipped");
+    }
 }
 
 // updates the cards
@@ -153,8 +172,17 @@ function updateCards() {
 
         // flip unflipped cards
         if (i < Global.caseProgress) {
-            if (!card.classList.contains("flipped"))
-                card.classList.add("flipped");
+            if (!card.classList.contains("flipped")) {
+                // if they're currently being stamped, dont flip //TODO: is there a better way
+                let solved = card.getElementsByClassName("card-solved");
+                // look at the solved cards animation
+                let beingStamped = solved[0].getAnimations().filter((anim) => {
+                    // check if they're running
+                    return anim.pending;
+                }).length != 0;
+                if (solved.length == 0 || !beingStamped)
+                    card.classList.add("flipped");
+            }
         }
         // remove locked overlay if it exists //TODO: rather hide it?
         if (i <= Global.caseProgress) {
