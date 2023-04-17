@@ -1,0 +1,447 @@
+<html>
+<style>
+    .container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+    }
+
+    .half {
+        width: 50%;
+        height: 100%;
+    }
+
+    #output {
+        width: 100%;
+        height: 100%;
+    }
+
+    .step {
+        border: 1px grey solid;
+        padding: 5px;
+    }
+
+    div.input {
+        display: flex;
+        flex-wrap: nowrap;
+    }
+
+    div.input label {
+        width: 10%;
+        display: inline-block;
+    }
+
+    div.input input {
+        width: 90%;
+    }
+
+    #steps>.step {
+        margin-bottom: 10px;
+    }
+</style>
+
+<head>
+    <title>Case Builder</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="half">
+            <button onclick="loadJSON()">Load JSON</button>
+            <div class="input">
+                <label for="case-id">ID</label>
+                <input id="case-id" type="text">
+            </div>
+            <div class="input">
+                <label for="case-title">Title</label>
+                <input id="case-title" type="text">
+            </div>
+            <div class="input">
+                <label for="case-difficulty">Difficulty</label>
+                <input id="case-difficulty" type="text" value="2/5">
+            </div>
+            <div class="input">
+                <label for="case-steps">#Steps</label>
+                <input id="case-steps" type="number" value="3">
+            </div>
+            <div id="steps">
+                <div id="step0" class="step">
+                    <div class="input">
+                        <label for="step0-id">ID Step 0</label>
+                        <input id="step0-id" type="text" value="introduction">
+                    </div>
+                    <button>null</button>
+                    <button>Circle</button>
+                    <button>AND</button>
+                    <button>OR</button>
+                    <div id="step0-step" class="step"></div>
+                </div>
+                <div id="step1" class="step">
+                    <div class="input">
+                        <label for="step1-id">ID Step 1</label>
+                        <input id="step1-id" type="text" value="step1">
+                    </div>
+                    <button>null</button>
+                    <button>Circle</button>
+                    <button>AND</button>
+                    <button>OR</button>
+                    <div id="step1-step" class="step">
+                        <div>CIRCLE</div>
+                        <div class="input">
+                            <label>JSON:</label>
+                            <input type="text" value='{"type":"circle","x":12264,"y":8724,"radius":100}'>
+                        </div>
+                    </div>
+                </div>
+                <div id="step2" class="step">
+                    <div>
+                        <label for="step2-id">ID Step 2</label>
+                        <input id="step2-id" type="text" value="step2">
+                    </div>
+                    <button>null</button>
+                    <button>Circle</button>
+                    <button>AND</button>
+                    <button>OR</button>
+                    <div id="step2-step" class="step">
+                        <div>AND</div>
+                        <div class="input">
+                            <label>#Steps</label>
+                            <input type="number" value="2">
+                        </div>
+                        <div class="nodes">
+                            <div class="step">
+                                <button>null</button>
+                                <button>Circle</button>
+                                <button>AND</button>
+                                <button>OR</button>
+                                <div class="step">
+                                    <div>CIRCLE</div>
+                                    <input type="text" value='{"type":"circle","x":12264,"y":8724,"radius":100}'>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <button>null</button>
+                                <button>Circle</button>
+                                <button>AND</button>
+                                <button>OR</button>
+                                <div class="step">
+                                    <div>CIRCLE</div>
+                                    <input type="text" value='{"type":"circle","x":12264,"y":8724,"radius":100}'>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="half">
+            <textarea id="output"></textarea>
+        </div>
+    </div>
+</body>
+
+<script>
+    object = {
+        id: "bank_heist",
+        name: "The Bank Heist",
+        difficulty: "2/5",
+        steps: [{
+            "id": "introduction",
+            "text": "The Bank Heist",
+            "solution": null
+        }, {
+            "id": "step1",
+            "text": "Find the bank!",
+            "solution": {
+                "type": "circle",
+                "x": 5183,
+                "y": 4686,
+                "radius": 186
+            }
+        }, {
+            "id": "step2",
+            "text": "Where did they discard their masks?",
+            "solution": {
+                "type": "and",
+                "nodes": [{
+                    "type": "circle",
+                    "x": 1844,
+                    "y": 7184,
+                    "radius": 83
+                }, {
+                    "type": "circle",
+                    "x": 1844,
+                    "y": 7184,
+                    "radius": 83
+                }]
+            }
+        }]
+    }
+
+    function loadJSON() {
+        let input = document.createElement("input");
+        input.type = "file";
+        input.accept = ".json";
+        input.onchange = (e) => {
+            let files = event.target.files;
+            let f = files[0];
+            let reader = new FileReader();
+            reader.addEventListener("load",
+                () => {
+                    let result = reader.result;
+                    object = JSON.parse(result);
+                    build();
+                    output();
+                });
+            reader.readAsText(f);
+        };
+        input.click();
+    }
+
+    function onButtonClick(type, node, index) {
+        let obj = null;
+        switch (type) {
+            case "circle": {
+                obj = {
+                    type: "circle",
+                    x: 0,
+                    y: 0,
+                    radius: 100
+                }
+                break;
+            }
+            case "and": {
+                obj = {
+                    type: "and",
+                    nodes: []
+                }
+                break;
+            }
+            case "or": {
+                obj = {
+                    type: "or",
+                    nodes: []
+                }
+                break;
+            }
+        }
+        // if index is given, we have a AND node
+        if (index != null) {
+            node.nodes[index] = obj;
+        } // else its a top lvl node
+        else {
+            node.solution = obj;
+        }
+        build();
+        output();
+    }
+
+    function addButtons(node, index) {
+        // container
+        let container = document.createElement("div");
+        // buttons
+        /// null
+        let nullButton = document.createElement("button");
+        nullButton.textContent = "null";
+        nullButton.onclick = () => onButtonClick("null", node, index);
+        /// circle
+        let circleButton = document.createElement("button");
+        circleButton.textContent = "CIRCLE";
+        circleButton.onclick = () => onButtonClick("circle", node, index);
+        /// and
+        let andButton = document.createElement("button");
+        andButton.textContent = "AND";
+        andButton.onclick = () => onButtonClick("and", node, index);
+        /// or
+        let orButton = document.createElement("button");
+        orButton.textContent = "OR";
+        orButton.onclick = () => onButtonClick("or", node, index);
+        // append
+        container.appendChild(nullButton);
+        container.appendChild(circleButton);
+        container.appendChild(andButton);
+        container.appendChild(orButton);
+        return container;
+    }
+
+    function buildNode(node) {
+        if (!node)
+            return null;
+
+        let div = document.createElement("div");
+
+        switch (node.type.toLowerCase()) {
+            case "circle": {
+                /*
+                    <div>CIRCLE</div>
+                    <div class="input">
+                        <label>JSON:</label>
+                        <input type="text" value='{"type":"circle","x":12264,"y":8724,"radius":100}'>
+                    </div>
+                */
+                // title
+                let title = document.createElement("div");
+                title.textContent = "CIRCLE";
+                // json
+                let jsonContainer = document.createElement("div");
+                jsonContainer.classList.add("input");
+                let jsonLabel = document.createElement("label");
+                jsonLabel.textContent = "JSON:";
+                let jsonInput = document.createElement("input");
+                jsonInput.value = JSON.stringify(node);
+                //TODO: hook up input
+                // append
+                jsonContainer.appendChild(jsonLabel);
+                jsonContainer.appendChild(jsonInput);
+                div.appendChild(title);
+                div.appendChild(jsonContainer);
+                break;
+            }
+            case "or":
+            case "and": {
+                /* 
+                    <div>AND</div>
+                        <div class="input">
+                            <label>#Steps</label>
+                            <input type="number" value="2">
+                        </div>
+                    <div class="nodes">...</div>
+                */
+                let title = document.createElement("div");
+                title.textContent = node.type == "and" ? "AND" : "OR";
+                // #steps
+                let stepsContainer = document.createElement("div");
+                stepsContainer.classList.add("input");
+                let stepsLabel = document.createElement("label");
+                stepsLabel.textContent = "#Steps:";
+                let stepsInput = document.createElement("input");
+                stepsInput.type = "number";
+                stepsInput.value = node.nodes.length;
+                // event
+                stepsInput.onchange = (e) => {
+                    let diff = stepsInput.value - node.nodes.length;
+                    if (diff > 0)
+                    {
+                        // add diff entries
+                        for (let i = 0; i < diff; i++)
+                            node.nodes.push(null);
+                    }
+                    else if (diff < 0)
+                    {
+                        // remove last diff entries
+                        node.nodes = node.nodes.slice(0, diff); 
+                    }
+                    build();
+                    output();
+                }
+                // content
+                let content = document.createElement("div");
+                content.classList.add("nodes");
+                node.nodes.forEach((n, i) => {
+                    /*
+                    <div class="step">
+                                <button>null</button>
+                                <button>Circle</button>
+                                <button>AND</button>
+                                <button>OR</button>
+                                <div class="step">
+                                    <div>CIRCLE</div>
+                                    <input type="text" value='{"type":"circle","x":12264,"y":8724,"radius":100}'>
+                                </div>
+                            </div>
+                    */
+                    // outer
+                    let d = document.createElement("div");
+                    d.classList.add("step");
+                    // inner
+                    let d2 = document.createElement("div");
+                    d2.classList.add("step");
+                    let c = buildNode(n);
+                    if (c) {
+                        // inner append
+                        d2.appendChild(c);
+                    }
+                    // outer append
+                    d.appendChild(addButtons(node, i));
+                    d.appendChild(d2);
+                    // append
+                    content.appendChild(d);
+                })
+                // append
+                stepsContainer.appendChild(stepsLabel);
+                stepsContainer.appendChild(stepsInput);
+                div.appendChild(title);
+                div.appendChild(stepsContainer);
+                div.appendChild(content);
+                break;
+            }
+        }
+        return div;
+    }
+
+    function build() {
+        let id = document.getElementById("case-id");
+        let title = document.getElementById("case-title");
+        let difficulty = document.getElementById("case-difficulty");
+        id.value = object.id;
+        title.value = object.name;
+        difficulty.value = object.difficulty;
+        //TODO: hook up these inputs
+
+        // clear steps
+        let steps = document.getElementById("steps");
+        steps.innerHTML = "";
+        // add steps
+        object.steps.forEach((step, index) => {
+            /*
+            <div id="step0" class="step">
+                    <div class="input">
+                        <label for="step0-id">ID Step 0</label>
+                        <input id="step0-id" type="text" value="introduction">
+                    </div>
+                    <button>null</button>
+                    <button>Circle</button>
+                    <button>AND</button>
+                    <button>OR</button>
+                    <div id="step0-step" class="step"></div>
+                </div>
+            */
+            let el = document.createElement("div");
+            el.classList.add("step");
+            el.id = `step${index}`;
+            //TODO: hook up input
+            // id
+            let idCont = document.createElement("div");
+            idCont.classList.add("input");
+            let idLabel = document.createElement("label");
+            idLabel.textContent = `Step ${index} ID`;
+            let idInput = document.createElement("input");
+            idInput.type = "text";
+            idInput.value = step.id;
+            idCont.appendChild(idLabel);
+            idCont.appendChild(idInput);
+            el.appendChild(idCont);
+            // buttons
+            el.appendChild(addButtons(step, null));
+            // content
+            let container = document.createElement("div");
+            container.id = `step${index}-step`;
+            container.classList.add("step");
+            let content = buildNode(step.solution);
+            if (content)
+                container.appendChild(content);
+            el.appendChild(container);
+            // append to parent
+            steps.appendChild(el);
+        });
+    }
+
+    function output() {
+        let out = document.getElementById("output");
+        out.textContent = JSON.stringify(object, undefined, 5);
+    }
+    build();
+    output();
+</script>
+
+</html>
