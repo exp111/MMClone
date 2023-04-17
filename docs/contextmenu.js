@@ -324,11 +324,24 @@ function toggleEditing(e) {
     if (!target.editing)
         return;
 
-    console.log(target.editing);
     if (target.editing.enabled())
         target.editing.disable();
     else
         target.editing.enable();
+}
+
+function roundValues(e) {
+    let target = e.relatedTarget;
+    if (!target)
+        return;
+
+    if (target instanceof(L.Circle)) {
+        target.setLatLng([
+            Math.round(target._latlng.lat),
+            Math.round(target._latlng.lng)
+        ]);
+        target.setRadius(Math.round(target._mRadius));
+    }
 }
 
 // edit move + resize events
@@ -390,6 +403,10 @@ function onMapRightClick(e) {
                         callback: toggleEditing
                     });
                 }
+                e.contextmenu.addItem({
+                    text: "Round values",
+                    callback: roundValues
+                });
             } else {
                 addSeperator = false;
             }

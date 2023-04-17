@@ -215,10 +215,12 @@ button.overlay-button {
     list-style: none;
 }
 
+/* Move bullets a bit down */
 .swiper-pagination {
     bottom: 0 !important
 }
 
+/* Bullet styling */
 .swiper-pagination-bullet {
     width: 26px;
     height: 32px;
@@ -233,10 +235,12 @@ button.overlay-button {
     background-size: initial
 }
 
+/* Mark active bullet */
 .swiper-pagination-bullet-active {
     opacity: 1
 }
 
+/* Specific bullet img */
 .swiper-pagination-bullet.unsolvable {
     background-image: url(assets/img/unsolvable.svg);
     position: relative;
@@ -261,6 +265,7 @@ button.overlay-button {
     left: 2px
 }
 
+/* Card Sizes */
 .card-vertical {
     width: 240px;
     height: 370px;
@@ -298,11 +303,13 @@ button.overlay-button {
 }
 
 /* Back */
+/** Title **/
 .text-card.card-back h1 {
     position: relative;
     top: 10%;
 }
 
+/** Text **/
 .text-card.card-back p {
     position: relative;
     top: 30%;
@@ -325,12 +332,14 @@ button.overlay-button {
     user-select: none;
 }
 
+/* Flip card */
 .card.flipped {
     -webkit-transform: rotateY(180deg);
     transform: rotateY(180deg);
     -ms-transform: rotateY(180deg);
 }
 
+/* Show pointer cursor on unflipped active cards */
 .swiper-slide-active.current:not(.flipped) {
     cursor: pointer;
 }
@@ -357,6 +366,11 @@ button.overlay-button {
     box-shadow: 0 0 18px 0 rgba(0, 0, 0, .2);
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden
+}
+
+.card-back {
+    -webkit-transform: rotateY(180deg);
+    transform: rotateY(180deg)
 }
 
 .card-locked-overlay {
@@ -453,11 +467,7 @@ button.overlay-button {
     }
 }
 
-.card-back {
-    -webkit-transform: rotateY(180deg);
-    transform: rotateY(180deg)
-}
-
+/* Hide stuff on mobile */
 @media (hover:none) and (pointer:coarse) {
 
     .leaflet-control-zoom,
@@ -466,10 +476,12 @@ button.overlay-button {
     }
 }
 
+/* Hide/show circle pointers */
 .leaflet-interactive {
     cursor: var(--marker-cursor, "inherit") !important;
 }
 
+/* Style draggables */
 .leaflet-marker-draggable {
     border-width: 2px;
 }
