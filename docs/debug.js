@@ -44,3 +44,13 @@ function debugJoin() {
     // hide menu
     setMenuVisible("menu", "bottom", false);
 }
+
+function clearShapes() {
+    // remove each shape
+    for (let key in Global.DEBUG.shapes) {
+        let shape = Global.DEBUG.shapes[key];
+        shape.remove();
+    }
+    // clear array
+    Global.DEBUG.shapes = {};
+}

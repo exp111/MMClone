@@ -16,8 +16,7 @@ You need to first load a map before being able to play. A test map is available 
 - right click menu:
     - delete all markers
     - debug:
-        - on circle: set color
-        - delete all circles
+        - on circle/shape: set color
 - style markers (so you can see what you marked)
 - help page + first time landing page/tutorial
 - fix bounds on small images

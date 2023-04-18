@@ -191,6 +191,7 @@ function handleCaseChangeCall(id) {
     Global.currentCase = selected;
     Global.caseProgress = 0;
     buildCards();
+    updateCaseStep();
     console.debug(`Selected case ${selected.name} (ID ${selected.id})`);
 }
 
@@ -209,6 +210,7 @@ function resetCaseCall() {
     Global.caseProgress = 0;
     // just rebuild cards lmao
     buildCards();
+    updateCaseStep();
     console.debug(`Reset case ${Global.currentCase.name} (ID ${Global.currentCase.id})`);
 }
 
