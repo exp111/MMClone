@@ -45,8 +45,7 @@ function initSwiper() {
 
 function buildCards() {
     // enable the swiper if it was previously disabled (finished a case)
-    if (!Global.UI.swiper.enabled)
-    {
+    if (!Global.UI.swiper.enabled) {
         Global.UI.swiper.enable();
         //FIXME: this is a hack to remove the height
         Global.UI.swiper.el.style.height = "";
@@ -248,6 +247,14 @@ function setMarkerCursor(enabled) {
 }
 
 function updateObjective(text, current, max) {
+    let overlay = document.getElementById("objective-overlay");
+    // hide the overlay if we're not showing anything
+    if (!text && !current && !max) {
+        overlay.style.display = "none";
+        return;
+    } else {
+        overlay.style.display = "";
+    }
     let label = document.getElementById("case_objective");
     label.textContent = current != null ? `${text} ${current}/${max}` : text;
 }
