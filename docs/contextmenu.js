@@ -154,6 +154,16 @@ function deleteMarkerCall(id) {
     target.remove();
 }
 
+function clearMarkers() {
+    for (let id in Global.MAP.markers) {
+        let marker = Global.MAP.markers[id];
+        if (marker)
+            marker.remove();
+    }
+    // clear global array
+    Global.MAP.markers = {};
+}
+
 // prints the currently selected target into the console
 function printTarget(e) {
     let target = e.relatedTarget;

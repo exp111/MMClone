@@ -49,7 +49,8 @@ function clearShapes() {
     // remove each shape
     for (let key in Global.DEBUG.shapes) {
         let shape = Global.DEBUG.shapes[key];
-        shape.remove();
+        if (shape)
+            shape.remove();
     }
     // clear array
     Global.DEBUG.shapes = {};

@@ -215,7 +215,7 @@ function updatePaginationBullet(step, i) {
     bullet.classList.remove("unsolvable", "completed", "not-completed", "locked");
     // apply new ones
     let style = "";
-    if (step.solution) // no solutions
+    if (!step.solution) // no solutions
     {
         style = "unsolvable";
     } else if (i > Global.caseProgress) // locked

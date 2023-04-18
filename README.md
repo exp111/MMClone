@@ -35,6 +35,9 @@ You need to first load a map before being able to play. A test map is available 
 - hints
 - add github link (to help menu?)
 - tests??
+- add default starting case to map metadata
+- toolbar like debug menu for quick access?
+- finish timer
 
 # How to create a map from a image
 To transform a image to raster tiles you can use libvips with this command:
