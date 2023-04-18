@@ -1,6 +1,13 @@
 Global.MAP = {
     markers: {},
     nextMarkerID: 0,
+    metadata: {
+        name: "Placeholder",
+        minZoom: 2,
+        maxZoom: 6,
+        width: 300,
+        height: 300
+    }
 }
 
 const MAP_BOUNDS_VISCOSITY = 1;
@@ -59,7 +66,7 @@ async function saveMapMetadata(json) {
 async function initMap() {
     let meta = await loadMapMetadata();
     if (meta)
-        Global.mapMetadata = meta;
+        Global.MAP.metadata = meta;
     l = Math.pow(2, 6) * MAP_MAX_RESOLUTION;
     transformation = .5;
     u = transformation;
@@ -77,14 +84,14 @@ async function initMap() {
         contextmenu: true,
         contextmenuItems: [{}], // needs object inside to open
         crs: c,
-        maxZoom: Global.mapMetadata.maxZoom,
-        minZoom: Global.mapMetadata.minZoom,
+        maxZoom: Global.MAP.metadata.maxZoom,
+        minZoom: Global.MAP.metadata.minZoom,
         zoomSnap: 1,
         zoomDelta: .75,
         wheelPxPerZoomLevel: 250,
         bounceAtZoomLimits: false,
         maxBounds: [c.unproject(L.point(-MAP_BOUNDS_EXTENSION, -MAP_BOUNDS_EXTENSION)), c.unproject(L.point(
-            Global.mapMetadata.width + MAP_BOUNDS_EXTENSION, Global.mapMetadata.height + MAP_BOUNDS_EXTENSION))],
+            Global.MAP.metadata.width + MAP_BOUNDS_EXTENSION, Global.MAP.metadata.height + MAP_BOUNDS_EXTENSION))],
         maxBoundsViscosity: MAP_BOUNDS_VISCOSITY,
         attributionControl: false
     });
@@ -96,13 +103,13 @@ async function initMap() {
     Global.map.on("draw:editresize", onDrawEditResize);
     // create offline layer
     Global.baseLayer = LeafletOffline.tileLayerOffline("{z}/{y}/{x}.png", {
-        minZoom: Global.mapMetadata.minZoom,
-        maxZoom: Global.mapMetadata.maxZoom,
+        minZoom: Global.MAP.metadata.minZoom,
+        maxZoom: Global.MAP.metadata.maxZoom,
         noWrap: true,
         tms: false,
         edgeBufferTiles: 1,
         tileSize: MAP_BASE_TILE_SIZE,
-        bounds: [c.unproject(L.point(0, 0)), c.unproject(L.point(Global.mapMetadata.width, Global.mapMetadata.height))]
+        bounds: [c.unproject(L.point(0, 0)), c.unproject(L.point(Global.MAP.metadata.width, Global.MAP.metadata.height))]
     });
 
     // let layer let from cache
@@ -126,7 +133,7 @@ async function initMap() {
     //INFO: need to set view once before moving
     Global.map.setView([0, 0], 0);
     // zoom into middle of map
-    let startZoom = Global.mapMetadata.startZoom ? Global.mapMetadata.startZoom : Global.mapMetadata.minZoom;
+    let startZoom = Global.MAP.metadata.startZoom ? Global.MAP.metadata.startZoom : Global.MAP.metadata.minZoom;
     Global.map.setView(Global.map.getCenter(), startZoom);
 }
 

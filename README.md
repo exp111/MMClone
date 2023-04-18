@@ -35,7 +35,6 @@ You need to first load a map before being able to play. A test map is available 
 - hints
 - add github link (to help menu?)
 - tests??
-- add default starting case to map metadata
 - toolbar like debug menu for quick access?
 - finish timer
 

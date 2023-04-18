@@ -33,7 +33,7 @@
         <div id="menu-main" class="overlay-content">
             <div class="overlay-select">
                 <label for="select_case">Choose Case:</label>
-                <select id="select_case" onchange="handleCaseChange(this.selectedOptions[0].value)">
+                <select id="select_case" onchange="handleCaseChange(this.value)">
                     <option value="Placeholder">
                 </select>
             </div>
@@ -119,14 +119,7 @@
             currentCase: null,
             caseProgress: 0, //TODO: read from/save to idb,
             caseMarkers: [],
-            markers: [],
-            mapMetadata: {
-                name: "Placeholder",
-                minZoom: 2,
-                maxZoom: 6,
-                width: 300,
-                height: 300
-            }
+            markers: []
         }
     </script>
     <script src="ui.js"></script>

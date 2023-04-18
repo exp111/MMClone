@@ -210,7 +210,7 @@ function hostOnConnectionOpen() {
         type: "lobbyJoin",
         data: {
             peerList: peerList,
-            map: Global.mapMetadata ? Global.mapMetadata.name : "",
+            map: Global.MAP.metadata ? Global.MAP.metadata.name : "",
             caseID: Global.currentCase ? Global.currentCase.id : "",
             caseProgress: Global.caseProgress,
             markerID: Global.MAP.nextMarkerID,
@@ -289,7 +289,7 @@ function onConnectionDataReceive(data) {
             Global.MAP.nextMarkerID = markerID;
             Global.DEBUG.nextShapeID = shapeID;
 
-            if (Global.mapMetadata && Global.mapMetadata.name != map) {
+            if (Global.MAP.metadata && Global.MAP.metadata.name != map) {
                 let txt = `The host is using a different map (${map}). This may cause problems.`;
                 console.log(txt);
                 alert(txt);

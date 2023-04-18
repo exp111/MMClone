@@ -152,8 +152,18 @@ async function refreshCases() {
         let text = val.difficulty ? `${val.name} (${val.difficulty})` : val.name
         select.append(new Option(text, key));
     }
-    let option = select.selectedOptions[0];
-    let id = option.value;
+    // set to starting case
+    let startCase = Global.MAP.metadata.startCase;
+    if (startCase) {
+        if (Object.keys(Global.cases).find(c => c == startCase)) {
+            select.value = startCase;
+        } else {
+            console.log(`Starting case ${startCase} not found.`);
+        }
+    }
+
+
+    let id = select.value;
     // Manually call the change func
     handleCaseChange(id);
 }
@@ -163,14 +173,12 @@ function changeCase(id) {
     let index = null;
     for (let i in select.options) {
         let opt = select.options[i];
-        if (opt.value == id)
-        {
+        if (opt.value == id) {
             index = i;
             break;
         }
     }
-    if (!index)
-    {
+    if (!index) {
         console.log(`Case with ID ${id} not found.`);
         return false;
     }
@@ -179,10 +187,12 @@ function changeCase(id) {
     handleCaseChangeCall(id);
     return true;
 }
+
 function handleCaseChange(id) {
     sendChangeCase(id);
     handleCaseChangeCall(id);
 }
+
 function handleCaseChangeCall(id) {
     let selected = Global.cases[id];
     if (!selected)
@@ -401,7 +411,7 @@ function solveStepCall() {
 function setCaseProgress(progress) {
     if (progress == Global.caseProgress)
         return;
-    
+
     // set to progress - 1
     Global.caseProgress = progress - 1;
     // then solve that step to do all the necessary stuff
