@@ -296,7 +296,9 @@ function playFinalAnimation() {
             // unlock after stamp
             setTimeout(() => {
                 //TODO: unlock pointer, reset container height
-            }, SOLVED_STAMP_ANIMATION_DURATION);
+                // hide cards
+                setMenuVisible("card-menu", "top", false);
+            }, SOLVED_STAMP_ANIMATION_DURATION * 2); // dont immediately reset
         }, FINAL_CARD_STACK_ANIMATION_DURATION);
     }, 100);
 }
