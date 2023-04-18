@@ -34,6 +34,10 @@
     div.input input {
         width: 90%;
     }
+    div.input select {
+        height: 100%;
+        width: 90%;
+    }
 
     #steps>.step {
         margin-bottom: 10px;
@@ -64,6 +68,13 @@
                 <label for="case-steps">#Steps</label>
                 <input id="case-steps" type="number" value="3">
             </div>
+            <div class="input">
+                <label for="case-orientation">Orientation</label>
+                <select id="case-orientation">
+                    <option value="horizontal">Horizontal</option>
+                    <option value="vertical">Vertical</option>
+                </select>
+            </div>
             <div id="steps">
             </div>
         </div>
@@ -78,6 +89,7 @@
         id: "bank_heist",
         name: "The Bank Heist",
         difficulty: "2/5",
+        orientation: "horizontal",
         steps: [{
             "id": "introduction",
             "text": "The Bank Heist",
@@ -313,10 +325,12 @@
         let title = document.getElementById("case-title");
         let difficulty = document.getElementById("case-difficulty");
         let caseSteps = document.getElementById("case-steps");
+        let orientation = document.getElementById("case-orientation");
         id.value = object.id;
         title.value = object.name;
         difficulty.value = object.difficulty;
         caseSteps.value = object.steps.length;
+        orientation.value = object.orientation;
         // hook up events
         id.onchange = () => {
             object.id = id.value;
@@ -344,6 +358,10 @@
                 // remove last diff entries
                 object.steps = object.steps.slice(0, diff);
             }
+            refresh();
+        }
+        orientation.onchange = () => {
+            object.orientation = orientation.value;
             refresh();
         }
 
