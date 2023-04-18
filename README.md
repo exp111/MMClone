@@ -23,7 +23,6 @@ You need to first load a map before being able to play. A test map is available 
 - mark solved cards better in ui
 - make objective display better on mobile
 - add shake on mobile/general cards after waiting too long?
-- add case finish animation
 - add possibility to (temporarily) see unflipped card?
 - save case progress
 - save settings
@@ -37,6 +36,8 @@ You need to first load a map before being able to play. A test map is available 
 - tests??
 - toolbar like debug menu for quick access?
 - finish timer
+- fix unlock animation?
+- fix stamps being under other cards
 
 # How to create a map from a image
 To transform a image to raster tiles you can use libvips with this command:

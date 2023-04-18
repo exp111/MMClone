@@ -398,9 +398,7 @@ button.overlay-button {
     align-items: center;
 }
 
-.card-solved {
-    z-index: 2;
-    content: url(assets/img/solved.png);
+.card-solved, .case-solved {
     height: auto;
     width: 90%;
     opacity: 0;
@@ -415,6 +413,13 @@ button.overlay-button {
     -webkit-animation-fill-mode: forwards;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden
+}
+.card-solved {
+    z-index: 2;
+    content: url(assets/img/solved.png);
+}
+.case-solved {
+    content: url(assets/img/caseclosed.png);
 }
 
 @keyframes pulse {

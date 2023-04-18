@@ -230,13 +230,7 @@ function updateCaseStep() {
     if (!step)
         return;
     // update solutions
-    // clear existing circles
-    console.debug(`Removing ${Global.caseMarkers.length} markers`);
-    for (let key in Global.caseMarkers) {
-        let val = Global.caseMarkers[key];
-        val.remove();
-    }
-    Global.caseMarkers = [];
+    clearCaseMarkers();
 
     // then add the new ones
     let root = buildStepNodes(step);
@@ -249,6 +243,16 @@ function updateCaseStep() {
 
     console.debug(`Built ${Global.CASE.nodes.length} nodes.`);
     console.debug(`Added ${Global.caseMarkers.length} new markers`);
+}
+
+function clearCaseMarkers() {
+    // clear existing circles
+    console.debug(`Removing ${Global.caseMarkers.length} markers`);
+    for (let key in Global.caseMarkers) {
+        let val = Global.caseMarkers[key];
+        val.remove();
+    }
+    Global.caseMarkers = [];
 }
 
 function buildStepNodes(step) {
@@ -434,6 +438,12 @@ function progressCase() {
     //TODO: end of case animation or smth
     if (Global.caseProgress == Global.currentCase.steps.length) {
         console.debug("Reached the end of the case.");
+        // clear any case leftovers
+        Global.CASE.objective = "";
+        clearCaseMarkers();
+        updateObjective(Global.CASE.objective, null, null);
+        // stamp the cards
+        playFinalAnimation();
         return;
     }
 

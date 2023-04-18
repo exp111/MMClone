@@ -1,7 +1,9 @@
 Global.UI = {
     swiper: null,
 }
+const SOLVED_STAMP_ANIMATION_DURATION = 600;
 const UNLOCK_CARD_ANIMATION_DURATION = 400;
+const FINAL_CARD_STACK_ANIMATION_DURATION = 1800;
 
 function setSubMenuVisible(mainID, subMenuID, enabled) {
     let main = document.getElementById(mainID);
@@ -42,6 +44,13 @@ function initSwiper() {
 }
 
 function buildCards() {
+    // enable the swiper if it was previously disabled (finished a case)
+    if (!Global.UI.swiper.enabled)
+    {
+        Global.UI.swiper.enable();
+        //FIXME: this is a hack to remove the height
+        Global.UI.swiper.el.style.height = "";
+    }
     console.debug("Building cards...");
     let orientation = Global.currentCase.orientation ? Global.currentCase.orientation : "vertical";
     let cardClass = `card-${orientation}`;
@@ -156,7 +165,7 @@ function flipCard(index, stamp) {
         setTimeout(() => {
             // then flip
             card.classList.add("flipped");
-        }, 600);
+        }, SOLVED_STAMP_ANIMATION_DURATION);
     } else // only flip
     {
         card.classList.add("flipped");
@@ -241,4 +250,53 @@ function setMarkerCursor(enabled) {
 function updateObjective(text, current, max) {
     let label = document.getElementById("case_objective");
     label.textContent = current != null ? `${text} ${current}/${max}` : text;
+}
+
+function playFinalAnimation() {
+    // lock
+    Global.UI.swiper.disable();
+    // move cards
+    let cards = Global.UI.swiper.slides;
+    let offsets = cards.map(card => card.offsetLeft);
+    let lastOffset = offsets[offsets.length - 1];
+    let container = Global.UI.swiper.el;
+    // save container height
+    let containerHeight = window.getComputedStyle(container, null).getPropertyValue("height");
+    // move cards apart
+    for (i = 0; i < cards.length; i++) {
+        let offset = 1000 * (cards.length + 1 - i);
+        let card = cards[i];
+        card.style.position = "absolute";
+        card.style.left = `${offsets[i]}px`;
+        card.style.transition = `${FINAL_CARD_STACK_ANIMATION_DURATION}ms`;
+        card.style.zIndex = offset.toString();
+        card.style.transform = `translate3d(0, 0, ${offset}px) rotateY(180deg)`;
+    }
+    // set container height as cards dont take up space
+    container.style.height = containerHeight;
+    // after move, stack cards
+    setTimeout(() => {
+        for (let i = 0; i < cards.length; i++) {
+            let offset = 1000 * (cards.length + 1 - i);
+            let card = cards[i];
+            card.style.left = `${lastOffset}px`;
+            card.style.transform = `translate3d(0, 0, ${offset}px) rotate(${(8 * Math.random() - 3)}deg)`;
+        }
+        // after stacking, stamp
+        setTimeout(() => {
+            let first = cards[0];
+            let inner = first.getElementsByClassName("card-inner")[0];
+            let back = first.getElementsByClassName("card-back")[0];
+            let solvedWrapper = document.createElement("div");
+            solvedWrapper.classList.add("card-face", "card-solved-wrapper");
+            let solved = document.createElement("img");
+            solved.classList.add("case-solved");
+            solvedWrapper.appendChild(solved);
+            inner.insertBefore(solvedWrapper, back);
+            // unlock after stamp
+            setTimeout(() => {
+                //TODO: unlock pointer, reset container height
+            }, SOLVED_STAMP_ANIMATION_DURATION);
+        }, FINAL_CARD_STACK_ANIMATION_DURATION);
+    }, 100);
 }
