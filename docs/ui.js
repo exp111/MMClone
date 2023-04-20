@@ -182,19 +182,12 @@ function updateCards() {
         let card = Global.UI.swiper.slides[i];
         card.classList.remove("current");
 
+        //TODO: remove these checks as they just make stuff complicated. kill the problems at the root
+        /// by flipping cards on casesync and just waiting on animations
         // flip unflipped cards
         if (i < Global.caseProgress) {
-            if (!card.classList.contains("flipped")) {
-                // if they're currently being stamped, dont flip //TODO: is there a better way
-                let solved = card.getElementsByClassName("card-solved");
-                // look at the solved cards animation
-                let beingStamped = solved[0].getAnimations().filter((anim) => {
-                    // check if they're running
-                    return anim.pending;
-                }).length != 0;
-                if (solved.length == 0 || !beingStamped)
-                    card.classList.add("flipped");
-            }
+            if (!card.classList.contains("flipped"))
+                card.classList.add("flipped");
         }
         // remove locked overlay if it exists //TODO: rather hide it?
         if (i <= Global.caseProgress) {
