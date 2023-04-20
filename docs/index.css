@@ -344,6 +344,11 @@ button.overlay-button {
     cursor: pointer;
 }
 
+/* Make finished case cards clickable */
+.finished .card {
+    cursor: pointer;
+}
+
 /* Move up the active slide so the stamp can be above nearby cards */
 .swiper-slide-active {
     z-index: 2;

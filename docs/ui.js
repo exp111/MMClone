@@ -131,6 +131,15 @@ function buildCards() {
 
 function onSlideClick(index) {
     //console.debug(`Clicked on slide ${index}`);
+    // check if we finished the case
+    if (Global.currentCase && Global.caseProgress == Global.currentCase.steps.length) {
+        // only if we clicked it once
+        if (Global.UI.swiper.wrapperEl.classList.contains("finished")) {
+            // stamp the cards
+            playFinalAnimation();
+            Global.UI.swiper.wrapperEl.classList.remove("finished");
+        }
+    }
 
     if (index == Global.UI.swiper.activeIndex && index == Global.caseProgress) {
         let curStep = Global.currentCase.steps[Global.caseProgress];
@@ -166,6 +175,7 @@ async function flipCard(index, stamp) {
             // then flip
             card.classList.add("flipped");
             //TODO: wait for flip?
+            //await delay(1000);
             resolve();
         } else {
             // only flip

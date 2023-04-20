@@ -444,8 +444,8 @@ function progressCase() {
         Global.CASE.objective = "";
         clearCaseMarkers();
         updateObjective(Global.CASE.objective, null, null);
-        // stamp the cards
-        playFinalAnimation();
+        // add finished tag so its made clickable
+        Global.UI.swiper.wrapperEl.classList.add("finished");
         return;
     }
 
