@@ -344,6 +344,11 @@ button.overlay-button {
     cursor: pointer;
 }
 
+/* Move up the active slide so the stamp can be above nearby cards */
+.swiper-slide-active {
+    z-index: 2;
+}
+
 .card-inner {
     width: 100%;
     height: 100%;
@@ -415,7 +420,7 @@ button.overlay-button {
     -webkit-backface-visibility: hidden
 }
 .card-solved {
-    z-index: 2;
+    z-index: 10;
     content: url(assets/img/solved.png);
 }
 .case-solved {

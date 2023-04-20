@@ -149,26 +149,30 @@ function onSlideClick(index) {
 }
 
 // flips a card. if "stamp" is true, the card will be stamped
-function flipCard(index, stamp) {
+async function flipCard(index, stamp) {
     let card = Global.UI.swiper.slides[index];
     let inner = card.getElementsByClassName("card-inner")[0];
-
-    if (stamp) {
-        // first stamp with solve
-        let wrap = document.createElement("div");
-        wrap.classList.add("card-face", "card-solved-wrapper");
-        let solved = document.createElement("img");
-        solved.classList.add("card-solved");
-        wrap.appendChild(solved);
-        inner.appendChild(wrap);
-        setTimeout(() => {
+    return new Promise(async (resolve, reject) => {
+        if (stamp) {
+            // first stamp with solve
+            let wrap = document.createElement("div");
+            wrap.classList.add("card-face", "card-solved-wrapper");
+            let solved = document.createElement("img");
+            solved.classList.add("card-solved");
+            wrap.appendChild(solved);
+            inner.appendChild(wrap);
+            // wait for the stamp animation
+            await delay(SOLVED_STAMP_ANIMATION_DURATION);
             // then flip
             card.classList.add("flipped");
-        }, SOLVED_STAMP_ANIMATION_DURATION);
-    } else // only flip
-    {
-        card.classList.add("flipped");
-    }
+            //TODO: wait for flip?
+            resolve();
+        } else {
+            // only flip
+            card.classList.add("flipped");
+            resolve();
+        }
+    });
 }
 
 // updates the cards

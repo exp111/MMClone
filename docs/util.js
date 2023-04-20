@@ -69,3 +69,7 @@ function StringToColor(str) {
     }
     return colour;
 }
+
+function delay(ms) {
+    return new Promise(res => setTimeout(res, ms));
+}

@@ -406,10 +406,10 @@ function solveStepCall() {
     // open menu
     setMenuVisible("card-menu", "top", true);
     // flip card, stamp if there was a solution
-    flipCard(Global.caseProgress, step.solution != null);
-
-    // unlock next card
-    progressCase();
+    flipCard(Global.caseProgress, step.solution != null).then(() => {
+        // unlock next card
+        progressCase();
+    });
 }
 
 function setCaseProgress(progress) {

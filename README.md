@@ -36,8 +36,7 @@ You need to first load a map before being able to play. A test map is available 
 - tests??
 - toolbar like debug menu for quick access?
 - finish timer
-- fix unlock animation?
-- fix stamps being under other cards
+- fix slides not being centered after resizing while case is finished (swiper is disabled)
 
 # How to create a map from a image
 To transform a image to raster tiles you can use libvips with this command:
