@@ -7,8 +7,10 @@
             "name": "MMClone",
             "type": "firefox",
             "request": "launch",
-            "reAttach": true,
-            "file": "${workspaceFolder}/docs/index.html"
+            "reAttach": false,
+            "file": "${workspaceFolder}/docs/index.html",
+            "profile": "debug",
+            "keepProfileChanges": true
         },
         {
             "name": "CaseBuilder",

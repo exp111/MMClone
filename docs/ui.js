@@ -68,7 +68,7 @@ function buildCards() {
         inner.classList.add("card-inner");
 
         // add lock overlay if its locked
-        if (i > Global.caseProgress) {
+        if (!hasStepUnlocked(step)) {
             let lock = document.createElement("div");
             lock.classList.add("card-face");
             lock.classList.add("card-locked-overlay");
@@ -132,7 +132,7 @@ function buildCards() {
 function onSlideClick(index) {
     //console.debug(`Clicked on slide ${index}`);
     // check if we finished the case
-    if (Global.currentCase && Global.caseProgress == Global.currentCase.steps.length) {
+    if (Global.currentCase && Global.CASE.completedSteps == Global.currentCase.steps.length) {
         // only if we clicked it once
         if (Global.UI.swiper.wrapperEl.classList.contains("finished")) {
             // stamp the cards
@@ -141,14 +141,17 @@ function onSlideClick(index) {
         }
     }
 
-    if (index == Global.UI.swiper.activeIndex && index == Global.caseProgress) {
-        let curStep = Global.currentCase.steps[Global.caseProgress];
+    let step = Global.currentCase.steps[index];
+    // if the clicked step is active, solve it/select it
+    if (index == Global.UI.swiper.activeIndex && stepActive(step)) {
         // unlock if unsolvable
-        if (curStep.solution == null) { //TODO: can we like do this not in the ui context
-            solveStep();
+        if (step.solution == null) { //TODO: can we like do this not in the ui context
+            solveStep(step.id);
             return;
         }
-        // else go into the map
+        // else set step as active //TODO: remove selected
+        Global.CASE.selected = index;
+        // and go into the map
         setMenuVisible("card-menu", "top", false);
         return;
     }
@@ -191,16 +194,18 @@ function updateCards() {
         // cards
         let card = Global.UI.swiper.slides[i];
         card.classList.remove("current");
+        let solved = hasStepSolved(step);
+        let unlocked = hasStepUnlocked(step);
 
         //TODO: remove these checks as they just make stuff complicated. kill the problems at the root
         /// by flipping cards on casesync and just waiting on animations
-        // flip unflipped cards
-        if (i < Global.caseProgress) {
+        // flip solved unflipped cards
+        if (solved) {
             if (!card.classList.contains("flipped"))
                 card.classList.add("flipped");
         }
         // remove locked overlay if it exists //TODO: rather hide it?
-        if (i <= Global.caseProgress) {
+        if (unlocked) {
             let locked = card.getElementsByClassName("card-locked-overlay");
             if (locked.length > 0) {
                 let target = locked[0];
@@ -211,17 +216,17 @@ function updateCards() {
             }
         }
 
-        // set current for cursor
-        if (Global.caseProgress == i) {
+        // set currents for cursor
+        if (!solved && unlocked) {
             card.classList.add("current");
         }
 
         // pagination
-        updatePaginationBullet(step, i);
+        updatePaginationBullet(step, i, solved, unlocked);
     });
 }
 
-function updatePaginationBullet(step, i) {
+function updatePaginationBullet(step, i, solved, unlocked) {
     let bullet = Global.UI.swiper.pagination.bullets[i];
     if (!bullet) // sanity check
         return;
@@ -230,16 +235,16 @@ function updatePaginationBullet(step, i) {
     bullet.classList.remove("unsolvable", "completed", "not-completed", "locked");
     // apply new ones
     let style = "";
-    if (!step.solution) // no solutions
+    if (!step.solution) // no solutions //TODO: logic in my ui? its more likely than you think
     {
         style = "unsolvable";
-    } else if (i > Global.caseProgress) // locked
+    } else if (!unlocked) // locked
     {
         style = "locked";
-    } else if (i == Global.caseProgress) // not completed
+    } else if (unlocked && !solved) // not completed
     {
         style = "not-completed";
-    } else if (i < Global.caseProgress) // completed
+    } else if (unlocked && solved) // completed
     {
         style = "completed";
     }
@@ -254,6 +259,7 @@ function setMarkerCursor(enabled) {
 }
 
 function updateObjective(text, current, max) {
+    //TODO: show multiple objectives?
     let overlay = document.getElementById("objective-overlay");
     // hide the overlay if we're not showing anything
     if (!text && !current && !max) {

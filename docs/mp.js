@@ -211,7 +211,7 @@ function hostOnConnectionOpen() {
             peerList: peerList,
             map: Global.MAP.metadata ? Global.MAP.metadata.name : "",
             caseID: Global.currentCase ? Global.currentCase.id : "",
-            caseProgress: Global.caseProgress,
+            caseProgress: Global.CASE.progress,
             markerID: Global.MAP.nextMarkerID,
             shapeID: Global.DEBUG.nextShapeID,
         }
@@ -506,9 +506,12 @@ function sendChangeCirclePosition(id, newX, newY) {
     }, true);
 }
 
-function sendSolveStep() {
+function sendSolveStep(id) {
     sendDataMP({
-        type: "solveStep"
+        type: "solveStep",
+        data: {
+            id: id,
+        }
     });
 }
 

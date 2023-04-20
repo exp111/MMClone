@@ -61,8 +61,8 @@
             return temp;
         }
 
+        // copy obj
         let res = JSON.parse(JSON.stringify(json));
-        //TODO: copy obj
         json.steps.forEach((step, stepI) => {
             if (step.solutions) {
                 step.solutions.forEach((sol, solI) => {

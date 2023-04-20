@@ -1,6 +1,9 @@
 Global.CASE = {
     objective: [],
     nodes: [],
+    progress: {},
+    selected: 0,
+    completedSteps: 0
 }
 
 function handleCaseFile(event) {
@@ -118,13 +121,20 @@ async function getStepImageBack(step) {
     return loadCaseImage(Global.currentCase.id, img)
 }
 
-// helper to delete all children of a element
-function clearChildren(parent) {
-    var childArray = parent.children;
-    var cL = childArray.length;
-    while (cL > 0) {
-        cL--;
-        parent.removeChild(childArray[cL]);
+// Does additional transformations for backwards compat
+function prepareCases() {
+    for (let id in Global.cases) {
+        let cur = Global.cases[id];
+        cur.steps.forEach((step, index) => {
+            // Requires
+            if (!step.requires || step.requires instanceof Array) {
+                // create default requires
+                if (index > 0)
+                    step.requires = [cur.steps[index - 1].id];
+                else // first one has no requirement
+                    step.requires = [];
+            }
+        });
     }
 }
 
@@ -138,15 +148,20 @@ async function refreshCases() {
     if (cases.length == 0)
         return;
 
+    // copy into global var
     Global.cases = {}
     for (let key in cases) {
         let val = cases[key];
         Global.cases[val["id"]] = val;
     }
+    // prepare loaded cases //TODO: do before storing cases into db?
+    prepareCases();
 
     // Put into select
     let select = document.getElementById("select_case");
-    clearChildren(select);
+    // clear select
+    select.innerHTML = "";
+    // append cases to select
     for (let key in Global.cases) {
         let val = Global.cases[key];
         let text = val.difficulty ? `${val.name} (${val.difficulty})` : val.name
@@ -199,7 +214,7 @@ function handleCaseChangeCall(id) {
         return;
 
     Global.currentCase = selected;
-    Global.caseProgress = 0;
+    Global.CASE.progress = {};
     buildCards();
     updateCaseStep();
     console.debug(`Selected case ${selected.name} (ID ${selected.id})`);
@@ -217,7 +232,9 @@ function resetCaseCall() {
     if (!Global.currentCase)
         return;
 
-    Global.caseProgress = 0;
+    Global.CASE.progress = {};
+    Global.CASE.completedSteps = 0;
+    Global.CASE.selected = 0;
     // just rebuild cards lmao
     buildCards();
     updateCaseStep();
@@ -226,7 +243,8 @@ function resetCaseCall() {
 
 // Updates the objective text and markers.
 function updateCaseStep() {
-    let step = Global.currentCase.steps[Global.caseProgress];
+    //TODO: this currently only shows one step's markers
+    let step = Global.currentCase.steps[Global.CASE.selected];
     if (!step)
         return;
     // update solutions
@@ -258,7 +276,9 @@ function clearCaseMarkers() {
 function buildStepNodes(step) {
     Global.CASE.nodes = [];
     if (step.solution) {
-        return buildStepNode(step.solution, null)
+        let root = buildStepNode(step.solution, null);
+        root.step = step.id;
+        return root;
     }
     return null;
 }
@@ -268,7 +288,7 @@ function solveParent(node) {
     node.done = true;
     // pass to parent
     if (node.parent == null)
-        solveStep();
+        solveStep(node.step);
     else
         solveNode(node.parent);
 }
@@ -378,51 +398,53 @@ function buildStepNode(node, parent) {
     return n;
 }
 
-function solveStep() {
+function solveStep(id) {
     if (!Global.currentCase)
-        return;
-
-    let step = Global.currentCase.steps[Global.caseProgress];
-    if (!step)
         return;
 
     // send mp
-    sendSolveStep()
+    sendSolveStep(id)
     // call rpc func
-    solveStepCall()
+    solveStepCall(id)
 }
 // Solves the current step and shows the solution. Also unlocks the next button.
-function solveStepCall() {
+function solveStepCall(id) {
     if (!Global.currentCase)
         return;
 
-    let step = Global.currentCase.steps[Global.caseProgress];
+    let index = Global.currentCase.steps.findIndex(s => s.id == id);
+    let step = Global.currentCase.steps[index];
     if (!step)
         return;
 
     //INFO: if step is solved, open menu, flip card, unlock next card. thats all
+    console.debug(`Solved Step ${id}`);
+    Global.CASE.progress[id] = true;
     // slide instantly to next current card
-    Global.UI.swiper.slideTo(Global.caseProgress, 0);
+    Global.UI.swiper.slideTo(index, 0);
     // open menu
     setMenuVisible("card-menu", "top", true);
     // flip card, stamp if there was a solution
-    flipCard(Global.caseProgress, step.solution != null).then(() => {
-        // unlock next card
+    flipCard(index, step.solution != null).then(() => {
+        // try to unlock next card
         progressCase();
     });
 }
 
 function setCaseProgress(progress) {
-    if (progress == Global.caseProgress)
-        return;
+    Global.CASE.progress = progress;
 
-    // set to progress - 1
-    Global.caseProgress = progress - 1;
+    // TODO: remove this shitty hack and just show all solved cards with no animation
+    let keys = Object.keys(progress);
+    let last = keys[keys.length - 1];
+    Global.CASE.progress[last] = false;
+    // filter for true values
+    Global.CASE.completedSteps = Object.values(Global.CASE.progress).filter(s => s).length;
+
     // update cards to flip and unlock each cards
     updateCards();
     // then solve that step to do all the necessary stuff
-    solveStepCall();
-    //TODO: dont rely on solvestep?
+    solveStepCall(last);
 }
 
 // Increases the case progress and updates the objective and solution text.
@@ -432,13 +454,15 @@ function progressCase() {
         return;
     }
 
-    console.debug(`Increasing case step from ${Global.caseProgress}`);
-    Global.caseProgress++;
+    console.debug(`Increasing case step from ${Global.CASE.completedSteps}`);
+    Global.CASE.completedSteps++;
+    //TODO: dont auto select next case here? may be annoying/confusing if you get kicked out of your curcase
+    Global.CASE.selected = getNextStep();
 
     // update cards
     updateCards();
     //TODO: end of case animation or smth
-    if (Global.caseProgress == Global.currentCase.steps.length) {
+    if (Global.CASE.completedSteps == Global.currentCase.steps.length) {
         console.debug("Reached the end of the case.");
         // clear any case leftovers
         Global.CASE.objective = "";
@@ -456,4 +480,31 @@ function progressCase() {
 // used to update the case. if you want to progress, use progressCase();
 function updateCase() {
     updateCaseStep();
+}
+
+function hasStepSolved(step) {
+    return Global.CASE.progress[step.id] == true;
+}
+
+function hasStepUnlocked(step) {
+    for (let id of step.requires) {
+        if (!Global.CASE.progress[id])
+            return false;
+    }
+    return true;
+}
+
+function stepActive(step) {
+    return !hasStepSolved(step) && hasStepUnlocked(step);
+}
+
+function getNextStep() {
+    // find the first case that is unlocked but still unsolved
+    for (let i = 0; i < Global.currentCase.steps.length; i++) {
+        let step = Global.currentCase.steps[i];
+        if (stepActive(step))
+            return i;
+    }
+    console.debug("No next step found. End of case?")
+    return Global.CASE.completedSteps;
 }
