@@ -1,8 +1,7 @@
 Global.CASE = {
-    objective: [],
+    objectives: {},
     nodes: [],
     progress: {},
-    selected: 0,
     completedSteps: 0
 }
 
@@ -127,7 +126,7 @@ function prepareCases() {
         let cur = Global.cases[id];
         cur.steps.forEach((step, index) => {
             // Requires
-            if (!step.requires || step.requires instanceof Array) {
+            if (step.requires == null || !step.requires instanceof Array) {
                 // create default requires
                 if (index > 0)
                     step.requires = [cur.steps[index - 1].id];
@@ -215,6 +214,8 @@ function handleCaseChangeCall(id) {
 
     Global.currentCase = selected;
     Global.CASE.progress = {};
+    Global.CASE.completedSteps = 0;
+    Global.CASE.objectives = {};
     buildCards();
     updateCaseStep();
     console.debug(`Selected case ${selected.name} (ID ${selected.id})`);
@@ -234,7 +235,7 @@ function resetCaseCall() {
 
     Global.CASE.progress = {};
     Global.CASE.completedSteps = 0;
-    Global.CASE.selected = 0;
+    Global.CASE.objectives = {};
     // just rebuild cards lmao
     buildCards();
     updateCaseStep();
@@ -243,41 +244,68 @@ function resetCaseCall() {
 
 // Updates the objective text and markers.
 function updateCaseStep() {
-    //TODO: this currently only shows one step's markers
-    let step = Global.currentCase.steps[Global.CASE.selected];
-    if (!step)
-        return;
+    //TODO: activeSteps?
+    let old = Global.CASE.objectives; //TODO: dont recreate every time
+    Global.CASE.objectives = {};
+    for (let step of Global.currentCase.steps) {
+        if (!stepActive(step))
+            continue;
+
+        //FIXME: hack to fix objectives resetting
+        if (old[step.id]) {
+            Global.CASE.objectives[step.id] = old[step.id];
+            continue;
+        }
+        // build nodes
+        let root = buildStepNodes(step);
+        if (root && root.counter != null) {
+            Global.CASE.objectives[step.id] = {
+                text: step.text ? step.text : "",
+                current: root.counter,
+                max: root.children.length,
+            };
+        } else {
+            // only add a objective if we've got text
+            if (step.text) {
+                Global.CASE.objectives[step.id] = {
+                    text: step.text,
+                };
+            }
+        }
+    }
+
     // update solutions
     clearCaseMarkers();
 
-    // then add the new ones
-    let root = buildStepNodes(step);
     // update objective label
-    Global.CASE.objective = step.text ? step.text : "";
-    if (root && root.counter != null) {
-        updateObjective(Global.CASE.objective, root.counter, root.children.length);
-    } else
-        updateObjective(Global.CASE.objective, null, null);
+    updateObjectives();
 
     console.debug(`Built ${Global.CASE.nodes.length} nodes.`);
     console.debug(`Added ${Global.caseMarkers.length} new markers`);
 }
 
 function clearCaseMarkers() {
-    // clear existing circles
+    // clear existing circles that arent active anymore
     console.debug(`Removing ${Global.caseMarkers.length} markers`);
-    for (let key in Global.caseMarkers) {
-        let val = Global.caseMarkers[key];
-        val.remove();
-    }
-    Global.caseMarkers = [];
+    Global.caseMarkers = Global.caseMarkers.filter(marker => {
+        let node = marker.node;
+        // not used anymore
+        if (!Global.CASE.objectives[node.step]) //TODO: active steps
+        {
+            // remove + filter
+            marker.remove();
+            return false;
+        }
+        
+        // keep
+        return true;
+    });
 }
 
 function buildStepNodes(step) {
     Global.CASE.nodes = [];
     if (step.solution) {
-        let root = buildStepNode(step.solution, null);
-        root.step = step.id;
+        let root = buildStepNode(step.solution, null, step.id);
         return root;
     }
     return null;
@@ -345,11 +373,15 @@ function incrementNodeCall(node) {
 
     // only update the top node
     if (node.parent == null)
-        updateObjective(Global.CASE.objective, node.counter, node.children.length);
+    {
+        let obj = Global.CASE.objectives[node.step];
+        obj.current = node.counter;
+        updateObjectives();
+    }
     return false;
 }
 
-function buildStepNode(node, parent) {
+function buildStepNode(node, parent, step) {
     // create new node
     let id = Global.CASE.nodes.length;
     let n = {
@@ -357,6 +389,7 @@ function buildStepNode(node, parent) {
         id: id,
         parent: parent,
         children: [],
+        step: step,
     };
     Global.CASE.nodes[id] = n;
 
@@ -372,6 +405,7 @@ function buildStepNode(node, parent) {
                 radius: node.radius,
                 bubblingMouseEvents: false, // needed or else we cause a map contextmenu event
             });
+            circle.node = n;
             circle.addTo(Global.map);
             circle.addEventListener("click", () => solveNode(n));
             Global.caseMarkers.push(circle);
@@ -380,13 +414,13 @@ function buildStepNode(node, parent) {
         case "and": {
             n.counter = 0;
             node.nodes.forEach((child) => {
-                n.children.push(buildStepNode(child, n));
+                n.children.push(buildStepNode(child, n, step));
             });
             break;
         }
         case "or": {
             node.nodes.forEach((child) => {
-                n.children.push(buildStepNode(child, n));
+                n.children.push(buildStepNode(child, n, step));
             });
             break;
         }
@@ -456,8 +490,6 @@ function progressCase() {
 
     console.debug(`Increasing case step from ${Global.CASE.completedSteps}`);
     Global.CASE.completedSteps++;
-    //TODO: dont auto select next case here? may be annoying/confusing if you get kicked out of your curcase
-    Global.CASE.selected = getNextStep();
 
     // update cards
     updateCards();
@@ -465,9 +497,9 @@ function progressCase() {
     if (Global.CASE.completedSteps == Global.currentCase.steps.length) {
         console.debug("Reached the end of the case.");
         // clear any case leftovers
-        Global.CASE.objective = "";
+        Global.CASE.objectives = {};
         clearCaseMarkers();
-        updateObjective(Global.CASE.objective, null, null);
+        updateObjectives();
         // add finished tag so its made clickable
         Global.UI.swiper.wrapperEl.classList.add("finished");
         return;
@@ -496,15 +528,4 @@ function hasStepUnlocked(step) {
 
 function stepActive(step) {
     return !hasStepSolved(step) && hasStepUnlocked(step);
-}
-
-function getNextStep() {
-    // find the first case that is unlocked but still unsolved
-    for (let i = 0; i < Global.currentCase.steps.length; i++) {
-        let step = Global.currentCase.steps[i];
-        if (stepActive(step))
-            return i;
-    }
-    console.debug("No next step found. End of case?")
-    return Global.CASE.completedSteps;
 }

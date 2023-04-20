@@ -41,9 +41,13 @@ You need to first load a map before being able to play. A test map is available 
 - use card classes instead of adding card overlays for locked and solved?
 - website icon
 - fix caseclosed.png clipping
+- delete circles after clicking them in a AND/OR node
+- clean up multi-steps + objectives code
+- move to (first) unlocked card after solving card?
 
 ## CaseBuilder TODO:
-- add depending tasks
+- better step requirement input
+- "update" json
 
 # How to create a map from a image
 To transform a image to raster tiles you can use libvips with this command:

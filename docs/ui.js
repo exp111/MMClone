@@ -149,9 +149,7 @@ function onSlideClick(index) {
             solveStep(step.id);
             return;
         }
-        // else set step as active //TODO: remove selected
-        Global.CASE.selected = index;
-        // and go into the map
+        // else go into the map
         setMenuVisible("card-menu", "top", false);
         return;
     }
@@ -258,18 +256,25 @@ function setMarkerCursor(enabled) {
     root.style.setProperty("--marker-cursor", val);
 }
 
-function updateObjective(text, current, max) {
-    //TODO: show multiple objectives?
+function updateObjectives() {
     let overlay = document.getElementById("objective-overlay");
     // hide the overlay if we're not showing anything
-    if (!text && !current && !max) {
+    if (Object.keys(Global.CASE.objectives).length == 0) {
         overlay.style.display = "none";
         return;
     } else {
         overlay.style.display = "";
     }
+
     let label = document.getElementById("case_objective");
-    label.textContent = current != null ? `${text} ${current}/${max}` : text;
+    label.innerHTML = "";
+    for (let id in Global.CASE.objectives) {
+        let obj = Global.CASE.objectives[id];
+        let text = obj.current != null ? `${obj.text} ${obj.current}/${obj.max}` : obj.text;
+        let item = document.createTextNode(text);
+        label.appendChild(item);
+        label.appendChild(document.createElement("br"));
+    }
 }
 
 function playFinalAnimation() {
