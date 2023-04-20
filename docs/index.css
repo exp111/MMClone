@@ -344,7 +344,7 @@ button.overlay-button {
     cursor: pointer;
 }
 
-/* Make finished case cards clickable */
+/* Make finished case cards clickable to trigger the final animation */
 .finished .card {
     cursor: pointer;
 }

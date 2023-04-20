@@ -42,6 +42,9 @@ You need to first load a map before being able to play. A test map is available 
 - website icon
 - fix caseclosed.png clipping
 
+## CaseBuilder TODO:
+- add depending tasks
+
 # How to create a map from a image
 To transform a image to raster tiles you can use libvips with this command:
 

@@ -34,6 +34,7 @@
     div.input input {
         width: 90%;
     }
+
     div.input select {
         height: 100%;
         width: 90%;
@@ -142,6 +143,87 @@
         input.click();
     }
 
+    function assign(node, index, obj) {
+        // if index is given, we have a AND/OR node
+        if (index != null)
+            node.nodes[index] = obj;
+        else // else its a top lvl node
+            node.solution = obj;
+    }
+
+    // Finds the first childs that matches the type. Does a DFS that prefers the first items in a list.
+    function findFirstChild(parent, type) {
+        let nodes = parent.nodes.reverse();
+        while (nodes.length > 0) {
+            // take the next one from the back
+            let cur = nodes.pop();
+            if (cur) {
+                if (cur.type == "circle")
+                    return cur;
+
+                if (cur.nodes != null) {
+                    // reverse add them so we get the first one last
+                    for (let i = cur.nodes.length - 1; i >= 0; i--) {
+                        nodes.push(cur.nodes[i]);
+                    }
+                }
+            }
+        } 
+        return null;
+    }
+
+    function replaceObj(node, index, obj) {
+        let original = index != null ? node.nodes[index] : node.solution;
+        // null check
+        if (original && obj) {
+            switch (original.type) {
+                case "circle": {
+                    switch (obj.type) {
+                        case "circle": {
+                            // do nothing
+                            return;
+                        }
+                        case "and":
+                        case "or": {
+                            // add original object to new obj
+                            let clone = {
+                                ...original
+                            };
+                            assign(node, index, obj);
+                            obj.nodes.push(clone);
+                            return;
+                        }
+                    }
+                }
+                case "or":
+                case "and": {
+                    switch (obj.type) {
+                        case "circle": {
+                            // use the first child node if available
+                            if (original.nodes.length > 0) {
+                                let child = findFirstChild(original);
+                                if (child) {
+                                    assign(node, index, child);
+                                    return;
+                                }
+                            }
+                            break;
+                        }
+                        case "and":
+                        case "or": {
+                            // only overwrite type
+                            original.type = obj.type;
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        // else just overwrite
+        assign(node, index, obj);
+    }
+
     function onButtonClick(type, node, index) {
         let obj = null;
         switch (type) {
@@ -169,13 +251,8 @@
                 break;
             }
         }
-        // if index is given, we have a AND node
-        if (index != null) {
-            node.nodes[index] = obj;
-        } // else its a top lvl node
-        else {
-            node.solution = obj;
-        }
+        // replace obj
+        replaceObj(node, index, obj);
         refresh();
     }
 
