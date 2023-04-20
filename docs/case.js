@@ -418,6 +418,8 @@ function setCaseProgress(progress) {
 
     // set to progress - 1
     Global.caseProgress = progress - 1;
+    // update cards to flip and unlock each cards
+    updateCards();
     // then solve that step to do all the necessary stuff
     solveStepCall();
     //TODO: dont rely on solvestep?

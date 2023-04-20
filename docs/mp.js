@@ -176,7 +176,6 @@ function onPeerConnection(connection) {
     // if we're hosting, inform them of all the other peers
     if (Global.MP.hosting) {
         // inform them after the connection is ready to read/write
-        //TODO: sync cases and such here?
         connection.on("open", hostOnConnectionOpen);
     }
     // add the connection to our peerlist
