@@ -27,7 +27,6 @@ You need to first load a map before being able to play. A test map is available 
 - save case progress
 - save settings
 - optimize loading (zip limited?)
-- support multi-steps (each step gets a "depends on" array? `step1.dependsOn = [step1,step2]`?)
 - show step progress (1/4) somewhere on mobile (card menu? corner?)
 - finer file load progress bar (hook put onsuccess?)
 - performance test loading (seperate zip and idb tests)
@@ -44,6 +43,9 @@ You need to first load a map before being able to play. A test map is available 
 - delete circles after clicking them in a AND/OR node
 - clean up multi-steps + objectives code
 - move to (first) unlocked card after solving card?
+- test multi steps more + in mp
+- move case file upload to debug?
+- case finish animation not working on mobile?
 
 ## CaseBuilder TODO:
 - better step requirement input

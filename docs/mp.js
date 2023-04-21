@@ -313,13 +313,15 @@ function onConnectionDataReceive(data) {
             return; // dont log
         }
         case "solveStep": {
-            solveStepCall();
+            let id = data.data.id;
+            solveStepCall(id);
             break;
         }
         case "incrementNode": {
+            let step = data.data.step;
             let id = data.data.id;
             let solved = data.data.solved;
-            incrementNode(id, solved);
+            incrementNode(step, id, solved);
             break;
         }
         case "changeCase": {
@@ -515,10 +517,11 @@ function sendSolveStep(id) {
     });
 }
 
-function sendIncrementNode(id, solved) {
+function sendIncrementNode(step, id, solved) {
     sendDataMP({
         type: "incrementNode",
         data: {
+            step: step,
             id: id,
             solved: solved
         },

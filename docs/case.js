@@ -1,6 +1,6 @@
 Global.CASE = {
     objectives: {},
-    nodes: [],
+    nodes: {},
     progress: {},
     completedSteps: 0
 }
@@ -272,6 +272,7 @@ function updateCaseStep() {
                 };
             }
         }
+        console.debug(`Built ${Global.CASE.nodes[step.id].length} nodes for step ${step.id}.`);
     }
 
     // update solutions
@@ -280,7 +281,6 @@ function updateCaseStep() {
     // update objective label
     updateObjectives();
 
-    console.debug(`Built ${Global.CASE.nodes.length} nodes.`);
     console.debug(`Added ${Global.caseMarkers.length} new markers`);
 }
 
@@ -303,7 +303,8 @@ function clearCaseMarkers() {
 }
 
 function buildStepNodes(step) {
-    Global.CASE.nodes = [];
+    //TODO: build at the start of the case?
+    Global.CASE.nodes[step.id] = [];
     if (step.solution) {
         let root = buildStepNode(step.solution, null, step.id);
         return root;
@@ -329,6 +330,7 @@ function solveNode(node) {
     switch (node.type) {
         case "or":
         case "circle": {
+            //TODO: remove node
             solveParent(node);
             break;
         }
@@ -336,7 +338,7 @@ function solveNode(node) {
             let solved = incrementNodeCall(node);
             // only inform other clients if the node wasnt solved. else solveStep should do it (in hopes of defeating potential desync)
             if (!solved) // also send all done nodes to the other clients
-                sendIncrementNode(node.id, node.children.filter(n => n.done).map(n => n.id));
+                sendIncrementNode(node.step, node.id, node.children.filter(n => n.done).map(n => n.id));
             break;
         }
         default: {
@@ -346,8 +348,8 @@ function solveNode(node) {
     }
 }
 
-function incrementNode(id, solved) {
-    let node = Global.CASE.nodes[id];
+function incrementNode(stepID, id, solved) {
+    let node = Global.CASE.nodes[stepID][id];
     if (!node || node.done)
         return;
 
@@ -355,7 +357,7 @@ function incrementNode(id, solved) {
     incrementNodeCall(node);
     // mark all solved nodes as done
     solved.forEach((i) => {
-        let node = Global.CASE.nodes[i];
+        let node = Global.CASE.nodes[stepID][i];
         if (node)
             node.done = true;
     })
@@ -383,7 +385,7 @@ function incrementNodeCall(node) {
 
 function buildStepNode(node, parent, step) {
     // create new node
-    let id = Global.CASE.nodes.length;
+    let id = Global.CASE.nodes[step].length;
     let n = {
         type: node.type,
         id: id,
@@ -391,7 +393,7 @@ function buildStepNode(node, parent, step) {
         children: [],
         step: step,
     };
-    Global.CASE.nodes[id] = n;
+    Global.CASE.nodes[step][id] = n;
 
     switch (node.type) {
         case "circle": {
