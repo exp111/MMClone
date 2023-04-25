@@ -43,13 +43,13 @@ You need to first load a map before being able to play. A test map is available 
 - delete circles after clicking them in a AND/OR node
 - clean up multi-steps + objectives code
 - move to (first) unlocked card after solving card?
-- test multi steps more + in mp
+- test multi steps more
 - move case file upload to debug?
 - case finish animation not working on mobile?
 
 ## CaseBuilder TODO:
 - better step requirement input
-- "update" json
+- show error symbol when something went wrong
 
 # How to create a map from a image
 To transform a image to raster tiles you can use libvips with this command:

@@ -53,6 +53,7 @@
     <div class="container">
         <div class="half">
             <button onclick="loadJSON()">Load JSON</button>
+            <button onclick="fixDependencies()">Fix Dependencies</button>
             <div class="input">
                 <label for="case-id">ID</label>
                 <input id="case-id" type="text">
@@ -398,6 +399,17 @@
             }
         }
         return div;
+    }
+
+    function fixDependencies() {
+        object.steps.forEach((step, i) => {
+            if (!step.requires) {
+                step.requires = []
+                if (i > 0)
+                    step.requires.push(object.steps[i - 1].id);
+            }
+        });
+        refresh();
     }
 
     function build() {

@@ -453,6 +453,11 @@ function solveStepCall(id) {
     if (!step)
         return;
 
+    if (Global.CASE.progress[id] == true) {
+        console.log(`Step ${id} already solved!`);
+        return;
+    }
+
     //INFO: if step is solved, open menu, flip card, unlock next card. thats all
     console.debug(`Solved Step ${id}`);
     Global.CASE.progress[id] = true;

@@ -131,30 +131,35 @@ function buildCards() {
 
 function onSlideClick(index) {
     //console.debug(`Clicked on slide ${index}`);
-    // check if we finished the case
-    if (Global.currentCase && Global.CASE.completedSteps == Global.currentCase.steps.length) {
-        // only if we clicked it once
-        if (Global.UI.swiper.wrapperEl.classList.contains("finished")) {
-            // stamp the cards
-            playFinalAnimation();
-            Global.UI.swiper.wrapperEl.classList.remove("finished");
-        }
-    }
-
     let step = Global.currentCase.steps[index];
-    // if the clicked step is active, solve it/select it
-    if (index == Global.UI.swiper.activeIndex && stepActive(step)) {
-        // unlock if unsolvable
-        if (step.solution == null) { //TODO: can we like do this not in the ui context
-            solveStep(step.id);
+
+    // if the clicked step is active
+    if (index == Global.UI.swiper.activeIndex) {
+        // check if we finished the case => play animation
+        if (Global.currentCase && Global.CASE.completedSteps == Global.currentCase.steps.length) {
+            // only if we havent clicked it yet
+            if (Global.UI.swiper.wrapperEl.classList.contains("finished")) {
+                // stamp the cards
+                playFinalAnimation();
+                Global.UI.swiper.wrapperEl.classList.remove("finished");
+            }
             return;
         }
-        // else go into the map
-        setMenuVisible("card-menu", "top", false);
-        return;
+
+        // solve/go to game if active step
+        if (stepActive(step)) {
+            // unlock if unsolvable
+            if (step.solution == null) { //TODO: can we like do this not in the ui context
+                solveStep(step.id);
+                return;
+            }
+            // else go into the map
+            setMenuVisible("card-menu", "top", false);
+            return;
+        }
     }
 
-    // slide to card
+    // else slide to card
     Global.UI.swiper.slideTo(index);
 }
 
@@ -283,7 +288,7 @@ function playFinalAnimation() {
     // move cards
     let cards = Global.UI.swiper.slides;
     let offsets = cards.map(card => card.offsetLeft);
-    let lastOffset = offsets[offsets.length - 1];
+    let curCardOffset = offsets[Global.UI.swiper.activeIndex];
     let container = Global.UI.swiper.el;
     // save container height
     let containerHeight = window.getComputedStyle(container, null).getPropertyValue("height");
@@ -304,7 +309,7 @@ function playFinalAnimation() {
         for (let i = 0; i < cards.length; i++) {
             let offset = 1000 * (cards.length + 1 - i);
             let card = cards[i];
-            card.style.left = `${lastOffset}px`;
+            card.style.left = `${curCardOffset}px`;
             card.style.transform = `translate3d(0, 0, ${offset}px) rotate(${(8 * Math.random() - 3)}deg)`;
         }
         // after stacking, stamp
