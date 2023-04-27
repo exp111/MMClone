@@ -38,7 +38,6 @@
                 </select>
             </div>
             <button onclick="askForFile(handleZipFile, '.zip')">Upload Zip</button>
-            <button onclick="askForFile(handleCaseFile, '.json')">Upload Case File</button>
             <button onclick="loadTestMap()">Load Test Map</button>
             <button onclick="resetCase(); setMenuVisible('menu', 'bottom', false);">Reset Case</button>
             <button id="debug-menu-button" onclick="setSubMenuVisible('menu-main', 'menu-debug', true)">Debug ></button>
@@ -62,11 +61,12 @@
                 <input type="checkbox" id="debug_toggle" autocomplete="off" onchange="Global.DEBUG.enabled = this.checked" />
                 <label for="debug_toggle">Debug</label>
             </div>
+            <button onclick="askForFile(handleCaseFile, '.json')">Upload Case File</button>
             <button onclick="clearMapDB()">Clear Map DB</button>
             <button onclick="clearCaseDB()">Clear Case DB</button>
             <button onclick="clearCaseImgDB()">Clear Case Img DB</button>
-            <button onclick="solveStep()">Solve</button>
-            <button onclick="progressCase()">Force Next</button>
+            <button onclick="solveNextStep()">Solve Next Step</button>
+            <button onclick="progressCase()">Progress Case</button>
             <button onclick="debugHost()">Quick Host</button>
             <button onclick="debugJoin()">Quick Join</button>
             <button onclick="clearShapes()">Clear Shapes</button>

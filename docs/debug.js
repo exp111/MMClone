@@ -55,3 +55,20 @@ function clearShapes() {
     // clear array
     Global.DEBUG.shapes = {};
 }
+
+function solveNextStep() {
+    // iterate through all steps and unlock the first one that isnt unlocked yet
+    if (!Global.currentCase)
+        return;
+
+    for (let step of Global.currentCase.steps) {
+        let id = step.id;
+        // already unlocked?
+        if (Global.CASE.progress[id] == true)
+            continue;
+
+        solveStep(id);
+        console.log(`Force unlocked step ${id}`);
+        return;
+    }
+}
