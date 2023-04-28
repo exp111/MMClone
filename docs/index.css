@@ -5,6 +5,19 @@
     font-weight: 400;
     src: url(assets/fonts/Bangers-Regular.ttf);
 }
+/* Card font */
+@font-face {
+    font-family: Barlow;
+    font-style: normal;
+    font-weight: 500;
+    src: url(assets/fonts/Barlow-Medium.ttf);
+}
+@font-face {
+    font-family: Barlow;
+    font-style: normal;
+    font-weight: 600;
+    src: url(assets/fonts/Barlow-SemiBold.ttf);
+}
 
 /* Make map fullscreen. bg white */
 #map,
@@ -503,4 +516,49 @@ button.overlay-button {
 
 .leaflet-edit-resize {
     border-radius: 100%;
+}
+
+/* Help menu stuff */
+#help-menu .card {
+    background-color: #fff;
+    border-radius: 30px;
+}
+
+#help-menu .card-face {
+    background-color: #111;
+    margin: 22px;
+    border-radius: 22px;
+    width: calc(100% - 22px*2); /* *2 because we have two borders... */
+    height: calc(100% - 22px*2);
+
+    color: #fff;
+    font-family: 'Barlow', sans-serif;
+}
+
+#help-menu .card-face > .header {
+    margin-top: 32px;
+    margin-left: 22px;
+    margin-bottom: 22px;
+    font-size: 30px;
+    font-weight: 600;
+}
+
+#help-menu .card-face > .text {
+    margin-left: 22px;
+    margin-bottom: 22px;
+    font-size: 20px;
+    font-weight: 500;
+}
+
+#help-menu .card-face > button {
+    font-family: 'Barlow', sans-serif;
+    background-color: #fff;
+    color: #111;
+    font-size: 20px;
+    font-weight: 600 !important;
+    border-radius: 10px;
+    margin-left: 22px;
+    width: calc(100% - 22px *2);
+    line-height: 52px;
+    height: 52px;
 }

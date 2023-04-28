@@ -29,7 +29,7 @@ function setMenuVisible(id, direction, enabled) {
 }
 
 function initSwiper() {
-    Global.UI.swiper = new Swiper(".swiper-container", {
+    Global.UI.swiper = new Swiper("#card-swiper", {
         slidesPerView: "auto",
         spaceBetween: 20,
         centeredSlides: true,
@@ -38,6 +38,19 @@ function initSwiper() {
             clickable: true,
             renderBullet: function (e, t) {
                 return `<span class="${t}"></span>`
+            }
+        }
+    });
+
+    Global.UI.helpSwiper = new Swiper("#help-swiper", {
+        slidesPerView: "auto",
+        spaceBetween: 20,
+        centeredSlides: true,
+        pagination: {
+            el: ".swiper-pagination",
+            clickable: true,
+            renderBullet: function (e, t) {
+                return `<span class="${t} unsolvable"></span>`
             }
         }
     });

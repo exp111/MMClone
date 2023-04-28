@@ -42,23 +42,28 @@
             <button onclick="resetCase(); setMenuVisible('menu', 'bottom', false);">Reset Case</button>
             <button id="debug-menu-button" onclick="setSubMenuVisible('menu-main', 'menu-debug', true)">Debug ></button>
             <button onclick="setSubMenuVisible('menu-main', 'menu-mp', true)">Multiplayer ></button>
+            <button onclick="setMenuVisible('menu', 'bottom', false); setMenuVisible('help-menu', 'top', true)">Show
+                Help</button>
             <div class="overlay-input mobile-hide">
                 <input type="checkbox" id="marker_toggle" autocomplete="off" onchange="setMarkerCursor(this.checked)" />
                 <label for="marker_toggle">Show Solution Pointer</label>
             </div>
             <div class="overlay-input mobile-hide">
-                <input type="checkbox" id="cursor_toggle" autocomplete="off" onchange="Global.MP.dontSendCursor = this.checked" />
+                <input type="checkbox" id="cursor_toggle" autocomplete="off"
+                    onchange="Global.MP.dontSendCursor = this.checked" />
                 <label for="cursor_toggle">Dont send Cursor Position</label>
             </div>
             <div class="overlay-input mobile-hide">
-                <input type="range" id="cursor_update_limit" min="0" max="250" value="50" autocomplete="off" onchange="Global.MP.cursorUpdateLimit = this.value" />
+                <input type="range" id="cursor_update_limit" min="0" max="250" value="50" autocomplete="off"
+                    onchange="Global.MP.cursorUpdateLimit = this.value" />
                 <label for="cursor_update_limit">Cursor Update Delay</label>
             </div>
         </div>
         <!-- Debug Sub Menu -->
         <div id="menu-debug" class="overlay-content" style="display: none;">
             <div class="overlay-input">
-                <input type="checkbox" id="debug_toggle" autocomplete="off" onchange="Global.DEBUG.enabled = this.checked" />
+                <input type="checkbox" id="debug_toggle" autocomplete="off"
+                    onchange="Global.DEBUG.enabled = this.checked" />
                 <label for="debug_toggle">Debug</label>
             </div>
             <button onclick="askForFile(handleCaseFile, '.json')">Upload Case File</button>
@@ -71,7 +76,8 @@
             <button onclick="debugJoin()">Quick Join</button>
             <button onclick="clearShapes()">Clear Shapes</button>
             <div class="overlay-input">
-                <input type="checkbox" id="debug_sync_toggle" autocomplete="off" onchange="Global.DEBUG.sync = this.checked" />
+                <input type="checkbox" id="debug_sync_toggle" autocomplete="off"
+                    onchange="Global.DEBUG.sync = this.checked" />
                 <label for="debug_sync_toggle">Sync</label>
             </div>
             <button onclick="setSubMenuVisible('menu-main', 'menu-debug', false)">&lt; Back</button>
@@ -98,7 +104,7 @@
     </button>
     <div id="card-menu" class="overlay" style="top: 100%">
         <button class="close-button" onclick="setMenuVisible('card-menu', 'top', false)">×</button>
-        <div class="swiper-container">
+        <div id="card-swiper" class="swiper-container">
             <div class="swiper-wrapper">
             </div>
             <div class="swiper-pagination"></div>
@@ -110,6 +116,31 @@
         <div class="overlay-header">Loading ZIP. This can take up to 30 seconds...</div>
         <label id="load-text" for="load-progress" class="overlay-content">Loading...</label>
         <progress id="load-progress" max="100" value="0"></progress>
+    </div>
+    <!-- Help Menu -->
+    <div id="help-menu" class="overlay" style="top: 100%">
+        <button class="close-button" onclick="setMenuVisible('help-menu', 'top', false)">×</button>
+        <div id="help-swiper" class="swiper-container">
+            <div class="swiper-wrapper">
+                <!-- How to play -->
+                <div class="swiper-slide card card-vertical">
+                    <div class="card-face">
+                        <div class="header">Header:</div>
+                        <div class="text">Body</div>
+                        <button>Close</button>
+                    </div>
+                </div>
+                <!-- Maps -->
+                <div class="swiper-slide card card-vertical">
+                    <div class="card-face">
+                        <div class="header">Header:</div>
+                        <div class="text">Body</div>
+                        <button>Close</button>
+                    </div>
+                </div>
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
     </div>
     <script>
         var Global = {
@@ -136,6 +167,8 @@
         initSwiper();
         setMarkerCursor(false);
         generateUsername();
+        //TODO: remove
+        //setMenuVisible("help-menu", "top", true);
     </script>
 
 </body>
