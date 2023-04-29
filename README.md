@@ -18,7 +18,6 @@ You need to first load a map before being able to play. A test map is available 
     - debug:
         - on circle/shape: set color
 - style markers (so you can see what you marked)
-- help page + first time landing page/tutorial
 - fix bounds on small images
 - mark solved cards better in ui
 - make objective display better on mobile
@@ -31,7 +30,6 @@ You need to first load a map before being able to play. A test map is available 
 - finer file load progress bar (hook put onsuccess?)
 - performance test loading (seperate zip and idb tests)
 - hints
-- add github link (to help menu?)
 - tests??
 - toolbar like debug menu for quick access?
 - finish timer
