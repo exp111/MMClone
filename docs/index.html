@@ -125,17 +125,65 @@
                 <!-- How to play -->
                 <div class="swiper-slide card card-vertical">
                     <div class="card-face">
-                        <div class="header">Header:</div>
-                        <div class="text">Body</div>
-                        <button>Close</button>
+                        <div class="header">How to play:</div>
+                        <div class="section">
+                            <img class="icon" src="assets/img/help/drag.svg">
+                            <div class="text">To search Crime City for the answers, drag the map. Zoom with the buttons or pinch / use your mouse wheel.</div>
+                        </div>
+                        <div class="section">
+                            <img class="icon" src="assets/img/help/click.svg">
+                            <div class="text">If you think you've found the right answer, just click on the place in the scene.</div>
+                        </div>
+                        <div class="section">
+                            <img class="icon" src="assets/img/help/question.svg">
+                            <div class="text">Use the card menu in the bottom right to see your current objective.</div>
+                        </div>
+                        <button class="mobile-show" onclick="helpCardButtonClick(event, false)">Next</button>
                     </div>
                 </div>
                 <!-- Maps -->
                 <div class="swiper-slide card card-vertical">
                     <div class="card-face">
-                        <div class="header">Header:</div>
-                        <div class="text">Body</div>
-                        <button>Close</button>
+                        <div class="header">How to load maps:</div>
+                        <div class="section">
+                            <img class="icon" src="assets/img/help/download.svg">
+                            <div class="text">Download the test map through the menu and find all ghosts!</div>
+                        </div>
+                        <div class="section">
+                            <img class="icon" src="assets/img/help/upload.svg">
+                            <div class="text">Play your own maps by uploading a compatible zip file.</div>
+                        </div>
+                        <button class="mobile-show" onclick="helpCardButtonClick(event, false)">Next</button>
+                    </div>
+                </div>
+                <!-- Multiplayer -->
+                <div class="swiper-slide card card-vertical">
+                    <div class="card-face">
+                        <div class="header">Multiplayer:</div>
+                        <div class="section">
+                            <img class="icon" src="assets/img/help/multiplayer.svg">
+                            <div class="text">You can also play maps with your friends together. Go into the menu and click multiplayer.</div>
+                        </div>
+                        <div class="section">
+                            <img class="icon" src="assets/img/help/host.svg">
+                            <div class="text">Host a game with "Host Lobby" and share your lobby id with your friends.</div>
+                        </div>
+                        <div class="section">
+                            <img class="icon" src="assets/img/help/join.svg">
+                            <div class="text">Join your friends by clicking "Join Lobby" and and enter the host's id.</div>
+                        </div>
+                        <button class="mobile-show" onclick="helpCardButtonClick(event, false)">Next</button>
+                    </div>
+                </div>
+                <!-- Maps -->
+                <div class="swiper-slide card card-vertical">
+                    <div class="card-face">
+                        <div class="header">Issues or ideas?</div>
+                        <div class="section">
+                            <img class="icon" src="assets/img/help/github.svg">
+                            <div class="text">If you have any problems look into the <a href="https://www.github.com/exp111/MMClone">GitHub page</a> and open an issue.</div>
+                        </div>
+                        <button onclick="helpCardButtonClick(event, true)">Close</button>
                     </div>
                 </div>
             </div>
@@ -167,10 +215,9 @@
         initSwiper();
         setMarkerCursor(false);
         generateUsername();
-        //TODO: remove
-        //setMenuVisible("help-menu", "top", true);
+        if (localStorage && !localStorage.getItem("first-time"))
+            setMenuVisible("help-menu", "top", true);
     </script>
-
 </body>
 
 </html>

@@ -54,6 +54,13 @@ function initSwiper() {
             }
         }
     });
+    // hook up click events to help cards
+    Global.UI.helpSwiper.slides.forEach((card, i) => {
+        card.onclick = () => {
+            if (Global.UI.helpSwiper.activeIndex != i)
+                Global.UI.helpSwiper.slideTo(i);
+        };
+    });
 }
 
 function buildCards() {
@@ -344,4 +351,21 @@ function playFinalAnimation() {
             }, SOLVED_STAMP_ANIMATION_DURATION * 2); // dont immediately reset
         }, FINAL_CARD_STACK_ANIMATION_DURATION);
     }, 100);
+}
+
+function helpCardButtonClick(event, lastButton) {
+    if (lastButton)
+    {
+        // close window
+        setMenuVisible("help-menu", "top");
+        // save in storage
+        if (localStorage)
+            localStorage.setItem("first-time", false);
+    }
+    else
+    {
+        // show the next slide
+        Global.UI.helpSwiper.slideNext();
+    }
+    event.stopPropagation();
 }

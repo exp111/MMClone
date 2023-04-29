@@ -5,6 +5,7 @@
     font-weight: 400;
     src: url(assets/fonts/Bangers-Regular.ttf);
 }
+
 /* Card font */
 @font-face {
     font-family: Barlow;
@@ -12,6 +13,7 @@
     font-weight: 500;
     src: url(assets/fonts/Barlow-Medium.ttf);
 }
+
 @font-face {
     font-family: Barlow;
     font-style: normal;
@@ -255,25 +257,25 @@ button.overlay-button {
 
 /* Specific bullet img */
 .swiper-pagination-bullet.unsolvable {
-    background-image: url(assets/img/unsolvable.svg);
+    background-image: url(assets/img/pagination/unsolvable.svg);
     position: relative;
     top: 1px
 }
 
 .swiper-pagination-bullet.completed {
-    background-image: url(assets/img/completed.svg);
+    background-image: url(assets/img/pagination/completed.svg);
     position: relative;
     top: -5px
 }
 
 .swiper-pagination-bullet.not-completed {
-    background-image: url(assets/img/not-completed.svg);
+    background-image: url(assets/img/pagination/not-completed.svg);
     position: relative;
     top: 1px
 }
 
 .swiper-pagination-bullet.locked {
-    background-image: url(assets/img/locked.svg);
+    background-image: url(assets/img/pagination/locked.svg);
     position: relative;
     left: 2px
 }
@@ -399,7 +401,7 @@ button.overlay-button {
 .card-locked-overlay {
     height: 100%;
     width: 100%;
-    background: #000 url(assets/img/locked.svg) no-repeat 50%;
+    background: #000 url(assets/img/pagination/locked.svg) no-repeat 50%;
     background-size: 10%;
     opacity: .95;
     border-radius: 24px;
@@ -421,7 +423,8 @@ button.overlay-button {
     align-items: center;
 }
 
-.card-solved, .case-solved {
+.card-solved,
+.case-solved {
     height: auto;
     width: 90%;
     opacity: 0;
@@ -437,10 +440,12 @@ button.overlay-button {
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden
 }
+
 .card-solved {
     z-index: 10;
     content: url(assets/img/solved.png);
 }
+
 .case-solved {
     content: url(assets/img/caseclosed.png);
 }
@@ -495,12 +500,20 @@ button.overlay-button {
     }
 }
 
+.mobile-show {
+    display: none !important;
+}
+
 /* Hide stuff on mobile */
 @media (hover:none) and (pointer:coarse) {
 
     .leaflet-control-zoom,
     .mobile-hide {
         display: none;
+    }
+
+    .mobile-show {
+        display: inherit;
     }
 }
 
@@ -521,21 +534,23 @@ button.overlay-button {
 /* Help menu stuff */
 #help-menu .card {
     background-color: #fff;
-    border-radius: 30px;
+    border-radius: 25px;
+    cursor: pointer;
 }
 
 #help-menu .card-face {
     background-color: #111;
     margin: 22px;
-    border-radius: 22px;
-    width: calc(100% - 22px*2); /* *2 because we have two borders... */
+    border-radius: 16px;
+    width: calc(100% - 22px*2);
+    /* *2 because we have two borders... */
     height: calc(100% - 22px*2);
 
     color: #fff;
     font-family: 'Barlow', sans-serif;
 }
 
-#help-menu .card-face > .header {
+#help-menu .card-face>.header {
     margin-top: 32px;
     margin-left: 22px;
     margin-bottom: 22px;
@@ -543,22 +558,46 @@ button.overlay-button {
     font-weight: 600;
 }
 
-#help-menu .card-face > .text {
+#help-menu .card-face>.section {
+    display: flex;
     margin-left: 22px;
+    margin-right: 22px;
     margin-bottom: 22px;
-    font-size: 20px;
+}
+
+/* Give the icons some space on the right */
+#help-menu .card-face .icon {
+    margin-right: 10px;
+    width: 50px;
+}
+
+#help-menu .card-face .text {
+    margin-left: 22px;
+    font-size: 16px;
     font-weight: 500;
 }
 
-#help-menu .card-face > button {
+#help-menu .card-face .section .text {
+    margin-left: 0px;
+}
+
+#help-menu .card-face>button {
     font-family: 'Barlow', sans-serif;
     background-color: #fff;
     color: #111;
     font-size: 20px;
     font-weight: 600 !important;
-    border-radius: 10px;
+    border-radius: 6px;
     margin-left: 22px;
     width: calc(100% - 22px *2);
     line-height: 52px;
     height: 52px;
+    position: absolute;
+    bottom: 3%;
+}
+
+/* Make the contrast of the links smaller */
+#help-menu .card-face a,
+#help-menu .card-face a:visited {
+    color: #ABDDFF;
 }
