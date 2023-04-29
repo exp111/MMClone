@@ -41,7 +41,6 @@ You need to first load a map before being able to play. A test map is available 
 - clean up multi-steps + objectives code
 - move to (first) unlocked card after solving card?
 - test multi steps more
-- load zip from url
 - case finish animation not working on mobile?
 
 ## CaseBuilder TODO:

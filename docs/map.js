@@ -204,33 +204,6 @@ async function saveTile(coords, blob) {
     return LeafletOffline.saveTile(info, blob);
 }
 
-// Called from the map file upload
-function handleZipFile(event) {
-    // hide menu
-    setMenuVisible("menu", "bottom", false);
-    // show load menu
-    setMenuVisible("load-menu", "top", true);
-    console.debug("Got Zip File");
-    let files = event.target.files;
-    let promises = [];
-    let start = new Date();
-    for (let i = 0; i < files.length; i++) {
-        let file = files[i];
-        console.debug(`Loading Zip ${file.name}`);
-        promises.push(loadFromZip(file));
-    }
-
-    Promise.all(promises).then(() => {
-        // info at the end of load
-        let txt = `Loaded Zip in ${(new Date() - start) / 1000} seconds. Refreshing site.`;
-        console.log(txt);
-        alert(txt);
-        if (!Global.DEBUG.enabled)
-            window.location.reload();
-    });
-}
-// attach handler to input (in index.html)
-
 // Parses coords from a map/ path. Else returns null
 function parseCoords(path) {
     // 6/9/9.png
@@ -252,15 +225,8 @@ function clearMapDB() {
 
 function loadTestMap() {
     const path = "data/ghosthunt.zip";
-    alert("Fetching and loading Test Map. This can take a few seconds. Press OK to continue.");
-    let start = new Date();
-    fetch(path).then(res => res.blob()).then(blob => loadFromZip(blob)).then(() => {
-        let txt = `Loaded Map in ${(new Date() - start) / 1000} seconds. Refreshing site.`;
-        console.log(txt);
-        alert(txt);
-        if (!Global.DEBUG.enabled)
-            window.location.reload();
-    });
+    console.debug("Loading test map...");
+    loadZipFromUrl(path);
 }
 
 function getNextMarkerID() {

@@ -8,6 +8,7 @@ function askForFile(callback, accept) {
 }
 
 let start = new Date();
+
 function setProgressBar(text, val) {
     console.debug(`${text} (${(new Date() - start) / 1000} seconds)`);
     let progress = document.getElementById("load-progress");
@@ -122,4 +123,72 @@ async function loadFromZip(f) {
             await tx.done;
             setProgressBar(`Done.`, 100);
         });
+}
+
+// Called from the case file upload
+function handleCaseFile(event) {
+    console.debug("Got Case File(s)");
+    let files = event.target.files;
+    let promises = []
+    for (let i = 0; i < files.length; i++) {
+        let file = files[i];
+        console.debug(`Loading Case from ${file}`);
+        promises.push(loadCaseJson(file));
+    }
+
+    // wait for all files to load
+    Promise.all(promises).then(() => {
+        // refresh cases
+        refreshCases();
+        alert(`Loaded ${files.length} Cases.`);
+    });
+}
+
+// Called from the map file upload
+function handleZipFile(event) {
+    // hide menu
+    setMenuVisible("menu", "bottom", false);
+    // show load menu
+    setMenuVisible("load-menu", "top", true);
+    console.debug("Got Zip File");
+    let files = event.target.files;
+    let promises = [];
+    let start = new Date();
+    for (let i = 0; i < files.length; i++) {
+        let file = files[i];
+        console.debug(`Loading Zip ${file.name}`);
+        promises.push(loadFromZip(file));
+    }
+
+    Promise.all(promises).then(() => {
+        // info at the end of load
+        let txt = `Loaded Zip in ${(new Date() - start) / 1000} seconds. Refreshing site.`;
+        console.log(txt);
+        alert(txt);
+        if (!Global.DEBUG.enabled)
+            window.location.reload();
+    });
+}
+
+function loadZipFromUrl(url) {
+    // enable menu
+    setMenuVisible("load-menu", "top", true);
+    setProgressBar("Downloading...", 0);
+    // download
+    let start = new Date();
+    fetch(url).then(res => res.blob()).then(blob => loadFromZip(blob)).then(() => {
+        let txt = `Loaded Map in ${(new Date() - start) / 1000} seconds. Refreshing site.`;
+        console.log(txt);
+        alert(txt);
+        if (!Global.DEBUG.enabled)
+            window.location.reload();
+    });
+}
+
+function askForZipUrl() {
+    let url = prompt("Enter Zip URL");
+    if (!url)
+        return;
+
+    loadZipFromUrl(url);
 }

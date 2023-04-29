@@ -6,24 +6,6 @@ Global.CASE = {
     completedSteps: 0
 }
 
-function handleCaseFile(event) {
-    console.debug("Got Case File(s)");
-    let files = event.target.files;
-    let promises = []
-    for (let i = 0; i < files.length; i++) {
-        let file = files[i];
-        console.debug(`Loading Case from ${file}`);
-        promises.push(loadCaseJson(file));
-    }
-
-    // wait for all files to load
-    Promise.all(promises).then(() => {
-        // refresh cases
-        refreshCases();
-        alert(`Loaded ${files.length} Cases.`);
-    });
-}
-
 const caseStoreName = "cases";
 const caseImgStoreName = "images";
 const caseDBName = "mmclone.cases";
