@@ -43,6 +43,19 @@
     #steps>.step {
         margin-bottom: 10px;
     }
+
+    #dropzone {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        transition: 175ms;
+        opacity: 0;
+        visibility: hidden;
+        z-index: 10;
+    }
 </style>
 
 <head>
@@ -50,9 +63,10 @@
 </head>
 
 <body>
+    <div id="dropzone"></div>
     <div class="container">
         <div class="half">
-            <button onclick="loadJSON()">Load JSON</button>
+            <button onclick="openJSONPrompt()">Load JSON</button>
             <button onclick="fixDependencies()">Fix Dependencies</button>
             <div class="input">
                 <label for="case-id">ID</label>
@@ -128,23 +142,73 @@
         }]
     }
 
-    function loadJSON() {
+    function openJSONPrompt() {
         let input = document.createElement("input");
         input.type = "file";
         input.accept = ".json";
         input.onchange = (e) => {
             let files = event.target.files;
             let f = files[0];
-            let reader = new FileReader();
-            reader.addEventListener("load",
-                () => {
-                    let result = reader.result;
-                    object = JSON.parse(result);
-                    refresh();
-                });
-            reader.readAsText(f);
+            loadJSON(f);
         };
         input.click();
+    }
+
+    function setDropzone(visible) {
+        let el = document.getElementById("dropzone");
+        el.style.visibility = visible ? "visible" : "hidden";
+        el.style.opacity = visible ? 1 : 0;
+    }
+    function handleDrop(event) {
+        event.preventDefault();
+        // hide
+        setDropzone(false)
+        if (event.dataTransfer.files.length > 0) {
+            let file = event.dataTransfer.files[0];
+            console.debug(`Dropped file ${file.name}`);
+            if (!file.name.endsWith(".json"))
+            {
+                alert("Not a JSON file.");
+                return;
+            }
+            loadJSON(file);
+            return;
+        }
+        alert("No files dropped.");
+    }
+
+    function DragEnter(event) {
+        event.preventDefault();
+        setDropzone(true);
+    }
+    function DragOver(event) {
+        // needed to prevent opening the file
+        event.preventDefault();
+    }
+    function DragLeave(event) {
+        // check if the drag is still inside of the window
+        if (event.clientX >= 0 && event.clientX <= document.body.clientWidth &&
+            event.clientY >= 0 && event.clientY <= document.body.clientHeight)
+            return;
+        
+        // hide
+        setDropzone(false);
+    }
+    // set up drophandler
+    window.ondrop = handleDrop;
+    window.ondragenter = DragEnter;
+    window.ondragover = DragOver;
+    window.ondragleave = DragLeave;
+
+    function loadJSON(file) {
+        let reader = new FileReader();
+        reader.addEventListener("load",
+            () => {
+                let result = reader.result;
+                object = JSON.parse(result);
+                refresh();
+            });
+        reader.readAsText(file);
     }
 
     function assign(node, index, obj) {

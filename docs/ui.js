@@ -353,19 +353,11 @@ function playFinalAnimation() {
     }, 100);
 }
 
-function helpCardButtonClick(event, lastButton) {
-    if (lastButton)
-    {
-        // close window
-        setMenuVisible("help-menu", "top");
-        // save in storage
-        if (localStorage)
-            localStorage.setItem("first-time", false);
-    }
-    else
-    {
-        // show the next slide
-        Global.UI.helpSwiper.slideNext();
-    }
+function helpCardButtonClick(event) {
+    // close window
+    setMenuVisible("help-menu", "top");
+    // save in storage
+    if (localStorage)
+        localStorage.setItem("first-time", false);
     event.stopPropagation();
 }

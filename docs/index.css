@@ -517,7 +517,7 @@ button.overlay-button {
     }
 
     .mobile-show {
-        display: inherit;
+        display: inherit !important;
     }
 }
 
