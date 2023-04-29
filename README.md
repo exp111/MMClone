@@ -48,7 +48,6 @@ You need to first load a map before being able to play. A test map is available 
 ## CaseBuilder TODO:
 - better step requirement input
 - show error symbol when something went wrong
-- stop accidental page reload if editing 
 
 # How to create a map from a image
 To transform a image to raster tiles you can use libvips with this command:

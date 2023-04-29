@@ -142,6 +142,15 @@
         }]
     }
 
+    hasChangedSomething = false;
+    // keep user from going away
+    window.onbeforeunload = () => {
+        if (hasChangedSomething)
+            return "Do you really wanna leave?";
+        else
+            return false;
+    }
+
     function openJSONPrompt() {
         let input = document.createElement("input");
         input.type = "file";
@@ -587,6 +596,7 @@
     function refresh() {
         build();
         output();
+        hasChangedSomething = true;
     }
     refresh();
 </script>
