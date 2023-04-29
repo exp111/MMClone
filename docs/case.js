@@ -2,6 +2,7 @@ Global.CASE = {
     objectives: {},
     nodes: {},
     progress: {},
+    activeSteps: {},
     completedSteps: 0
 }
 
@@ -242,21 +243,44 @@ function resetCaseCall() {
     console.debug(`Reset case ${Global.currentCase.name} (ID ${Global.currentCase.id})`);
 }
 
+function updateActiveSteps() {
+    //TODO: dont redo completely everytime?
+    
+    Global.CASE.activeSteps = {};
+    for (let step of Global.currentCase.steps) {
+        if (!isActiveStep(step))
+            continue;
+        
+        Global.CASE.activeSteps[step.id] = true;
+    }
+}
+
 // Updates the objective text and markers.
 function updateCaseStep() {
-    //TODO: activeSteps?
-    let old = Global.CASE.objectives; //TODO: dont recreate every time
-    Global.CASE.objectives = {};
+    // get solved steps, and newly added steps
+    solved = [];
+    added = [];
+    isActiveStep = (step) => !hasStepSolved(step) && hasStepUnlocked(step);
     for (let step of Global.currentCase.steps) {
-        if (!stepActive(step))
-            continue;
-
-        //FIXME: hack to fix objectives resetting
-        if (old[step.id]) {
-            Global.CASE.objectives[step.id] = old[step.id];
-            continue;
-        }
-        // build nodes
+        let prevActive = stepActive(step);
+        let nowActive = isActiveStep(step);
+        if (prevActive && !nowActive)
+            solved.push(step);
+        else if (!prevActive && nowActive)
+            added.push(step);
+    }
+    // then update activesteps and objectives accordingly
+    /// remove solved steps
+    for (let step of solved)
+    {
+        delete Global.CASE.activeSteps[step.id];
+        delete Global.CASE.objectives[step.id];
+    }
+    /// add newly added steps and build their nodes
+    for (let step of added)
+    {
+        Global.CASE.activeSteps[step.id] = true;
+        // build node
         let root = buildStepNodes(step);
         if (root && root.counter != null) {
             Global.CASE.objectives[step.id] = {
@@ -289,8 +313,8 @@ function clearCaseMarkers() {
     console.debug(`Removing ${Global.caseMarkers.length} markers`);
     Global.caseMarkers = Global.caseMarkers.filter(marker => {
         let node = marker.node;
-        // not used anymore
-        if (!Global.CASE.objectives[node.step]) //TODO: active steps
+        // not used anymore?
+        if (!Global.CASE.activeSteps[node.step])
         {
             // remove + filter
             marker.remove();
@@ -534,5 +558,5 @@ function hasStepUnlocked(step) {
 }
 
 function stepActive(step) {
-    return !hasStepSolved(step) && hasStepUnlocked(step);
+    return Global.CASE.activeSteps[step.id] == true;
 }
