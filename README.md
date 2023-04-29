@@ -36,7 +36,6 @@ You need to first load a map before being able to play. A test map is available 
 - fix slides not being centered after resizing while case is finished (swiper is disabled)
 - Ui shouldnt have to do case logic checks, mark step as unsolvable (in buildnodes?), only check that flag
 - use card classes instead of adding card overlays for locked and solved?
-- website icon
 - fix caseclosed.png clipping
 - delete circles after clicking them in a AND/OR node
 - clean up multi-steps + objectives code
