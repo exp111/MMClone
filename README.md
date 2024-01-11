@@ -42,6 +42,8 @@ You need to first load a map before being able to play. A test map is available 
 - move to (first) unlocked card after solving card?
 - test multi steps more
 - case finish animation not working on mobile?
+- open github link in new tab?
+- handle fetch zip from url errors
 
 ## CaseBuilder TODO:
 - better step requirement input
